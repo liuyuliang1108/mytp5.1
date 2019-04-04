@@ -1,0 +1,92 @@
+{extend name='base/base_content' /}
+
+
+{block name="seo"}
+<title>{$title|default='页面标题'}</title>
+<meta name="keywords" content="{$keywords|default='页面关键字'}">
+<meta name="description" content="{description|default='页面描述'}">
+<link rel="stylesheet" href="__ADMIN__/lib/layui/css/layui.css" media="all">
+</head>
+<body>
+{/block}
+
+
+{block name="content"}
+<div class="panel panel-default">
+    <div class="panel-header">{$data.title}</div>
+
+    <div id="returndata"></div><!-- 被分页内容容器 -->
+
+</div>
+
+
+<div id="paginte"></div> <!--分页容器-->
+
+{/block}
+
+
+{block name="js"}
+<script src="__ADMIN__/lib/layui/layui.js" charset="utf-8"></script>
+<script>
+
+    <!--获取url参数-->
+    function GetQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    }
+
+    //使用分页模块
+    layui.use('laypage', function () {
+        var laypage = layui.laypage;
+
+        //laypage初始化分页
+        Ajaxpage();
+
+        //ajax与后台传送数据，传入当前页码，及文章编号；
+        //传回当前页内容，将其渲染模板，并传回总页数等数据，执行一个laypage实例
+        function Ajaxpage(curr) {
+            $.getJSON("__URL__/blog_category/contentShow", {
+                child: GetQueryString('child'),
+                id: GetQueryString('id'),
+                page: curr || 1
+            }, function (data) {
+                $(".spiner-example").css('display', 'none'); //数据加载完关闭动画
+                if (data == '') {
+
+                    //传回当前页内容，将其渲染模板
+                    $("#returndata").html('<td colspan="20" style="padding-top:10px;padding-bottom:10px;font-size:16px;text-align:center">暂无数据</td>');
+                } else {
+
+                    html = '<div class="panel-body">' + data.content + '</div>';
+                    $("#returndata").html(html);
+
+                    //执行一个laypage实例
+                    laypage.render({
+                        elem: 'paginte' //注意，这里的 test1 是 ID，不用加 # 号
+                        , count: '{$count}', //数据总数，从服务端得到
+                        limit: '{$limits}',//每页显示的数量，从服务端得到
+                        skip: true,//是否开启跳页
+                        skin: '#1AB5B7',//分页组件颜色
+                        curr: curr || 1,
+                        groups: 3,//连续显示分页数
+                        jump: function (obj, first) {
+                            if (!first) {
+                                Ajaxpage(obj.curr)
+                            }
+                            $('#returndata').append('<p style="text-align:center">'+'第' + obj.curr + '页，共' + obj.pages + '页'+'</p>');
+                        }
+                    });
+                }
+            });
+
+
+        }
+    });
+
+</script>
+{/block}
+
+</body>
+</html>

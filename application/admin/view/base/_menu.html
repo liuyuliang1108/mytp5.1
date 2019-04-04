@@ -1,0 +1,20 @@
+<!--左侧菜单栏-->
+<aside class="Hui-aside">
+	<div class="menu_dropdown bk_2">
+		{volist name ="menu" id="vo"}
+		<dl id="menu-article">
+			<dt><i class="Hui-iconfont">&#xe616;</i> {$vo.name}<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
+			<dd>
+				<ul>
+
+					{volist name="vo['parent_id']" id="vi"}
+					<li><a data-href="__URL__/{$vi.url}" data-title="{$vi.name}" href="javascript:void(0)">{$vi.name}</a></li>
+					{/volist}
+
+				</ul>
+			</dd>
+		</dl>
+		{/volist}
+</aside>
+<!--左侧菜单栏-->
+<div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>

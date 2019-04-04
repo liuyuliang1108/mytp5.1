@@ -1,0 +1,105 @@
+{extend name='base/base_content' /}
+
+
+{block name="seo"}
+<title>{$title|default='页面标题'}</title>
+<meta name="keywords" content="{$keywords|default='页面关键字'}">
+<meta name="description" content="{description|default='页面描述'}">
+<link href="__ADMIN__/static/h-ui.admin/css/H-ui.login.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+{/block}
+
+
+{block name="content"}
+<input type="hidden" id="TenantId" name="TenantId" value=""/>
+<div class="header"></div>
+<div class="loginWraper">
+    <div id="loginform" class="loginBox">
+        <form class="form form-horizontal" action="index.html" method="post">
+            <div class="row cl">
+                <label class="form-label col-xs-3"><i class="Hui-iconfont">&#xe60d;</i></label>
+                <div class="formControls col-xs-8">
+                    <input id="nameid" name="name" type="text" placeholder="账户" class="input-text size-L">
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-3"><i class="Hui-iconfont">&#xe60e;</i></label>
+                <div class="formControls col-xs-8">
+                    <input id="passwordid" name="password" type="password" placeholder="密码" class="input-text size-L">
+                </div>
+            </div>
+            <div class="row cl">
+                <div class="formControls col-xs-8 col-xs-offset-3">
+                    <input class="input-text size-L" name="verify" type="text" placeholder="验证码"
+                           onblur="if(this.value==''){this.value='验证码:'}"
+                           onclick="if(this.value=='验证码:'){this.value='';}" value="" style="width:100px;">
+                    <img src="{:captcha_src()}" id="verify_img" alt="captcha"/>
+                    <a id="kanbuq" href="javascript:refreshVerify();">看不清，换一张</a>
+                </div>
+                <!--{:url('admin/user/verify')}-->
+            </div>
+            <div class="row cl">
+                <div class="formControls col-xs-8 col-xs-offset-3">
+                    <label for="online">
+                        <input type="checkbox" name="online" id="online" value="">
+                        使我保持登录状态</label>
+                </div>
+            </div>
+            <div class="row cl">
+                <div class="formControls col-xs-8 col-xs-offset-3">
+                    <input name="" type="button" id="loginid" class="btn btn-success radius size-L"
+                           value="&nbsp;登&nbsp;&nbsp;&nbsp;&nbsp;录&nbsp;">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="footer">Copyright 你的公司名称 by H-ui.admin v3.1</div>
+{/block}
+
+
+{block name="js"}
+<script type="text/javascript" src="__ADMIN__/lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="__ADMIN__/static/h-ui/js/H-ui.min.js"></script>
+<!--此乃百度统计代码，请自行删除-->
+<script>
+    /**
+     * ajax脚本
+     */
+    $(function () {
+        //给登陆按钮添加点击事件
+        $("#loginid").on('click', function () {
+
+            $.ajax({
+                type: 'POST',
+                url: "{:url('checkLogin')}",
+                data: $('form').serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    if(data.status==1){
+                        alert(data.message);
+                        window.location.href="{:url('index/index/index')}";
+                    }else { //给出错误信息
+                        alert(data.message);
+                    }
+                }
+
+            });
+        })
+
+    })
+
+
+</script>
+<script>
+    //刷新验证码函数
+    function refreshVerify() {
+        var ts = Date.parse(new Date()) / 1000;
+        $('#verify_img').attr('src', "/captcha?id=" + ts);//刷新验证码
+    }
+</script>
+{/block}
+
+</body>
+</html>

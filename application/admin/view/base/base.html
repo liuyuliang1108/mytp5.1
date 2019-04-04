@@ -1,0 +1,33 @@
+
+
+<!--base.html是基础模板，可供其他模板继承-->
+
+{include file='base/_meta' /}
+
+{block name="seo"}
+网站标题关键词与描述
+{/block}
+
+
+<!--顶部导航栏-->
+{include file='/base/_header' /}
+<!--顶部导航栏-->
+
+<!--左侧菜单栏-->
+{include file='/base/_menu' /}
+<!--左侧菜单栏-->
+
+{block name="content"}
+页面主体内容
+{/block}
+
+{include file='base/_footer' /}
+
+
+{block name="js"}
+用户自定义js脚本
+{/block}
+
+</body>
+</html>
+

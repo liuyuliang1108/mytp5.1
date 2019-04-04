@@ -1,0 +1,151 @@
+{extend name='base/base_content' /}
+
+
+{block name="seo"}
+<title>{$title|default='页面标题'}</title>
+<meta name="keywords" content="{$keywords|default='页面关键字'}">
+<meta name="description" content="{description|default='页面描述'}">
+<link rel="stylesheet" href="__ADMIN__/lib/layui/css/layui.css" media="all">
+</head>
+<body>
+{/block}
+
+
+{block name="content"}
+
+
+<div id="content-page"></div><!-- 被分页内容容器 -->
+
+
+<div id="layer-page"></div> <!--分页容器-->
+
+<div style="margin-left: 30px">
+    <button class="btn btn-primary " onclick="add_content()" type="button">新增文章</button>
+</div>
+{/block}
+
+
+{block name="js"}
+<script src="__ADMIN__/lib/layui/layui.js" charset="utf-8"></script>
+<script>
+    jQuery.Huifold = function (obj, obj_c, speed, obj_type, Event) {
+        if (obj_type == 2) {
+            $(obj + ":first").find("b").html("-");
+            $(obj_c + ":first").show()
+        }
+        $(obj).bind(Event, function () {
+            if ($(this).next().is(":visible")) {
+                if (obj_type == 2) {
+                    return false
+                } else {
+                    $(this).next().slideUp(speed).end().removeClass("selected");
+                    $(this).find("b").html("+")
+                }
+            } else {
+                if (obj_type == 3) {
+                    $(this).next().slideDown(speed).end().addClass("selected");
+                    $(this).find("b").html("-")
+                } else {
+                    $(obj_c).slideUp(speed);
+                    $(obj).removeClass("selected");
+                    $(obj).find("b").html("+");
+                    $(this).next().slideDown(speed).end().addClass("selected");
+                    $(this).find("b").html("-")
+                }
+            }
+        })
+    }
+
+
+
+
+                    //使用分页模块
+                    layui.use('laypage', function () {
+                        var laypage = layui.laypage;
+
+                        //laypage初始化分页
+                        Ajaxpage();
+
+                        //ajax与后台传送数据，传入当前页码，及文章编号；
+                        //传回当前页内容，将其渲染模板，并传回总页数等数据，执行一个laypage实例
+                        function Ajaxpage(curr) {
+                            $.getJSON("__URL__/blog_category/contentList", {
+                                page: curr || 1,
+                                cId: {$child_id}
+                            }, function (data) {
+
+
+                                //传回当前页内容，将其渲染模板
+                                var data = data;
+
+                                var html = '';
+                                html = '<ul id="Huifold1" class="Huifold">';
+
+                                data.forEach(function (value) {
+
+                                    html += '<li class="item"  value=" ' + value['url'] + '">';
+                                    html += '<h4>' + value['title'] + '<b>+</b></h4>';
+                                    html += '<div class="info"> 摘要：<br>' + value['content'] + '</div>';
+                                    html += '</li>';
+
+                                });
+                                html += '</ul>';
+
+
+                                $("#content-page").html(html);
+
+                                $.Huifold("#Huifold1 .item h4", "#Huifold1 .item .info", "fast", 3, "mouseover"); /*5个参数顺序不可打乱，分别是：相应区,隐藏显示的内容,速度,类型,事件*/
+
+                                //执行一个laypage实例
+                                laypage.render({
+                                    elem: 'layer-page' //注意，这里的 test1 是 ID，不用加 # 号
+                                    , count: '{$count}', //数据总数，从服务端得到
+                                    limit: '{$limits}',//每页显示的数量，从服务端得到
+                                    skip: true,//是否开启跳页
+                                    skin: '#1AB5B7',//分页组件颜色
+                                    curr: curr || 1,
+                                    groups: 3,//连续显示分页数
+                                    jump: function (obj, first) {
+                                        if (!first) {
+                                            Ajaxpage(obj.curr)
+                                        }
+                                        $('#content-page').append('<p style="text-align:center">' + '第' + obj.curr + '页，共' + obj.pages + '页' + '</p>');
+                                    }
+                                });
+
+                            });
+
+                        }
+
+                    });
+
+
+
+
+        //展示内容
+        function contentShow(url) {
+            var url = url;
+            window.location.href = "__URL__/blog_category/contentShow" + url;
+        }
+
+        //动态给元素绑定事件
+        $("#content-page").on('click', '.item', function () {
+            contentShow($(this).attr("value"));
+        })
+
+        //添加博客内容
+        function add_content() {
+            var cId = {$child_id};
+
+            if (cId == "") {
+                layer.alert("请选择一个博客分类");
+                return;
+            }
+            window.location.href = "__URL__/blog_category/addContent?cId=" + cId;
+        }
+
+</script>
+{/block}
+
+</body>
+</html>
