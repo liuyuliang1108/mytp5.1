@@ -54,4 +54,7 @@ class Notice extends Controller
         $json = DataTablesUtil::getJsonPage($queryArr[DataTablesUtil::S_ECHO],$count,$list);
         return json_decode($json);
     }
+    public function functionOne(){
+        return 666;
+    }
 }
