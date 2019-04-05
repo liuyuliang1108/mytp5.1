@@ -1,4 +1,4 @@
-<?php /*a:4:{s:72:"C:\phpStudy\PHPTutorial\WWW\tp5.1\application\admin\view\user\login.html";i:1554214203;s:79:"C:\phpStudy\PHPTutorial\WWW\tp5.1\application\admin\view\base\base_content.html";i:1553674992;s:72:"C:\phpStudy\PHPTutorial\WWW\tp5.1\application\admin\view\base\_meta.html";i:1553677538;s:74:"C:\phpStudy\PHPTutorial\WWW\tp5.1\application\admin\view\base\_footer.html";i:1553677291;}*/ ?>
+<?php /*a:4:{s:72:"C:\phpStudy\PHPTutorial\WWW\tp5.1\application\admin\view\user\login.html";i:1554373199;s:79:"C:\phpStudy\PHPTutorial\WWW\tp5.1\application\admin\view\base\base_content.html";i:1554373199;s:72:"C:\phpStudy\PHPTutorial\WWW\tp5.1\application\admin\view\base\_meta.html";i:1554373199;s:74:"C:\phpStudy\PHPTutorial\WWW\tp5.1\application\admin\view\base\_footer.html";i:1554373199;}*/ ?>
 
 
 <!--base.html是基础模板，可供其他模板继承-->
