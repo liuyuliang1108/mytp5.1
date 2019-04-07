@@ -75,30 +75,115 @@
 	<table class="table table-border table-bordered table-bg mt-20">
 		<thead>
 		<tr>
-			<th colspan="2" scope="col">服务器信息</th>
+			<th colspan="2" scope="col">请求信息</th>
 		</tr>
 		</thead>
 		<tbody>
 		<tr>
-			<th width="30%">服务器计算机名</th>
+			<th width="30%">当前访问域名或者IP</th>
 			<td><span id="lbServerName">{$Request.host}</span></td>
 		</tr>
 		<tr>
-			<td>服务器IP地址</td>
-			<td>{$Request.ip}</td>
+			<td>当前访问协议</td>
+			<td>{$Request.scheme}</td>
 		</tr>
-		<tr>
-			<td>服务器域名</td>
-			<td>{$Request.domain}</td>
-		</tr>
+
 		<tr>
 			<td>服务器端口 </td>
 			<td>{$Request.port}</td>
 		</tr>
+
 		<tr>
-			<td>服务器IIS版本 </td>
-			<td>Microsoft-IIS/6.0</td>
+			<td>当前请求的REMOTE_PORT</td>
+			<td>{$Request.remotePort}</td>
 		</tr>
+
+		<tr>
+			<td>当前请求的当前请求的SERVER_PROTOCOL</td>
+			<td>{$Request.protocol}</td>
+		</tr>
+
+		<tr>
+			<td>当前请求的CONTENT_TYPE </td>
+			<td>{$Request.contentType}</td>
+		</tr>
+
+		<tr>
+			<td>服务器域名</td>
+			<td>{$Request.domain}</td>
+		</tr>
+
+		<tr>
+			<td> 当前访问的子域名 </td>
+			<td>{$Request.subDomain}</td>
+		</tr>
+
+		<tr>
+			<td> 当前访问的泛域名 </td>
+			<td>{$Request.panDomain}</td>
+		</tr>
+
+		<tr>
+			<td> 当前访问的根域名 </td>
+			<td>{$Request.rootDomain}</td>
+		</tr>
+
+		<tr>
+			<td>当前请求url，传入true参数</td>
+			<!--传入true参数，获取包含域名的完整绝对url请求地址-->
+			<td>{$Request.url.true}</td>
+		</tr>
+
+		<tr>
+			<td> 当前请求的QUERY_STRING参数  </td>
+			<td>{$Request.query}</td>
+		</tr>
+
+		<tr>
+			<td>  当前执行的文件 </td>
+			<td>{$Request.baseFile}</td>
+		</tr>
+
+		<tr>
+			<td> URL访问根地址 </td>
+			<td>{$Request.root}</td>
+		</tr>
+
+		<tr>
+			<td>  URL访问根目录  </td>
+			<td>{$Request.rootUrl}</td>
+		</tr>
+
+		<tr>
+			<td>当前请求URL的pathinfo信息（含URL后缀）</td>
+			<td>{$Request.pathinfo}</td>
+		</tr>
+
+		<tr>
+			<td>  请求URL的pathinfo信息(不含URL后缀)   </td>
+			<td>{$Request.path}</td>
+		</tr>
+
+		<tr>
+			<td>当前URL的访问后缀</td>
+			<td>{$Request.ext}</td>
+		</tr>
+
+		<tr>
+			<td> 获取当前请求的时间 </td>
+			<td>{$Request.time}</td>
+		</tr>
+
+		<tr>
+			<td> 当前请求的资源类型  </td>
+			<td>{$Request.type}</td>
+		</tr>
+
+		<tr>
+			<td>  当前请求类型 </td>
+			<td>{$Request.method}</td>
+		</tr>
+
 		<tr>
 			<td>PHP版本</td>
 			<td>{$Think.const.PHP_VERSION}</td>
@@ -108,91 +193,68 @@
 			<td>服务器版本</td>
 			<td>{$Think.const.PHP_OS}</td>
 		</tr>
+
+		<thead>
 		<tr>
-			<td>当前请求url</td>
-			<!--传入true参数，获取包含域名的完整绝对url请求地址-->
-			<td>{$Request.url.true}</td>
+			<th colspan="2" scope="col">服务器变量server</th>
 		</tr>
+		</thead>
+		{volist name='$Request.server' id='vo'}
 		<tr>
-			<td>当前session数量</td>
-			<td>{:count($_SESSION)}</td>
+			<td>{$key}</td>
+			<td>{$vo}</td>
 		</tr>
+		{/volist}
+
+		<thead>
 		<tr>
-			<td>当前session ID</td>
-			<td>{:session_id()}</td>
+			<th colspan="2" scope="col">请求变量request</th>
 		</tr>
+		</thead>
+		{volist name='$Request.request' id='vo'}
 		<tr>
-			<td>本文件所在文件夹 </td>
-			<td>{$Think.const.__DIR__}</td>
+			<td>{$key}</td>
+			<td>{$vo}</td>
 		</tr>
+		{/volist}
+
+		<thead>
 		<tr>
-			<td>服务器操作系统 </td>
-			<td>Microsoft Windows NT 5.2.3790 Service Pack 2</td>
+			<th colspan="2" scope="col">环境变量env</th>
 		</tr>
+		</thead>
+		{volist name='$Request.env' id='vo'}
 		<tr>
-			<td>系统所在文件夹 </td>
-			<td>C:\WINDOWS\system32</td>
+			<td>{$key}</td>
+			<td>{$vo}</td>
 		</tr>
+		{/volist}
+
+
+		<thead>
 		<tr>
-			<td>服务器脚本超时时间 </td>
-			<td></td>
+			<th colspan="2" scope="col">路由变量route</th>
 		</tr>
+		</thead>
+		{volist name='$Request.route' id='vo'}
 		<tr>
-			<td>服务器的语言种类 </td>
-			<td>Chinese (People's Republic of China)</td>
+			<td>{$key}</td>
+			<td>{$vo}</td>
 		</tr>
+		{/volist}
+
+		<thead>
 		<tr>
-			<td>.NET Framework 版本 </td>
-			<td>2.050727.3655</td>
+			<th colspan="2" scope="col">cookie变量cookie</th>
 		</tr>
+		</thead>
+		{volist name='$Request.cookie' id='vo'}
 		<tr>
-			<td>服务器当前时间 </td>
-			<td>2014-6-14 12:06:23</td>
+			<td>{$key}</td>
+			<td>{$vo}</td>
 		</tr>
-		<tr>
-			<td>服务器IE版本 </td>
-			<td>6.0000</td>
-		</tr>
-		<tr>
-			<td>服务器上次启动到现在已运行 </td>
-			<td>7210分钟</td>
-		</tr>
-		<tr>
-			<td>逻辑驱动器 </td>
-			<td>C:\D:\</td>
-		</tr>
-		<tr>
-			<td>CPU 总数 </td>
-			<td>4</td>
-		</tr>
-		<tr>
-			<td>CPU 类型 </td>
-			<td>x86 Family 6 Model 42 Stepping 1, GenuineIntel</td>
-		</tr>
-		<tr>
-			<td>虚拟内存 </td>
-			<td>52480M</td>
-		</tr>
-		<tr>
-			<td>当前程序占用内存 </td>
-			<td>3.29M</td>
-		</tr>
-		<tr>
-			<td>Asp.net所占内存 </td>
-			<td>51.46M</td>
-		</tr>
-		<tr>
-			<td>当前Session数量 </td>
-			<td>8</td>
-		</tr>
-		<tr>
-			<td>当前SessionID </td>
-			<td>gznhpwmp34004345jz2q3l45</td>
-		</tr>
-		<tr>
-			<td>当前系统用户名 </td>
-			<td>NETWORK SERVICE</td>
-		</tr>
+		{/volist}
+
 		</tbody>
 	</table>
 </div>

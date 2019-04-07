@@ -17,9 +17,9 @@ return [
     'admin'     => [ //模块
         '__file__'   => [],
         '__dir__'   => [],
-        'controller'   => [],
+        'controller'   => ['Test'],
         'model'   => [],
-        'view'   => ['category/categor_manage'],
+        'view'   => [],
     ],
     // 其他更多的模块定义
 ];
