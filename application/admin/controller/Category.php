@@ -9,21 +9,38 @@
 namespace app\admin\controller;
 
 use think\facade\Build;
-use think\Controller;
+use app\admin\controller\Base;
 use app\admin\model\CategoryList;
 use think\Request;
 
-class Category extends Controller //分类管理控制器
+class Category extends Base //分类管理控制器
 {
 
 
     public function index()
     {
+        $this->isLogin();//判断用户是否登录
         $data = CategoryList::selectData();
-        //    dump($data);
+
         $data = getTree($data, 0);
-//dump($data);
+
+        $this->view->assign('title','后台管理系统v1.0');
+
         return $this->fetch('', ['menu' => $data]);
+    }
+
+    public function welcome()
+    {
+
+        return $this->fetch('');
+    }
+
+    public function categoryManage()
+    {
+        $this->isLogin();//判断用户是否登录
+
+
+        return $this->fetch('');
     }
 
     public function add()
@@ -284,9 +301,6 @@ class Category extends Controller //分类管理控制器
 //echo "</pre>";
 
         $string = file_get_contents($filename);
-        echo "<pre>";
-        dump($string);
-        echo "</pre>";
 //DB_HOST    localhost
         $data = ['__dir__' => 'hello'];
         foreach ($data as $key => $val) {
@@ -306,9 +320,6 @@ class Category extends Controller //分类管理控制器
         file_put_contents($filename, $string);
 
         $string = file_get_contents($filename);
-        echo "<pre>";
-        dump($string);
-        echo "</pre>";
 
     }
 

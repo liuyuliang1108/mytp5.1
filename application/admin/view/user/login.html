@@ -79,7 +79,7 @@
                 success: function (data) {
                     if(data.status==1){
                         alert(data.message);
-                        window.location.href="{:url('index/index/index')}";
+                        window.location.href="{:url('admin/category/index')}";
                     }else { //给出错误信息
                         alert(data.message);
                     }
@@ -95,8 +95,7 @@
 <script>
     //刷新验证码函数
     function refreshVerify() {
-        var ts = Date.parse(new Date()) / 1000;
-        $('#verify_img').attr('src', "/captcha?id=" + ts);//刷新验证码
+        $('#verify_img').attr('src', "/captcha?rand="+Math.random());//刷新验证码
     }
 </script>
 {/block}

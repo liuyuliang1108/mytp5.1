@@ -24,5 +24,6 @@ return
         // 验证码位数
        'length'   => 4,
         // 验证成功后是否重置
-        'reset'    => true
+        'reset'    => true,
+    'secure' => false,
 ];

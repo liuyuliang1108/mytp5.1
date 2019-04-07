@@ -14,7 +14,7 @@
 <div class="page-container">
 	<p class="f-20 text-success">欢迎使用H-ui.admin <span class="f-14">v3.1</span>后台模版！</p>
 	<p>登录次数：{$Think.session.user_info.login_count}次 </p>
-	<p>上次登录IP：222.35.131.79.1  上次登录时间：2014-6-14 11:19:55</p>
+	<p>上次登录IP：{$Request.ip}  上次登录时间：{:date("Y-m-d H:i:s",$Think.session.user_info.login_time )}</p>
 	<table class="table table-border table-bordered table-bg">
 		<thead>
 		<tr>
@@ -81,27 +81,49 @@
 		<tbody>
 		<tr>
 			<th width="30%">服务器计算机名</th>
-			<td><span id="lbServerName">http://127.0.0.1/</span></td>
+			<td><span id="lbServerName">{$Request.host}</span></td>
 		</tr>
 		<tr>
 			<td>服务器IP地址</td>
-			<td>192.168.1.1</td>
+			<td>{$Request.ip}</td>
 		</tr>
 		<tr>
 			<td>服务器域名</td>
-			<td>www.h-ui.net</td>
+			<td>{$Request.domain}</td>
 		</tr>
 		<tr>
 			<td>服务器端口 </td>
-			<td>80</td>
+			<td>{$Request.port}</td>
 		</tr>
 		<tr>
 			<td>服务器IIS版本 </td>
 			<td>Microsoft-IIS/6.0</td>
 		</tr>
 		<tr>
+			<td>PHP版本</td>
+			<td>{$Think.const.PHP_VERSION}</td>
+		</tr>
+
+		<tr>
+			<td>服务器版本</td>
+			<td>{$Think.const.PHP_OS}</td>
+		</tr>
+		<tr>
+			<td>当前请求url</td>
+			<!--传入true参数，获取包含域名的完整绝对url请求地址-->
+			<td>{$Request.url.true}</td>
+		</tr>
+		<tr>
+			<td>当前session数量</td>
+			<td>{:count($_SESSION)}</td>
+		</tr>
+		<tr>
+			<td>当前session ID</td>
+			<td>{:session_id()}</td>
+		</tr>
+		<tr>
 			<td>本文件所在文件夹 </td>
-			<td>D:\WebSite\HanXiPuTai.com\XinYiCMS.Web\</td>
+			<td>{$Think.const.__DIR__}</td>
 		</tr>
 		<tr>
 			<td>服务器操作系统 </td>
@@ -113,7 +135,7 @@
 		</tr>
 		<tr>
 			<td>服务器脚本超时时间 </td>
-			<td>30000秒</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>服务器的语言种类 </td>
