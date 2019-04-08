@@ -1,0 +1,2457 @@
+基础阶段  重点：linux nginx mysql php熟练
+linux：基本命令，操作，启动，基本服务配置，包括rpm安装文件，各种服务配置
+会写简单的shell脚本，和awk/sed脚本命令
+Nginx:做到能够安装配置nginx+php知道基本的nginx核心配置选项，
+mysql：会自己搭建mysql，指定mysql的配置选项，指定innodb和myisam的区别
+，知道针对innodb和myisam两个引擎的不同，知道两个引擎的差异，和选择上面的区别
+，能够纯手工编译搭建一个mysql并配置好编码
+php 基本语法数组，字符串，数据库，xml，socket，GD/imagemgk图片处理
+熟悉各种跟mysql操作链接的api（mysql、mysqli、pdo）
+知道各种编码文件的解决，知道常规熟练使用的php框架
+，了解基本mvc的运行机制，知道不同php框架之间的区别，能够快速学习一个mvc框架
+能够知道开发工程中的文件目录组织，有基本的良好的代码结构和风格，
+能够完成小系统的开发和中型系统中某个模块的开发工作
+
+5，前端：学习下html，css，js等相关知识，知道什么是web标准，
+div+css的web/wap页面模式，知道html5和4的区别，了解一下基本的前端知识和
+js框架jquery，了解些js的编程知识
+
+6.系统设计
+能够完成小型系统的基本设计，包括简单的数据库设计，能够完成简单的数据库设计，能够
+完成基本的浏览器->NGINX+PHH->数据库 架构的设计开发工作，能够支持每天几十万到数百万流量网站的开发维护工作
+
+
+
+修改完静态化
+cgi.force_redirect = 0
+
+  RewriteRule ^(.*)$ index.php [L,E=PATH_INFO:$1]
+11
+12
+
+21
+22
+03
+31
+32
+33
+
+
+
+git://github.com/top-think/think.git
+
+
+
+git init//创建一个git版本库
+git remote add origin https://github.com/liuyuliang1108/mytp5.1.git//建立与远程库连接
+git add .//文件名或. 到缓存区
+git commit -m "描述"上传到本地库
+
+git push -u origin master//应该是推送到主支（master）
+
+再 git clone url 指定文件夹名
+
+$ git status
+On branch master
+Your branch is up to date with 'origin/master'.
+
+不管是自己重新创建还是从远程仓库clone,我们现在得到了一个可以开展工作的工作区，这个工作区被git仓库所管理。
+
+进行一些修改后，可以通过add, commit, push来推送到远程仓库
+## 添加所有修改
+$ git add .
+## 提交修改
+$ git commit -m "add some files"
+## 推送到远程仓库
+$ git push
+
+分支
+通常情况下，当我们需要添加一个新功能的时候，是不能在主分支上直接修改的，这时，需要创建一个新的分支，等功能开发并测试完成之后，再合并到主分支。
+
+假设我们需要新建一个临时分支functionone来处理一个问题。
+git checkout -b 'functionone'
+【做点修改】
+## 添加并提交修改到本地
+$ git add application/admin/controller/Notice.php
+
+$ git commit -m "add sencond mess on functionone branch"
+
+## 推送到远程，因为现在远程还没有functionone分支，所以需要set-upstream
+## 这样，在远程仓库就有了functionone分支，之后可以直接push
+$ git push --set-upstream origin functionone
+
+
+## functionone解决后，把修改合并会master，并删除functionone分支【本地仓库】以及远程仓库中的
+$ git checkout master
+$ git merge functionone
+$ git branch -d functionone
+$ git push 【将更新功能后的push到master分支中】
+
+## 删除远程分支
+$ git push origin :functionone
+
+拉取别人的提交
+在我们完成了某项功能的修改，需要push的远程的时候，协作者可能已经提交了他们的修改，这时，我们需要先把最新的提交拉取下来，加入我们的修改，再重新提交上去。
+
+## 拉取远程提交内容并合并到当前工作区
+$ git pull
+## 重新push到远程
+$ git push
+
+处理冲突
+当拉取协作者的提交时，很可能不同开发者修改了同一个文件的同一部分，这时候，就会出现冲突，我们需要手动解决这些冲突，再重新提交上去。
+
+
+$ git pull
+## 尝试自动合并file1
+Auto-merging file1
+
+## 发现冲突，需要手动解决冲突
+CONFLICT (content): Merge conflict in file1
+Automatic merge failed; fix conflicts and then commit the result.
+
+## 此时，git已经把可能冲突的地方都写进了文件
+$ vim file1
+## 可以看见冲突的地方
+<<<<<<< HEAD
+file1 + add 1
+=======
+file1 + del 4
+>>>>>>> e2e17d311ec33700e94ce5dd694aa340920deb7c
+
+## vim里手动解决冲突后，add进来
+$ git add file1
+$ git commit -m "resolve confict in file1"
+## 推送到远程分支
+$ git push
+
+之前没有写.gitignore文件，就上传了一些没有必要的文件，在添加了.gitignore文件后，就想删除远程仓库中的文件却想保存本地的文件。 
+可以使用git rm -r –cached directory来删除缓冲，然后进行commit和push
+
+解决方法就是先把本地缓存删除（改变成未track状态），然后再提交：
+
+git rm -r --cached .
+git add .
+git commit -m 'update .gitignore'
+
+
+栗子
+# 此为注释 – 将被 Git 忽略
+ 
+*.a       # 忽略所有 .a 结尾的文件
+!lib.a    # 但 lib.a 除外
+/TODO     # 仅仅忽略项目根目录下的 TODO 文件，不包括 subdir/TODO
+build/    # 忽略 build/ 目录下的所有文件
+doc/*.txt # 会忽略 doc/notes.txt 但不包括 doc/server/arch.txt
+
+回退命令reset
+有可能已经commit了多次到本地。 
+1. 先查看commit日志 执行下面命令
+git log
+
+2. 回滚、取消之前的提交 
+git reset --hard commit_id     //退到/进到 指定commit的sha码 commit_id:239afed0857cc2e77c17c01014077808619af64d
+3.ok,可以重新提交了
+git commit a.txt -m "重新提交"   // 记得不要提交不想提交的文件哦
+
+
+git branch //查看分支
+git branch mingcheng //创建分支
+git checkout fenzhimingcheng //切换分支
+git branch -d fenzhimingcheng //删除分支
+git checkout -b mingcheng//快速创建并切换
+git merge 要和并到的分子名称//合并分支
+
+在使用Git把当前分支合并到master提示“Already up-to-date”，但当前分支和 master 分支代码不同步。
+假设当前分支是：dev，主分支是：master。
+解决方法：
+git checkout master；
+git reset --hard dev;
+git push --force origin master
+--------------------- 
+4.4 提交本地文件到GitHub
+首先获取远程仓库链接，如：https://github.com/xxx/MyDemo.git
+进入本地需要push到github的项目，“cd”进入根目录。
+
+执行git init命令，初始化本地仓库，会创建一个.git的隐藏文件夹。
+
+执行git add .命令，将目录添加入索引
+执行 git commit -m "日志"
+执行 git remote add origin github远程仓库的链接;
+
+执行git pull origin master从远程仓库获取更新，在2.9.2之后的版本还需要加上--allow-unrelated-histories，否则会pull失败。
+执行 git push -u origin master等待结束，提交成功；
+--------------------- 
+作者：操吴戈兮被犀甲 
+来源：CSDN 
+$ ssh-keygen -t rsa -C "563021874@qq.com"//生成密钥对
+
+SHA256:vxzerVqtEgc4zAT21VatIXcG27Aldj+MpoDxIC4aNA4 563021874@qq.com
+
+原文：https://blog.csdn.net/u013295518/article/details/78746007 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDkzGc0ZK6wXfdXOx/os4ad+e0qN/q9jccrU73VhkM8Kko0CjV7mOQ2oH3P6iNg5+xvJMJyV6a2wTSTc2sozNS9HzH2yIaXxyyxhG1Sz5l7lYNeoqk/HBQXyNXClBcmsKYcKq4DX48+VMZYHgc5+oEPCxAAmYAJA0d3Imi5xxzH3k5Y9AnQujc9XBoIwI/NEWMaSnG5m9JXzur6UyIFsdBhrrqwDPF3PovHWtX3/0pDlRC0xorP/Tc1Ezu9K4PgaRZk7y22uLpt5U/fctb7oNYg9FKGoU4M1XXvfAXpGMyfG88krmAMdtonwjWl+xNoOGFcdemLaW2EWP7UtXfLS2RR 563021874@qq.com
+
+$ ssh -T git@github.com//验证
+
+
+$ git remote -v 远程仓库查看
+$ git remote set-url origin git@github.com:liuyuliang1108/box.git//设置远程仓库地址
+
+
+git本地配置 
+　　打开本地的git cmd，首先输入
+
+git init
+1
+对git进行初始化。接下来输入以下命令对本地的一些信息进行配置。
+
+git config --global user.name "yourname"
+git config --global user.email "youremail"
+#这是对git的信息进行初始配置你的用户名和邮箱地址。--global指的全局的意思。
+#再接着设置一些常用的配置，例如字符集等等。
+git config --global core.autocrlf false
+git config --global gui.encoding utf-8
+git config --global core.quotepath off
+#设置完成后，使用git clone "git仓库地址"既可拉取远端的仓库代码
+#这里我们首先把本地的代码上传上去，那就需要配置一下公钥私钥，否则没有权限进行上传操作。
+ssh-keygen -t rsa -C “youremail”
+#这个命令会在对应的目录下生产秘钥，直接用notpad++打开进行复制。
+--------------------- 
+作者：逐风的小黄 
+来源：CSDN 
+原文：https://blog.csdn.net/qq_30683329/article/details/80795466 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+
+git config --list 命令来列出所有 Git 当时能找到的配置
+
+
+merge命令不生效
+当目标分支是当前分支的祖先commit节点，也就是说当前分支已经是最新的了，在这种情况下merge命令没有任何效果。
+
+在当前仓库中，当我们把dev分支merge到master的时候，会得到”Already up-to-date.”
+
+函数的命名空间 namespace a{function hello()} namespace \a\hello()
+类的命名空间 解决了类的全局命名冲突
+class A{
+public $name = 'liu' //类的属性
+public function say(){return $this->name //返回类属性} //类的方法
+echo（new A）->say();//实例对象，调用方法  命名空间名 类名 方法名（__METHOD__）a\A::say 当前
+不同空间访问类的属性 （new \a\A）->name()
+
+常量命名空间 namespace a { const SITE_NAME='WWW'} namespace
+{echo a\SITE_NAME;}  define命名的不受空间限制
+命名空间中的普通变量  不用加限制符访问
+
+命名空间的分层机制
+进行分级管理 可以使不同空间的代码逻辑清晰
+将有一定层级关系的命名空间用\分割
+类空间的分级机制，是类文件自动加载的实现基础
+
+命名空间导入与简化，本质就是用一个别名，来简化一个比较长的多级空间名称，php5.6后页支持常量和函数的导入
+ 导入空间使用use 空间别名的简化用as 进一步简化 as c；
+
+全局命名空间
+namespace    stdClass 是定义在全局中的标准类
+$obj= new \stdClass 
+可以创建与全局重名的函数
+使用全局函数时加\  访问全局系统函数必须加全局空间标识
+
+命名空间的三种引用方式
+1.非限定名称 省略空间名称 使用默认或当前的命名空间
+：：访问类中的静态方法 不需要实例化
+
+2.限定名称:前面必须添加命名空间才可以访问，通常用于子空间
+3.完全限定名称 从全局空间的反斜线开始\
+
+
+配置文件加载优先级
+模块中也有独立配置和场景配置
+惯例配置thinkphp-convention  <应用配置(应用配置<独立配置extra<场景配置在应用配置中设置状态)< 模块配置< 动态配置
+
+配置项的作用域
+作用域域命名空间的概念类似，就是配置项的可见范围 对用户的可见性
+2 作用域的表现形式与二维数组是一样的 作用域相当于二级配置项的名称
+切换作用域使用Config::range('作用域')
+用数组的方式来配置作用域中的值
+
+路由技术
+用户请求  路由解析 调度请求 执行操作
+
+作用
+1，根据事先定义的路由规则，检验url请求，确定执行或拒绝
+2，隐藏了原url地址，使访问更安全，地址更优雅
+
+写在哪
+路由规则写在与应用配置同级的route.php文件中
+路由规则主要使用路由类 Route::rule（）方法注册
+定义路由，是tp项目中的规范
+
+路由模式
+普通 使用PATH_INFO方式
+混合 开启了路由模式，path_info也能访问 创建了规则 就不能访问了
+强制 只能路由规则访问  每一个访问都要有对应创建路由规则才能访问
+
+路由注册
+1.动态方法
+Route::rule('路由规则','路由地址'，'请求类型','路由参数')变量规则
+2.配置数组（配置文件方式）return[‘路由规则’=>‘路由地址’]
+路由规则 变量的写法 /:变量名
+
+路由规则 就是用户最终用来访问的url地址，并非原始地址
+路由标识符/:变量名1/:变量名2/[:可选变量名] 动态部分
+
+五种常用的路由地址类型
+用户用路由规则访问页面时，真实跳转到的地址
+种类一
+模块/控制器/操作Route::rule('路由规则','')
+操作方法Route::rule('路由规则','@模块/控制器/操作')
+//跳过模块初始化，直接执行控制器中的方法//配置文件和公共文件跳过
+//调用视图必须设置完整模块文件的路径
+类的方法（动态与静态）
+重定向地址（301）
+闭包函数
+可访问控制器 url_controller_layer =>controller
+按从右到左的顺序进行地址解析  操作->控制器->模块
+支持额外参数 查询方式 ：?变量名1=值1&
+
+变量规则的作用域
+局部变量规则：仅对当前路由有效
+全局变量规则：已注册的全部路由规则都要遵守
+think\Route:: pattern(['name'=>'[a-zA-Z]+']）
+由一维数组组成
+路由配置数组  全局变量规则
+
+路由分组
+当多个路由规则中，有相同的路由前缀，分组提高效率
+分组方法：
+动态方法：Route::group('分组名称',[路由地址,[路由参数],[变量规则]])
+配置数组：return['规则'=>[路由地址,[路由参数],[变量规则]]
+
+闭包分组：Route::group('',function(){//创建路由规则语句;})
+虚拟分组：根据相同路由参数进行分组 关联键名name连接静态路由地址
+think\Route::group(
+    'demo',//分组名称
+    [
+        ':id' => 'demo1',//路由规则
+        ':name' => 'demo2',
+        ':isOk' => 'demo3',
+    ], [
+        'method' => 'get',//路由参数
+        'prefix' => 'index/user/'
+    ], [
+        'id' => '\d{2,4}',//变量规则
+        'name' => '[a-zA-Z]+',
+        'isOk' => '0|1'
+    ]
+);
+需要前期科学的规划
+
+第9课，别名路由
+给模块控制器取别名
+快速注册同一控制器下所有操作方法（不支持变量规则）
+1，动态方法Route::alias('路由规则','模块/控制器',[路由参数]);
+\think\Route::alias('math','index/demo',[
+    'ext'=>'html'
+    ,'allow'=>'add,sub',//白名单
+,'except'=>'add,sub',//黑名单
+    ]);
+静态数组：return['__alias__'=>['路由规则','模块/控制器',[路由参数];
+
+return [
+    '__alias__' =>
+        [
+            'math' => ['index/demo',
+                ['ext' => 'html',
+                'allow' => 'add,sub',]
+            ]
+        ]
+];
+
+十课 路由绑定
+在入口文件中添加：BIND_MODULE系统常量
+//将当前访问绑定模块/控制器
+define('BIND_MODULE','index');//模块级
+define('BIND_MODULE','index/demo');//控制器级
+
+2.入口自动绑定
+说明：入口文件名与应用中的模块自动绑定
+1、入口自动绑定模块设置：‘auto_bind_module’=>true,
+2、创建要需要绑定的入口文件如admin.php
+创建与入口文件对应的模块与控制器application/admin/controller/index.php,并创建默认index方法
+4、直接访问：域名/admin.php就会自动执行admin模块中默认控制器的默认方法
+3.动态绑定
+Route::bind('模块[/控制器][/操作]')
+1、绑定当前url到模块
+Route::bind('模块');
+三，绑定到命名空间或者类
+1.绑定当前url到指定命名空间
+Route::bind('app\index\controller','namespace');
+所有采用该命名空间的类，都可以直接访问
+2.绑定当前url到类
+Route::bind('app\index\controller\Demo','class');
+所有Demo类中的方法，都可以直接访问
+这种绑定会直接跳过模块配置文件和公共文件
+
+控制器类config
+
+五个属性介绍
+1，视图类实例对象 protected $view;
+2,请求类实例对象 protected $request;
+3,验证失败是否抛出异常 protected $failException=false;
+4,是否批量验证：protected $batchValidate=false;
+5，前置方法列表 protected $beforeActionList=[];
+8个方法介绍
+1，构造方法 public function __construct(Request $request = null)对象依赖驻
+
+实例类 public全局 类内部 外部子类都可以访问 所有实例都可以访问
+private 表示私有 只有本类内部可以使用
+protected 表示受保护的 只有本类或子类或父类中可以访问
+
+类的实例化就是对象，一个对象可以分为两个部分，一个是静态描述，就是类里的成员属性，第二个是动态描述方法，也就是对象的功能。
+声明一个类 可以在class前加一些关键字 abstract final
+
+声明类里的变量时，前面要加一些关键字 通常为var public private static把成员属性设置为静态权限 protected 等关键词
+
+实例化对象格式
+$变量名 = new 类名（）；//括号内可传参数
+
+给对象中成员属性赋值格式为
+$引用名->成员属性=值;
+
+调用对象中的成员方法的格式为
+$引用名->成员方法;
+
+成员方法使用成员属性的格式为
+$this->成员属性；
+
+<?php
+    class Person//声明一个类{
+        var $name;//声明类里的变量//静态描述 类型
+        var $age;
+        var $sex;
+         
+        function walk()//声明类里的方法{
+            echo $this ->name//成员方法使用成员属性." //$this引用就代表类,$this就代表Person对象，$this不仅可以引用成员属性也能引用成员方法，用法一样
+is walking.";
+        }
+    }
+  ------上面为定义类 的静态描述 类里的成员属性-----  
+    $Boy = new Person();//实例化对象  //动态描述 方法
+    $Boy ->name = "John";//给对象中的成员属性赋值
+    $Boy -> walk();//调用对象中的成员方法
+?>
+
+类二 类的构造方法和析构方法
+
+【构造方法】是对象创建完成后第一个被对象自动调用的方法，用来完成【对象的初始化】
+
+在每个类中都会有一个构造方法，如果没有声明的话，类中会存在一个没有参数列表并且内容为空的构造方法。默认的构造方法将被替代。
+
+在PHP5以前的版本中，构造方法的名称要与类名相同，这种方法在PHP5中也能用。
+
+<?php
+    class Person{
+        var $name;
+        var $age;
+        var $sex;
+
+        function __construct($name="",$age=23,$sex="Male"){ //给成员属性赋初值 //静态描述 
+            $this->name = $name; //创建对象的时候，使用传入的$name参数为$this->name赋初值
+            $this->age = $age; //创建对象的时候，使用传入的$age参数为$this->age赋初值
+            $this->sex = $sex; //创建对象的时候，使用传入的$sex参数为$this->sex赋初值
+        }
+         
+        function Say(){
+            echo "My name is ".$this->name.",and my age is ".$this->age.",sex is ".$this->sex;
+            echo "<br>";
+        }
+    }
+     
+    $p1 = new Person("Tom");
+    $p2 = new Person("John",21); //有参数传入的时候会覆盖掉成员属性的初值
+    $p3 = new Person("Alex",25,"Female");
+     
+    $p1->say();
+    $p2->say();
+    $p3->say();
+?>
+
+析构方法 是对象在销毁之前最后一个被对象自动调用的方法，用于对象呗销毁的时候
+
+<?php
+    class Person{
+        var $name;
+         
+        function __construct($name="",$age=23,$sex="Male"){
+            $this->name = $name;
+        }
+         
+        function __destruct(){
+            echo $this->name." be killed.";
+            echo "<br>";
+        }
+    }
+     
+    $p1 = new Person("Tom");
+    $p1 = null; //赋予空值，让其失去引用，然后自动调用了析构函数
+    $p2 = new Person("John");
+    $p3 = new Person("Alex");
+     
+因为对象的引用都是放在栈内存中，由于栈的后进先出的特点，后创建的对象引用会被先释放，所以先调用第三个对象的析构方法，再调用第二个对象的析构方法
+?>
+
+类三 类的封装
+设置私有成员
+使用private关键字来设置私有成员，完成对成员的封装，封装后的成员在对象的外部不能被访问，如果访问会出现错误，在对象的内部能访问被封装的成员属性和方法。
+<?php
+    class Person{
+        //封装属性
+        private $name;
+        private $age;
+        private $sex;
+         
+        function __construct($name="Tom",$age=23,$sex="Male"){
+            $this->name = $name;
+            $this->age = $age;
+            $this->sex = $sex;
+        }
+         
+        function Say(){
+            echo "My name is ".$this->name.",and my age is ".$this->age.",sex is ".$this->sex;
+        }
+         
+        private function Walk(){
+            echo $this->name." is Walk.";
+        }
+    }
+     
+    $p1 = new Person();
+    $p1->Say();
+    $p1->Walk();//外部对象不能引用私有方法
+    $p1->age = 25;//外部对象不能赋予私有属性值
+?>
+
+私有成员的访问
+在对象外如果想获取私有属性的值，或者想给私有属性赋值，可以使用public关键字或者在对象内部声明一些操作私有属性的方法
+
+类中的构造方法默认为公有方法，构造方法不要设置成私有的
+
+<?php
+    class Person{
+        private $name;
+        private $age;
+        private $sex;
+         
+        function __construct($name="Tom",$age=23,$sex="Male"){
+            $this->name = $name;
+            $this->age = $age;
+            $this->sex = $sex;
+        }
+         
+        function Say(){
+            echo "My name is ".$this->name.",and my age is ".$this->age.",sex is ".$this->sex;
+            echo "<br>";
+        }
+         
+        public function Walk(){
+            echo $this->name." is Walk.";
+            echo "<br>";
+        }
+         
+        public function SetAge($age){
+            if($age >100 || $age <0)
+                return;
+            else
+                $this->age = $age;
+                return $this->age;
+        }
+    }
+     
+    $p1 = new Person();
+    $p1->Say();
+    $p1->Walk();
+    $p1->SetAge(53);
+?>
+
+public 方法可以给私有属性赋值 也能访问私有属性值
+
+类四 类的继承 
+类的继承就是从已经定义的类中继承数据，也可以重新定义或加入一些数据。
+
+被继承的类称为父类，基类，超类
+继承的类称为子类，派生类
+php中只能使用单继承，也就是一个类只能从一个类中继承数据，但是一个类可以有多个子类
+
+<?php
+    class Person{
+        var $name;
+        var $age;
+        var $sex;
+         
+        function __construct($name="Alex",$age=12,$sex="Male"){
+            $this->name = $name;
+            $this->age = $age;
+            $this->sex = $sex;
+        }
+         
+        function Say(){
+            echo "My name is ".$this->name.",and my age is ".$this->age.",sex is ".$this->sex;
+            echo "<br>";
+    }
+    }
+     
+    class Student extends Person{//子类继承父类属性数据
+        var $grade;//可以重新定义类中属性，并加入一些数据
+         
+        function Study(){
+            echo $this->name." is study in grade ".$this->grade.".And My age is ".$this->age;
+            echo "<br>";
+        }
+    }
+     
+    class Teacher extends Person{
+        var $subject;
+         
+        function Teach(){
+            echo $this->name." teaches ".$this->subject;
+            echo "<br>";
+        }
+    }
+     
+    $p1 = new Student("John",16,"Male");
+    $p1->Say();
+    $p1->grade = 8;
+    $p1->Study();
+     
+    $p2 = new Teacher("Tom",23,"Male");
+    $p2->Say();
+    $p2->subject = "PHP";
+    $p2->Teach();
+?>
+
+子类重载父类
+在php中不能定义重名的函数，也不能在类中定义重名的方法，但在子类中可以定义和父类同名的方法
+父类中的一些方法不适用于子类，子类可以重载父类的方法 
+在子类重载父类的方法时，在子类中重载的方法的访问权限一定要不能低于父类被覆盖方法的访问权限
+
+<?php
+    class Person{
+        var $name;
+        var $age;
+        var $sex;
+         
+        function __construct($name="Alex",$age=12,$sex="Male"){
+            $this->name = $name;
+            $this->age = $age;
+            $this->sex = $sex;
+        }
+         
+        function Say(){
+            echo "My name is ".$this->name.",and my age is ".$this->age.",sex is ".$this->sex;
+            echo "<br>";
+    }
+    }
+     
+    class Student extends Person{
+        var $grade;
+         
+        //覆盖父类中的构造方法，并多添加一个成员属性，用来创建对象并初始化成员属性
+        function __construct($name="Alex",$age=12,$sex="Male",$grade="Eight"){
+            parent::__construct($name,$age,$sex); //调用父类中原本被覆盖的构造方法，为从父类继承过来的属性赋初值
+            $this->grade = $grade;
+        }
+         
+        function Say(){
+            parent::Say(); //调用父类中被覆盖的Say()方法
+            echo $this->name." is study in grade ".$this->grade.".And my age is ".$this->age;
+            echo "<br>";
+        }
+    }
+     
+    $p1 = new Student("John",16,"Male");
+    $p1->grade = 8;
+    $p1->Say();
+?>
+类的继承的访问控制
+访问控制有三种，public，private，protected
+
+public为公有权限
+
+private为私有权限，父类中设置为private权限，父类的外部和子类都不能访问
+
+protected为保护权限，父类中设置为protected权限，父类的外部和子类的外部都不能访问，但是子类能访问的
+<?php
+    class Person{
+        protected $name = "Tom";
+         
+        protected function Say(){
+            echo "My name is ".$this->name;
+        }
+    }
+     
+    class Man extends Person{
+        function Speak(){
+            echo $this->name." can speak Chinese";
+        }
+    }
+     
+    $p1 = new Man();
+    $p1->Speak();
+    $p1->Say(); //在子类外部（实例化对象）调用父类中受保护的方法
+?>
+ 应用 模块 控制器 命名空间
+
+namespace app\index\controller;
+//类名=根空间+子空间（可选）+类名
+
+入口文件 模块 控制器 方法 mvc设计模式
+
+控制器 学习目标 什么是控制器？什么是可访问控制器？
+
+
+什么是命名空间？它与控制器或方法后缀的关系？
+PublicController 控制器后缀 与系统关键字重名
+
+1.为什么要自定义访问控制器层？为了项目规范
+2.为什么要创建多级控制器？
+namespace app\index\controller\user;
+http://tp5.com/index/user.demo/index
+3.为什么要创建空操作和空控制器？
+public function _empty($method)
+4.在控制器中使用trait有什么好处？
+（方法参数名和参数用/隔开）
+突破单继承限制，实现代码复用 trait是种特殊的类
+
+//没有继承任何父类，但又想用到父类中的方法，
+//使用use关键字，导入trait类库，来使用方法
+
+5.什么是单一模块？什么时候需要他？
+  // 是否支持多模块
+    'app_multi_module'       => false,
+
+namespace app\controller 单模块 使用多级控制器实现前后台
+
+四。公共操作与公共控制器
+1.公共操作有什么用？如何创建公共操作？构造方法
+2.公共控制器类有什么用？如何创建公共控制器？
+控制器中的公共操作，解决了类中数据共享以及属性初始化的问题。公共控制器，从控制器层面上，解决了控制器类之间的属性和方法的共享问题
+
+五。前置操作
+1.什么是前置操作？
+2.为什么必须继承基类Controller，才能创建前置操作？
+3.前置操作有什么用？如何正确使用它？
+protected $beforeActionList=[//前置方法列表，继承自controller
+        'before1'=>'',//为空，表示before1是当前类全部操作的前置操作
+        'before2'=>['only'=>'demo2'],
+        'before3'=>['except'=>'demo1,demo2'],
+    ];
+
+页面跳转与重定向
+页面跳转的目标有哪些？
+调用方法：$this->success('提示','地址')和$this->error('提示','地址')
+1.当前控制器 2.跨控制器 3.跨模块 4.外部地址http协议开头
+public function hello($name)
+{
+    if ($name=='php') {
+        $this->success('验证成功，正在跳转···','login/ok');
+    }else{
+        $this->error('验证失败，正在返回登录页面','login/login');
+    }
+}
+\think\Url::build('admin/login/ok')用url中创建方法生成
+也能用助手函数简化
+url('admin/login/ok')
+
+如何设置url访问重定向 替换当前网页地址
+调用方法：$this->redirect('路由地址',[变量列表],'后缀','域名开关')
+站内地址和外部地址
+$this->redirect('ok',['siteName'=>'php']);
+$this->redirect('http://www.php.cn',302);//302临时重定向，301永久重定向
+
+七课 请求对象与参数绑定
+1.请求变量与请求对象的关系？
+像服务器发送请求，会拦截请求，调用相应方法
+获取请求变量值  has方法 请求变量是否存在
+
+2.请求变量与请求对象的关系？
+请求信息包括哪些？
+domain()获取域名
+url（）不包括域名 url（true）包括域名
+pathinfo()从模块开始
+path()从模块开始，不包括后缀
+ext()后缀
+module()获取模块
+action（）获取方法
+controller()获取控制器
+ip()获取ip地址
+only('id')获取一个数组
+except('id')排除
+param()获取url等请求变量，不获取默认值
+顺序绑定
+// URL参数方式 0 按名称成对解析 1 按顺序解析
+    'url_param_type'         => 1,
+用户对所有网络资源的访问，都要通过请求对象，以url为载体进行访问，用户需求的个性化是通过请求变量来体现
+
+八课 请求对象的属性与方法注入
+1.属性注入：\think\Request::instance()->属性
+2.方法注入：\think\Request::hook('方法','对应函数')
+作用：给当前请求对象绑定属性和方法，请求对象在应用的整个生命周期内都有效的（与原请求对象中的属性与方法是同级的），不仅可以被当前所有控制器方法所共享，还可以跨控制器和模块进行调用
+
+请求对象的属性与方法注入，不仅可以拓展请求对象的功能，实现在整个应用周期的信息共享，而且他还为自定义请求的行为制定了标准。
+
+先添加request 引用
+然后在方法里调用instance类
+
+控制器是类文件 相当于处理器，通过请求对象接受用户的请求，再分配到某个方法进行处理
+
+请求对象：理解为URL地址，URL请求对象（将用户的请求打包）。
+
+九课 对象变量的依赖注入
+依赖注入：改变了使用对象前，必须先创建对象的传统方式，而是外部注入所依赖的对象；
+tp5依赖注入主要是指把对象注入到可访问控制器
+注入方法：控制器的构造方法和操作方法
+实现方式：对参数进行对象类型约束则会自动触发依赖注入，自动实例化该对象
+
+参数传入方式
+访问控制器的参数都来自url请求
+普通变量>参数绑定(按名称或顺序绑定)>
+对象变量>依赖注入（通过类型约束自动实例化绑定）>
+》操作方法(构造方法和普通操作)
+
+请求变量在各个操作中的数据共享
+继承think\Controller类 使用请求对象实例$this->request->
+或者导入Request类instance实例获取变量
+//依赖注入方法
+或 约束类 Request  会自动创建一个$request对象
+依赖注入 使用构造方法 在本类中共享请求对象变量
+$request是一个对象变量
+访问控制器的依赖注入，不需要它依赖控制器基类，也不需要导入请求类命名空间，是一种高效的获取请求对象的方式
+
+第六部分 数据库与模型
+一课 连接器与查询构造器
+入口Db.php  连接器Connection.php
+查询构造器 对应Query.php Bulider.php两个类文件
+将用户的查询请求，封装成统一的格式发给连接器，再由连接器通过不同的请求，调用数据库驱动
+
+第二课 连接数据库
+数据库连接配置
+配置方法
+1.静态连接：应用/模块中的数据库配置文件database.php
+动态连接：入口类Db.php中 的connect（参数（数组，字符串））方法
+还支持连接字符串方式
+mysql://root:1234@localhost:3306/thinkphp#utf8
+类型：//用户名：密码@地址：端口/数据库名#字符集
+
+$result=Db::table('staff')->select();
+
+数据库原生查询
+原生查询的实现
+Connection类query(sql语句字符串，[参数绑定]）：读操作 select
+execute(sql语句字符串，[参数绑定]）：写操作 insert update delete
+用命名站位符 ：salary 参数绑定 防止sql注入 ‘salary’=>4000
+
+//2.将id为1004的记录，salary增加100
+    $sql="update staff set salary=salary+1000 where id=:id";
+    $result=Db::execute($sql,['id'=>1002]);
+
+    //1.查询操作：工资大于3000的员工信息
+    $sql="select * from staff where salary>:salary";
+    $result=Db::query($sql,['salary'=>4000]);
+
+//3.插入操作：默认添加到表的尾部
+    $sql="insert into staff (name,gender,salary) values(:name,:gender,:salary)";
+    $result=Db::execute($sql,['name'=>'liu','gender'=>1,'salary'=>5000]);
+    dump($result);
+
+//    4.删除name为liu的记录
+    $sql="delete from staff where name=:name";
+    $result=Db::execute($sql,['name'=>'liu']);
+    dump($result);
+Connection类实例通过入口类Db静态自动调用，不用显示写出
+
+四课 查询构造器
+查询构造器的工作原理？
+什么是链式操作？为什么要用链式操作？
+数据表的查询条件是如何生成的？
+如何用查询构造器实现数据表的增删查改（curd）操作？
+用户发送一个查询请求  Db类拦截转发=》查询构造器 生产sql语句=》连接类 再调用原生查询 将查询结果集返回给用户
+
+2.链式操作的工作原理图
+
+查询对象 =》查询方法1=》查询对象》查询方法2=》查询对象 生成sql语句的查询条件
+
+Db::table('staff')
+                ->field(['name', 'salary'])
+                ->where('id', 1002)
+                ->select()
+查询条件生成原理图
+2个方法where():and条件
+whereOr（）：or条件
+
+三种格式where（‘字段名’，‘表达式’//默认相等，‘查询条件’）
+where（[‘字段名’=>[‘表达式’，‘查询条件’]，]）//多个条件
+where(function($query){//链式查询语句；})
+field不写默认为查询所有
+闭包函数 =》嵌套方法  当做参数传入，又返回成参数，形成闭包
+
+本质是一个用变量来调用的函数
+
+赋值匿名函数的变量会等于匿名函数的返回值
+变量函数，在一个变量后（）php会寻找与变量名相同的函数，并执行它，
+use ( $rmb )
+函数内定义 return $func;
+匿名函数就可以引用上下文的变量了。如果将匿名函数返回给外界，匿名函数会保存use所引用的变量，而外界则不能得到这些变量
+
+匿名函数没有名字，如果需要使用它需要将其返还给一个变量，匿名函数也像普通函数一样可以声明参数
+实现闭包
+将匿名函数在普通函数中当做参数传入，也可以被返回，
+这样就实现了简单的闭包；
+由于函数内部不能访问全局作用的  所以需要一种考科一引入上一级作用域的语法结构，将需要引入到这个函数作用于内的变量写入到use（）里就可以了
+->where(function ($query){
+                    $query->where('id','>',1003)
+                        ->where('salary','>',2000);
+                })
+可以传入外部变量
+
+public function demo()
+    {
+        $salary = $this->request->param('salary');
+        dump(
+            Db::select(
+                function ($query)use ($salary) {
+                    $query->table('staff')
+                        ->field(['name' , 'salary' ])
+                        ->where([
+                                'id' => ['>', 1001],
+                                'salary' => ['>', $salary]
+                            ]
+                        );
+                }
+            )
+
+4，用查询构造器实现curd操作
+新增
+insert（['字段'=>'值']）
+insertAll([二维数组])
+
+更新 update（['字段'=>'值']//条件，主键，['字段'=>'值']）也能使用条件
+setInc/setDec('字段',步长)
+$affected = Db::table('staff')
+            ->where('id',1007)
+            ->setDec(
+
+                'salary' , $salary,3
+            );
+读取find（主键）返回一维数组 找到的第一条记录
+select（主键）
+
+删除 delete（主键）
+delete（true）清空数据表
+方法 查询 value('字段','默认值')返回 值
+where('id',1005)
+column('字段','表达式'，‘查询条件’)返回 一维数组
+where('id',‘>’,1005)
+
+delete不支持闭包
+
+查询条件的调用次序就是生成sql条件的次序，推荐使用闭包，来生成查询条件，便于拓展
+
+五课 模型类介绍
+
+什么是模型？为什么要创建模型？
+模型是对实体的抽象描述，快速直观的展示出实体的特性。
+thinkphp5中的模型是指什么？
+对应数据表 对应一个业务逻辑
+模型类
+属性对应字段 属性设置为数组型
+增删改查 用方法模拟
+
+模型类Model中有哪些属性和方法？
+1.模型类的属性和方法需要在基类Model中查看
+2.Model.php类位于public/library/think/Model.php
+3.该类是一个抽象类，不能被实例化，必须由子类继承并实现内部的全部抽象方法。
+
+（1）静态属性不需要实例化即可调用。因为静态属性存放的位置是在类里，调用方法为"类名::属性名"；
+（2）静态方法不需要实例化即可调用。同上
+（3）静态方法不能调用非静态属性。因为非静态属性需要实例化后，存放在对象里；
+（4）静态方法可以调用非静态方法，使用 self 关键词。php里，一个方法被self:: 后，它就自动转变为静态方法；
+
+模型与数据表的对应关系
+1.模型与数据表的区别于联系
+区别 分工不同 Db类负责数据表的访问
+                      模型专注于业务逻辑处理
+       返回值不同 Db访问返回 数组
+	模型操作返回 对象
+联系 模型最终任须调用Db类完成数据表的查询操作
+
+2，如何创建模型
+1.手动创建：在应用或模块下创建模型目录model，并在该目录下创建与数据表同名的类文件：如User.php对应user.dbf表；
+2.命令创建：在当前项目目录下，用命令:php think make:model 模块名/模型名，会自动创建指定位置和命名空的空模型，并自动与数据表绑定；
+3.模型创建完成后，会自动获取当前数据表名称$table,表中所有字段信息$field,主键$pk和数据库配置信息$connection,同时会自动继承基类Model中所有属性和方法，protected类型在本模型中使用，public类型还可以在控制器使用，静态方法大多直接用在控制器，进行curd操作
+进入某一目录 cd C:\phpStudy\PHPTutorial\WWW\tp5
+进入上一层目录 CD ../
+think make:model index/Staff
+
+如何在控制器调用模型
+
+一.实例化调用
+1.用new生成模型对象
+2，用模型对象处理相关业务
+
+二。静态调用
+1.通过静态查询直接将一个空模型转为数据模型；
+2，再将相关方法完成增删改查操作
+
+三，不推荐使用助手函数model（）和添加模型类后缀
+
+模型操作后返回一个对象
+原始数据储存在了data属性中
+使用getData()方法查看原始数据
+
+//实例化创建模型对象
+    $staff=new Staff();
+    $result=$staff->where('id',1004)->find();//返回了一个对象
+dump($result->getData());
+
+//静态创建模型对象
+    dump(Staff::get(1004));//根据主键查询
+
+模型访问方式 
+1.控制器访问（外部）用模型对象$model
+2.模型访问（内部）用伪对象变量$this
+
+
+Create 创建数据
+方法 save($data=[]) 添加单条 实例化//调用方式 影响记录数
+saveAll($data=[]) 批量添加 实例化 模型对象数组
+create($data=[])单条添加 静态 模型对象
+1.数据创建过程可以触发很多操作
+2.静态调用的实质其实仍是实例化调用，只是将CRUD方法进行静态封装
+3，saveAll很少用 多次执行insert语句
+4.理论上讲，通过模型向表中添加数据，尽可能都采用静态方法
+
+$result=Staff::create([
+        'name'=>'lingpingzhi',
+        'gender'=>1,
+        'salary'=>2000,
+    ]);
+    dump($result->getData('id'));
+
+Update更新数据
+save($data=[],$where=[])
+saveAll($data=[],true)
+update($data=[],$where=[],$field=[])
+1.不允许无条件更新，必须设置更新条件
+2.可以将更新条件，如主键写在更新数据中，方法可以自动识别
+3，更新条件可以使用闭包，完成更复杂的业务逻辑
+
+$data=['name'=>'yuebuqun','gender'=>'1','salary'=>65000];
+    $where=['id'=>1018,];
+    $field=['salary'];
+    $result=Staff::update($data,$where,$field);
+    dump($result->getData());
+
+public function index()
+{
+    $data=['name'=>'yuebuqun','gender'=>'2','salary'=>60000];
+    $where=function ($query){
+        $query->where('id'=1012);
+    };
+    $field=['salary'];
+    $result=Staff::update($data,$where,$field);
+    dump($result->getData());
+
+ORM模型（对象关系映射）
+tp5实现了基于ActiveRecords模式的ORM模型
+数据表   类  实例化 对象 （模型）
+
+Read读取操作
+find（$where）和get($where)实例化/静态 模型对象
+select($where)和all（$where）实例化/静态 模型对象数组 由模型对象组成的数组
+1，原则来说，查询都应该采用静态查询方法
+
+$where=function ($query){
+        $query->field(['name','salary'])
+            ->where('id','>',1010);
+    };
+$where=function ($query){
+        $query->field(['name','salary'])
+            ->where('id','>',1010);
+    };
+2，尽可能采用get()和all()方法替代find（）和select（）；
+3，牢记一条规则：一个模型对象实例应该唯一对应数据表的一条记录
+$staff=new Staff();
+$where=function ($query){
+        $query->field(['name','salary'])
+            ->where('id','>',1013);
+    };
+$result=$staff->all($where);
+    foreach ($result as $key=>$value){
+        echo'第'.$key.'条记录是：'.$value->salary.'<hr>';
+    }
+
+用模型类静态调用find和get
+
+  //用模型类静态调用find和get方法
+
+    $where=function ($query){
+      $query->field(['name','salary','gender'])
+      ->where('id','=',1007);
+    };
+    $result=Staff::find($where);
+    dump($result->name);
+
+$result=Staff::all($where);
+    foreach ($result as$key=> $value){
+        dump($value->name);
+    }
+
+4、Delect删除操作
+delete（）实例化 受影响的记录数量
+destory（条件/闭包）静态 受影响的记录数量
+
+$where=function ($query){
+    $query->where('id','>',1020);
+};
+$affected=Staff::destroy($where);
+dump($affected);
+
+模型的读取器
+触发条件：当用模型对象读取表中字段值的时候
+应用场景：日期时间字段，集合，枚举数据，数字状态与文本转换，字段拼装；
+设置方法，在模型中设置，访问属性通常为protected，不允许外部直接访问
+方法名称：get属性名称(大驼峰对应表中字段field_name)Attr（$name,$data=[]）
+
+protected function getTimeAttr($time){
+     return date('Y-m-d',$time);
+    }
+
+protected function getTimeAttr($time,$data){
+     return $data['name'].'的入职时间是'.date('Y-m-d',$time);
+    }
+读取器工作原理
+1.获取表中记录并创建模型对象$staff=Staff::get(1088);
+2.模型对象访问属性$staff->time
+3.自动调用模型__get()
+4.__get()调用getAttr()
+5getAttr()解析读取器get字段名Attr（）
+6.输出数据 return $staff->time;
+模型记录原始数据保存在$data属性中，可用getData方法获取 $staff->getData('字段')；
+
+模型的修改器
+触发条件：当用模型对象向数据表中新增记录或更新字段值的时候
+应用场景：日期时间字段，集合或枚举数组，数字状态或文本转换，字段拼接
+设置位置，模型中设置 protected
+方法名称：set属性名称Attr（$name,$data=[]）
+
+模型修改器工作原理图
+当使用模型对数据表进行写操作时（仅限save方法）2.自动调用模型__set(),3.__set()调用setAttr（） 再解析读取器set字段名Attr() //解析方法  返回受影响记录数
+
+加载器 Loader 类
+功能：实现类库或资源的自动加载
+在think/Loader.php
+
+返回模型对象
+直接调用数据库或模型方法进行查询操作
+方法是静态的 Loader::model('模型类名称')
+还有一个静态方法db()
+用来获取数据库连接对象
+
+九课 类型转换
+$type 属性
+protected $type=[
+'name'=>'array'//以json格式写入，取出自动解码为array
+‘age’=>'integer'//该字段写入和输出的时候会自动转换成整型
+‘salary’=>'float'//该字段自动转换成浮点型
+‘dept’=>'serialize'//自动序列化写入，读取的时候自动反序列化
+‘home’=>'json'//json_encode写入，读取时json_decode处理
+'hiretime'=>'timestamp'//用strtotime转为时间戳写入，读出时按$dateFormat格式处理
+‘birthday’=>'datetime'//读写时都按$dateFormat格式处理
+
+十课 自动完成
+一、自动时间戳
+1、模型中开启：protecte $autoWriteTimestamp=ture;
+2.在表中手动创建二个字段：creat_time,update_time;
+3.用户执行新增和更新操作时，会自动将新增与更新时间写入表中；
+4，默认以时间戳写入，可以配置为datetime格式
+
+二、自动完成
+1、$insert=['字段'=>'值',...];//新增时自动插入到表中的
+2、$update=['字段'=>'值',...];//更新时自动更新字段值
+3、$auto=['字段'=>'值',...];//新增或更新时自动填入或更新字段值
+通常要与类型自动转换属性：$type=['字段'=>'类型',]相配合
+
+
+七章 视图与模板
+第一课 控制器中使用视图的三种方式
+一、直接实例化视图类
+1、视图类：thinkphp/library/think/View.php
+2、命名空间：use think\View
+3、实例化 动态new View() 静态View::instance();
+4、常用方法 fetch()渲染模板 display()渲染内容 assign()模板赋值
+
+use think\View;
+//动态创建
+    $view=new View();
+ //静态创建
+$view=View::instance();
+
+    //模板赋值
+    $view->assign('domain','www.php.cn');
+    //渲染模板
+    return $view->fetch();
+
+二、继承控制器基类Controller
+1、控制器类：thinkphp/library/think/Controller.php
+2、命名空间：use think\Controller
+3、实例化 this->View() ;//可访问View类所有属性或方法
+4、常用方法 $this->fetch()渲染模板 $this->display()渲染内容 $this->assign()模板赋值 $this->engine()模板引擎
+
+use think\Controller;
+class Index extends Controller
+{
+public function index()
+{
+    $this->view->assign('siteName','php中文');
+    $this->view->assign('domain','www.php.cn');
+
+    //渲染模板
+   return $this->view->fetch();
+视图方法已经封装 可以直接访问
+
+三、助手函数view（）
+不用继承Controller基类，不用实例化View类，都可以使用
+2.仅适合于模板渲染，功能单一，不能加载配置
+3.语法：view（[模板文件],[模板变量数组],[模板替换数组]）
+实例 view('user',['name'=>'tp5'],[__SIRE__'=>'php.cn]);
+
+return view('index',['domain'=>'php.cn','siteName'=>'666']);
+
+模板引擎的配置
+
+一、通过应用配置文件config.php
+
+'template'               => [
+        // 模板引擎类型 支持 php think 支持扩展
+        'type'         => 'Think',
+        // 默认模板渲染规则 1 解析为小写+下划线 2 全部转换小写
+        'auto_rule'    => 1,
+        // 模板路径
+        'view_path'    => '',
+        // 模板后缀
+        'view_suffix'  => 'html',
+        // 模板文件名分隔符
+        'view_depr'    => DS,
+        // 模板引擎普通标签开始标记
+        'tpl_begin'    => '{',
+        // 模板引擎普通标签结束标记
+        'tpl_end'      => '}',
+        // 标签库标签开始标记
+        'taglib_begin' => '{',
+        // 标签库标签结束标记
+        'taglib_end'   => '}',
+//视图基础目录，配置文件为所有模块的视图起始目录
+‘view_base’=>''
+    ],
+二，实例化View类时传参配置$view=new View（[]）
+
+三、调用View类config（）方法进行配置
+1、源码:$this->engine->config($name,$value);
+2、实际上调用的是对应模板引擎的config方法，支持数组
+3.支持所有模板配置项
+4，用法:$view->config('配置名','值')->fetch（）；
+或者$this->view->config('view_suffix','php')
+
+通常开发前已经配置好了，开发过程中，如果要改变可以采用动态配置，仅影响当前操作，对全局无影响
+
+第三课：模板赋值的五种方法
+第一种方法通过assign()方法
+既可以用视图类，也可以用控制器调用（继承基类）
+一，单独赋值：$this->assign(‘变量名’，‘值’）
+二，批量赋值：$this->assign([‘变量名’=>'值1']
+
+二、用fetch()或display()方法传参赋值
+$this->fetch('模板文件',['变量名1'=>'值1','变量名2'=>'值2',])
+
+$this->display('内容',['变量名1'=>'值1','变量名2'=>'值2',])
+
+
+return $this->fetch('index',[
+    'domain'=>'piter','siteName'=>32,
+]);
+
+return $this->display('姓名:{$domain}年龄:{$siteName}',[
+        'domain'=>'piter','siteName'=>32,
+    ]);
+display方法传参给模板变量赋值
+
+三、给视图对象添加属性的方式赋值
+1、先获取视图对象，通过给他动态添加属性方式给模板赋值
+2、继承基类$this->view->$name=$value
+$this->view->domain='zhu';
+$this->view->siteName='zhu1';
+3、视图类\think\View::instance()->$name=$value
+  $view=\think\View::instance();
+    $view->domain='zhu';
+    $view->siteName='zhu1';
+return $view->fetch();
+
+四、用share（）方法给模板添加静态变量
+1、支持在任何地方使用静态方法进行模板变量赋值
+2、视图类调用：\think\View::share($name,$value)
+3、控制器继承调用$this->view->share($name,$value)//不推荐
+4、全局静态模板变量最终会和前面使用方法赋值的模板变量合并
+    \think\View::share('name','liu');
+
+五、用助手函数view()向模板赋值
+1、view（）不依赖控制器继承和视图类，可随时调用
+2、单独赋值：view($name,$value)
+3、批量赋值：view('key1'=>'value','key2'=>'value',);
+  
+return view('index',[
+       'domain'=>'piter',
+        'siteName'=>32,]);
+
+推荐使用assign() 以及传参赋值 不推荐使用助手函数view（）
+
+视图渲染方法
+1.语法 fetch('模板文件','[模板变量数组]')；
+2.模板定位规则：当前模块/默认视图目录/当前控制器/当前操作.html
+index/user控制器/edu操作/.html默认模板后缀
+3.模板文件语法
+四种方式
+1.不带任何参数 自动定位模板 $this->fetch()
+2.[控制器/][操作] 跨控制器调用模板 $this->fetch('user/index')
+3.[模块@][控制器/][操作] 跨模块调用模板 $this->fetch('admin@user/index')
+4.完整模板文件名  绝对地址（加后缀）$this->fetch('/public/tpl/user/login.html')
+
+视图渲染注意事项
+1、模板文件可以不依赖与控制器操作而独立存在：fetch('目录/模板文件')
+2、渲染模板时，可以同时给模板传入变量
+3、可以读取视图根目录view下的模板 /模板文件
+ return $this->fetch('/test');
+4、可以直接访问应用入口目录public/下面的模板    ./目录/模板文件.html
+ return $this->fetch('./tpl/demo.html');
+5、只要访问的模板不是在视图目录下，必须用加后缀的
+完整模板文件名称
+
+任何项目都离不开模板渲染，选择合适的渲染方式，提供运行效率
+
+五课 模板输出替换
+1.替换内容 5个预定义的常量
+   预定义             对应目录               描述
+__ROOT__        /                  应用入口/项目根目录
+__URL__        module/controller    当前访问地址
+__STATIC__   /public/static/        应用静态资源目录
+__CSS__       /static/css   应用的css文件目录
+__JS__         /static/js   应用的js文件目录
+
+2.替换方式
+1、单独替换：通过fetch()方法或助手函数view()对当前模板进行替换
+return $this->fetch('index',[],['__PUBLIC__'=>'/public/'])'
+return view('index',[],['__public__'=>'/public/'])'
+
+2.全局替换：通过应用配置文件中‘view_replace_str’数组进行替换
+‘view_replace_str’=>[
+'__PUBLIC__'=>'/public/',
+'__ROOT__'=>'/',
+],
+可以替换静态资源 替换字符 
+return $this->fetch('',[],[
+    'www.php.cn'=>'php中文',
+'__CSS__'=>'/static/css',
+]);
+
+模板内容替换通常是导入外部模板文件时，要做的第一件事，我们可以通过批量替换方式，大大提高页面静态资源引入的速度，提高项目的规范与可维护性。
+
+六课 自定义变量输出
+
+1、自定义变量：用户在控制器创建的变量；
+2、普通变量又叫单值变量和标量；
+语法：{$变量名称}与内容之间不能有空格
+
+二、复合变量
+1、复合变量主要是指数组与对象；
+2、数组使用点语法或方括号来访问{$user.id}{$user['email']}
+3、对象使用冒号或指向符来访问{$book:name},{$book->price}
+
+    $user=[
+     'domain'=>'piter',
+      'siteName'=>32,];
+    $book=new \stdClass();
+    $book->name='phpsheji';
+    $book->price='99';
+$this->assign('domain','piter');
+$this->assign('user',$user);//数组变量赋值给user
+$this->assign('book',$book);//对象变量赋值给book
+
+自定义变量输出非常简单，在模板中输出时，风格统一，
+
+七课 系统变量输出
+1.系统变量不需要赋值，可以在模板中输出；
+2.系统变量都是以$Think开头
+语法格式 $Think.类型.参数
+类型有 $_SERVER $_ENV $_POST $_GET $_REQUEST
+$_SESSION $_COOKIE const config
+参数  根据类型定 通常只输出第一个参数  数组指出哪一个键 进行输出
+
+<p>server.http_host:{$Think.server.http_host}</p>
+
+setcookie('siteName','php'); 要两次才读取到cookie值
+
+<p>server.http_host:{$Think.get.id}</p>
+<p>server.http_host:{$Think.const.CONF_PATH}</p>
+<p>配置项database中的type值:{$Think.config.database.password}</p>
+在模板中输出系统变量或常量，可以使模板的功能更加强大，完成更多的任务
+
+第八课 获取请求参数
+请求参数
+1.不必通过控制器，可以在模板中直接获取请求信息；
+2.请求变量必须以$Request开头 首字母大写
+语法格式：$Request.方法.参数
+方法有 param get/post root path/pathinfo
+module controller action ext host ip
+参数，可选 无参则直接输出结果，通常仅输出第一个参数
+<p>root:{$Request.root.true}</p>
+<p>host:{$Request.host}</p>
+<p>pathinfo:{$Request.pathinfo}</p>带拓展名
+<p>ip:{$Request.ip}</p>
+<p>module:{$Request.module}</p>
+请求变量的输出与系统变量相似，可以直接在模板中调用
+使模板具备了简单的交互和自适应，但尽量在控制器中实现
+
+八课 变量调节器
+对模板中的变量使用函数进行处理
+1、一个参数：{$变量|函数} 例如{$pass|md5}
+2、两个或上参数：{$变量|函数=“参数1”，###//占位符}
+例如 {$birthday|date="y-m-d",###}
+3、直接处理：{:函数名（参数）}
+例如：{：substr(strtoupper(md5($name)),0,3)}
+
+<p>求后缀：{:substr($domain,-2,2)}</p>
+
+还支持管道调用 嵌套调用
+
+对模板中的变量，调用函数进行处理，是常用 的，简单处理用变量调用器比较方便，但还是建议放在控制器中进行，模板只让他展示结果就行
+
+十课 默认值运算符
+一，模板变量的默认值
+1.自定义变量设置默认值
+<p>我的祖国：{$country|default='中国'}</p>
+2.系统变量设置默认值
+<p>员工变量：{$Think.get.id|default=22}</p>
+3.变量的函数与默认值可以同时使用
+<p>入职时间：{$Think.get.id | getTime|date='Y/m/d',###|default='1970/01/01'}</p>
+
+二、模板变量的算术运算符
+{$x+$y} {$x++}自增 {$x % $y}取模
+<p>x+y={$x+$y}</p>
+<p>++x：{++$x}</p>
+
+给模板中变量设置默认值，或简单算术运算，可以简化模板设计，更加灵活的处理模板数据，但尽可能放在模型或控制器中进行
+
+十一课：原样输出与模板注释
+一，原样输出
+{literal}
+模板标签 例如hello{$name}   //不会被解析
+{/literal}
+需要注意的是配置‘view_replace_str’替换参数，会替换掉literal标签内的内容，可以配置'templete.tpl_replace_string'避免替换掉literal标签内的内容
+
+二、模板注释
+1、单行注释：
+{/*注释内容*/}或{//注释内容}
+<p>{/*$domain*/},{//$siteName}</p>
+2、多行注释
+{/*
+注释内容
+*/}
+
+{/*
+看不到我
+*/}
+生成缓存文件时会自动删除注释
+
+十二课 模板布局
+公共模板文件
+1.很多页面中，总有一些共同的部分，头部，尾部，侧边栏等
+2、我们可以将他们剥离出来，制作公共文件，需要时再导入
+3、这样实现了代码共享，无论是创建新页面，还是更新都方便
+4、这样的公共文件，需要公共模板文件
+5、tp5中，针对这类需求，是用模板布局来解决的
+
+{include file='base/_meta' /}
+{include file='base/_header' /}
+<p>我是index控制器index操作模板文件</p>
+{include file='base/_footer' /}
+
+一、全局配置
+'template'=>[
+'layout_on'=>true，//开启模板布局
+'layout_name'=>'layout',//设置布局模板文件的名称
+'layout_item'=>'{__REPLACE__}'//设置布局模板中替换字符串
+]//默认{__CONTENT__}
+
+渲染流程 控制器 >>布局模板>> 用户模板
+
+2、模板里的配置
+1、必须关闭模板布局全局配置，防止布局循环
+2、在view目录下创建自定义布局文件
+3、在模板中使用
+{layout name="Layout/newlayout" replace="[__REPLACE__]"/}
+导入布局文件
+{layout name="layout" /}
+
+二、控制器里配置  在控制器中动态的开启了模板布局
+$this->view->engine->layout(参数)
+true：采用默认布局模板：layout+html
+false：临时关闭当前模板布局功能
+文件名：用户自定义布局模板名称
+ $this->view->engine->layout('mylayout');
+
+三种模板布局方案中，全局配置和控制器配置是在程序中实现模板布局，模板中布局是单纯通过模板标签实现
+
+十三课 模板继承
+1、在父模板中用{block}内容{/block}来子模板内容预留位置
+2、子模板中必须将父模板中预留位置（区块），全部用代码实现
+3、子模块中{block}中内容留空，将会删除对应区块；
+4、区块中可以使用模板变量，也可导入外部文件
+5、子模板可用"__BLOCK__"来引用父模板中 原区块内容
+
+父模板：base.html
+{include file='header'}
+{block name='区块1'}内容{/block}
+{include file='footer'}
+
+子模板：user.html
+{extend name='base'}
+{block name='区块1'}代码{/block}//代码为空，则相当于删除对应区块；
+
+模板布局只是模板继承 的一个特例
+当父模板中只有一个需要实现的区块时，推荐使用模板布局，否则用模板继承，有时用公共模板，比模板继承更方便！
+
+十四课：内置循环标签
+1、volist:
+{volist name='模板变量' 'id'='临时变量' offset='索引' length='数量' key='循环变量' empty='提示信息'
+}
+2、foreach:
+{foreach name='模板变量' item='临时变量'}
+3、for：
+{for start='开始值' end='结束值' comparison='比较关系lt' step='步进值1' name='循环变量名i'}
+都是闭合标签 结尾用{/标签名}
+
+{volist name="user" id="vo"  offset="1" length="5" empty='没有数据'}
+    <tr>
+        <th>{$key}</th>
+        <th>{$vo.name}</th>
+        <th>{$vo.sex}</th>
+        <th>{$vo.salary}</th>
+    </tr>
+    {/volist}
+ {foreach name="user" item="value"}
+    <tr>
+        <th>{$key}</th>
+        <th>{$value.name}</th>
+        <th>{$value.sex}</th>
+        <th>{$value.salary}</th>
+    </tr>
+    {/foreach}
+
+ {for start="0" end="10" comparsion='lt' name='i'}
+    <tr>
+        {for start="0" end="4" comparsion='lt' name='j'}
+        <td>{$i+$j}</td>
+        {/for}
+    </tr>
+    {/for}
+循环标签三种语法，volist适合输出格式较复杂的数据，
+foreach输出简单数据
+for适合输出大量重复样式，不适合数据输出
+
+十五课 比较标签语法
+比较标签仅用于模板变量与普通值之间的简单比较，包括一组标签，用法基本一致
+{比较标签 name="变量" value="值"}
+内容
+{else /}//可选
+内容
+{/比较标签}
+支持的关系
+eq 等于 neq不等于 gt大于 egt大于等于 lt小于 elt小于等于 heq恒等于 nheq不恒等于
+
+{egt name="vo.salary" value="$income"}
+        <th>高收入</th>
+        {else /}
+        <th style="background-color: #aa4444">低收入</th>
+        {/egt}
+{compare type="egt" name="vo.salary" value="$income"}
+{/compare}
+比较标签适合在模板中进行简单的逻辑判断，复杂的用if，不推荐在模板中过多的使用这类标签，模板专注于数据展示
+
+十六课 条件判断标签
+if条件判断标签
+{if condition="条件，支持原生"}内容1
+{elseif condition="条件2}内容2
+{else /}内容3
+{/if}
+switch多分支条件判断标签
+{switch name="模板变量"}
+{case value="值1" break="0|1"}内容1{/case}
+{case value="值2" break="0|1"}内容2{/case}
+{/switch}
+三、范围判断标签
+{range name="模板变量" value="范围" type="类型"}内容1
+{else/}内容2
+{/range}
+范围类型快捷标签
+1、{in/noin name="模板变量" value="范围"}内容{/in/noin}//离散值
+2、{between/nobetween name="模板变量" value="范围"}内容{/between/nobetween}//连续值
+
+四 存在或空值判断
+变量是否定义{present name="模板变量"}内容{/present}
+变量是否未定义{nopresent name="模板变量"}内容{/nopresent}
+变量是否为空{empty name="模板变量"}内容{/empty}
+常量是否定义{defined name="常量名"}内容{/defined}
+
+php原生标签
+<?php
+//代码 ?>
+<?php foreach($user as $key=>$value):?>
+<tr>
+<td><?php echo $key; ?></td>
+<?php endforeach; ?>
+{php}
+//代码
+{/php}
+{:auto_upload_layout()}
+
+{php}
+auto_upload_layout();
+{/php}
+th 表头 tr表的行 td表格单元
+
+完整商城项目实战
+
+第一阶段 
+1、程序设计
+前台
+后台
+应用程序拓展{微信 团购 秒杀}
+2、前后台模板搭建
+3、无线分类模块设计
+无限分类数据表的设计方法
+类型  注释  类型
+id 分类表自增id  int
+name名称 varchar
+pid父级id  int  
+path分类路径 varchar
+level等级 int
+
+
+4、无线分类模块代码实现 
+
+第二阶段
+5、商品模块设计
+6、商品模块代码实现
+7、redis介绍及安装方法
+8、使用redis的方法
+9、使用redis代替session缓存数据
+
+第三阶段
+10、RABC角色模块设计
+11、RABC角色模块代码实现
+12、前台分类展示实现
+13、前台商品展示实现
+
+tp5.0有一个URL默认自动转换的配置，会把驼峰转换下划线连接的方式，即：blog_category。
+
+namespace app\admin\controller;
+
+use think\Controller;
+class Member extends Controller
+{
+    //默认方法
+    public function index()
+    {
+        return $this->fetch();
+    }
+}
+
+第一层 菜单
+对照目录建控制器 引入命名空间 继承控制器类
+添加一个默认方法   并加载模板
+F5复制控制器
+
+
+用户访问模块地址》_memu  __URL__/         admin/         articleList.html
+建控制器》
+建相应方法》
+再建方法的模块
+
+第二层菜单
+
+
+
+CREATE TABLE `mq_blog_category` (
+  `id` tinyint(4) NOT NULL AUTO_INCREMENT COMMENT '逻辑主键',
+  `cname` varchar(60) DEFAULT NULL COMMENT '分类名称',
+  `order_num` tinyint(4) DEFAULT NULL COMMENT '排列顺序',
+  `remark` varchar(200) DEFAULT NULL COMMENT '备注',
+  `parent_id` int(11) DEFAULT NULL COMMENT '父ID',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `mq_blog_category` VALUES ('1', 'it', '1', '', '0');
+INSERT INTO `mq_blog_category` VALUES ('2', 'java', '2', null, '1');
+INSERT INTO `mq_blog_category` VALUES ('3', '文学', '3', null, '0');
+INSERT INTO `mq_blog_category` VALUES ('4', 'php', '4', null, '1');
+INSERT INTO `mq_blog_category` VALUES ('5', '.net', '3', 'dsfdddd', '1');
+INSERT INTO `mq_blog_category` VALUES ('6', '《花前月下，青丝白发》', '1', '周作人散文精选集', '3');
+INSERT INTO `mq_blog_category` VALUES ('7', 'oracle', '4', '', '1');
+INSERT INTO `mq_blog_category` VALUES ('9', 'mysql', '5', '', '1');
+INSERT INTO `mq_blog_category` VALUES ('10', 'sqlServer', '1', '', '1');
+
+url转换 控制器转  方法不转
+
+建控制器 建视图控制器目录  放模板文件
+改对应控制器地址 再改控制器里的操作
+
+value="{$start_date|default=date('Y-m-d h:i:s',strtotime('-1 month'))}
+
+value="{$end_time|default=date('Y-m-d h:i:s',time())}
+
+use think/Request;
+  public function index($name='name')
+    {
+        $request = Request::instance();
+
+        echo '请求方法：'.$request->method() . '<br/>';
+
+        echo '资源类型：'.$request->type() . '<br/>';
+
+        echo '访问ip：'.$request->ip() . '<br/>';
+
+        echo '是否为ajax请求：'.var_export($request->isAjax(), true) . '<br/>';
+
+        echo '请求参数：';
+        dump($request->param());
+
+        echo '请求参数：仅包含name';
+        dump($request->only(['name']));
+
+        echo '请求参数：排除name';
+        dump($request->except(['name']));
+
+        echo '资源类型：'.$request->type() . '<br/>';
+        echo '<br/>操作：'.$request->action();
+        echo '获取当前域名：'.$request->domain() . '<br/>';
+
+        // 获取当前入口文件
+        echo '获取当前入口文件：'.$request->baseFile() . '<br/>';
+
+        // 获取当前URL地址，不含域名
+        echo '获取当前URL地址，不含域名：'.$request->url() . '<br/>';
+
+        // 获取包含域名的完整url地址
+        echo '获取包含域名的完整url地址：'.$request->url(true) . '<br/>';
+
+        // 获取URL地址 不含QUERY_STRING
+        echo '获取URL地址 不含QUERY_STRING：'.$request->baseurl() . '<br/>';
+
+        // 获取URL访问的ROOT地址
+        echo '获取URL访问的ROOT地址：'.$request->root() . '<br/>';
+
+        // 获取URL访问的ROOT地址
+        echo '获取URL访问的ROOT地址 ：'.$request->root(true) . '<br/>';
+
+        // 获取URL地址中的 PATH_INFO 信息
+        echo '获取URL地址中的 PATH_INFO 信息：'.$request->pathinfo() . '<br/>';
+
+        // 获取URL地址中的 PATH_INFO 信息，不含后缀
+        echo '获取URL地址中的 PATH_INFO 信息，不含后缀：'.$request->path() . '<br/>';
+
+        // 获取URL地址中的后缀信息
+
+        echo '获取URL地址中的后缀信息：'.$request->ext() . '<br/>';
+      Session::set('name','thinkphp');
+      Cookie::set('name','thinkphp2');
+        dump($request->route());
+        dump($request->dispatch());
+        echo Session::get('name');
+
+
+    }
+domain 域名
+入口文件 项目根目录到入口文件地址
+root地址：public目录 根目录
+url为入口文件开始到参数的资源地址
+url（true）包括域名 完整的
+pathinfo为模块/控制器/方法 带后缀
+path 没后缀
+
+$arr[] = $value; 方法
+array_push ( array &$array , mixed $var [, mixed $... ] )
+将array当成一个栈，并将传入的变量压入array的末尾。
+压入一个元素，使用$arr[]=$value效率高
+如果同时压入多个元素，使用array_push效率高 不用重复获取文件尾的指针
+
+数组的键名和值
+
+array_values($arr);  获得数组的值
+array_keys($arr);  获得数组的键名
+array_flip($arr);  数组中的值与键名互换（如果有重复前面的会被后面的覆盖）
+in_array("apple",$arr);  在数组中检索apple
+array_search("apple",$arr);  在数组中检索apple ，如果存在返回键名
+array_key_exists("apple",$arr);  检索给定的键名是否存在数组中
+isset($arr[apple]):   检索给定的键名是否存在数组中
+
+数组的内部指针
+
+current($arr);  返回数组中的当前单元
+pos($arr);  返回数组中的当前单元
+key($arr);  返回数组中当前单元的键名
+prev($arr);  将数组中的内部指针倒回一位
+next($arr);  将数组中的内部指针向前移动一位
+end($arr);  将数组中的内部指针指向最后一个单元
+reset($arr;  将数组中的内部指针指向第一个单元
+each($arr);  将返回数组当前元素的一个键名/值的构造数组，并使数组指针向前移动一位
+list($key,$value)=each($arr);  获得数组当前元素的键名和值
+
+数组和变量之间的转换
+
+extract($arr);用于把数组中的元素转换成变量导入到当前文件中，键名当作变量名，值作为变量值
+注：（第二个参数很重要，可以看手册使用）使用方法 echo $a;
+compact(var1,var2,var3);用给定的变量名创建一个数组
+
+
+二、数组的分段和填充
+
+数组的分段
+
+array_slice($arr,0,3);  可以将数组中的一段取出，此函数忽略键名
+array_splice($arr,0,3，array("black","maroon"));  可以将数组中的一段取出，与上个函数不同在于返回的序列从原数组中删除
+
+分割多个数组
+
+array_chunk($arr,3,TRUE);  可以将一个数组分割成多个，TRUE为保留原数组的键名
+
+数组的填充
+
+array_pad($arr,5,'x');  将一个数组填补到制定长度
+
+三、数组与栈
+
+array_push($arr,"apple","pear");  将一个或多个元素压入数组栈的末尾（入栈），返回入栈元素的个数
+array_pop($arr);  将数组栈的最后一个元素弹出（出栈）
+
+四、数组与列队
+
+array_shift($arr);数组中的第一个元素移出并作为结果返回（数组长度减1，其他元素向前移动一位，数字键名改为从零技术，文字键名不变）
+array_unshift($arr,"a",array(1,2));在数组的开头插入一个或多个元素
+
+五、回调函数
+
+array_walk($arr,'function','words');  使用用户函数对数组中的每个成员进行处理（第三个参数传递给回调函数function）
+array_mpa("function",$arr1,$arr2);  可以处理多个数组（当使用两个或更多数组时，他们的长度应该相同）
+array_filter($arr,"function");  使用回调函数过滤数组中的每个元素，如果回调函数为TRUE，数组的当前元素会被包含在返回的结果数组中，数组的键名保留不变
+array_reduce($arr,"function","*");  转化为单值函数（*为数组的第一个值）
+
+六、数组的排序
+
+通过元素值对数组排序
+
+sort($arr);  由小到大的顺序排序（第二个参数为按什么方式排序）忽略键名的数组排序
+rsort($arr);  由大到小的顺序排序（第二个参数为按什么方式排序）忽略键名的数组排序
+usort($arr,"function");  使用用户自定义的比较函数对数组中的值进行排序（function中有两个参数，0表示相等，正数表示第一个大于第二个，负数表示第一个小于第二个）忽略键名的数组排序
+asort($arr);  由小到大的顺序排序（第二个参数为按什么方式排序）保留键名的数组排序
+arsort($arr);  由大到小的顺序排序（第二个参数为按什么方式排序）保留键名的数组排序
+uasort($arr,"function");  使用用户自定义的比较函数对数组中的值进行排序（function中有两个参数，0表示相等，正数表示第一个大于第二个，负数表示第一个小于第二个）保留键名的数组排序
+
+通过键名对数组排序
+
+ksort($arr);  按照键名正序排序
+krsort($arr);  按照键名逆序排序
+uksort($arr,"function");  使用用户自定义的比较函数对数组中的键名进行排序（function中有两个参数，0表示相等，正数表示第一个大于第二个，负数表示第一个小于第二个）
+
+自然排序法排序
+
+natsort($arr);  自然排序（忽略键名）
+natcasesort($arr);  自然排序（忽略大小写，忽略键名）
+
+
+七、数组的计算
+
+数组元素的求和
+
+array_sum($arr);  对数组内部的所有元素做求和运算
+
+数组的合并
+
+array_merge($arr1,$arr2);  合并两个或多个数组（相同的字符串键名，后面的覆盖前面的，相同的数字键名，后面的不会做覆盖操作，而是附加到后面）
+“+”$arr1+$arr2;  对于相同的键名只保留后一个
+array_merge_recursive($arr1,$arr2);   递归合并操作，如果数组中有相同的字符串键名，这些值将被合并到一个数组中去。如果一个值本身是一个数组，将按照相应的键名把它合并为另一个数组。当数组 具有相同的数组键名时，后一个值将不会覆盖原来的值，而是附加到后面
+
+数组的差集
+
+array_diff($arr1,$arr2);  返回差集结果数组
+array_diff_assoc($arr1,$arr2,$arr3);  返回差集结果数组，键名也做比较
+
+数组的交集
+
+array_intersect($arr1,$arr2);  返回交集结果数组
+array_intersect_assoc($arr1,$arr2);  返回交集结果数组，键名也做比较
+
+八、其他的数组函数
+
+range(0,12);  创建一个包含指定范围单元的数组
+array_unique($arr);  移除数组中重复的值，新的数组中会保留原始的键名
+array_reverse($arr,TRUE);  返回一个单元顺序与原数组相反的数组，如果第二个参数为TRUE保留原来的键名
+//srand((float)microtime()*10000000);   随机种子触发器
+array_rand($arr,2);  从数组中随机取出一个或 多个元素
+shuffle($arr);  将数组的顺序打乱
+
+本类函数允许用多种方法来操作数组和与之交互。数组的本质是储存，管理和操作一组变量。
+
+PHP 支持一维和多维数组，可以是用户创建或由另一个函数创建。有一些特定的数据库处理函数可以从数据库查询中生成数组，还有一些函数返回数组。
+
+array_change_key_case — 返回字符串键名全为小写或大写的数组
+
+array_chunk — 将一个数组分割成多个
+
+array_combine — 创建一个数组，用一个数组的值作为其键名，另一个数组的值作为其值
+
+array_count_values — 统计数组中所有的值出现的次数
+
+array_diff_assoc — 带索引检查计算数组的差集
+
+array_diff_key — 使用键名比较计算数组的差集
+
+array_diff_uassoc — 用用户提供的回调函数做索引检查来计算数组的差集
+
+array_diff_ukey — 用回调函数对键名比较计算数组的差集
+
+array_diff — 计算数组的差集
+
+array_fill_keys — Fill an array with values, specifying keys
+
+array_fill — 用给定的值填充数组
+
+array_filter — 用回调函数过滤数组中的单元
+
+array_flip — 交换数组中的键和值
+
+array_intersect_assoc — 带索引检查计算数组的交集
+
+array_intersect_key — 使用键名比较计算数组的交集
+
+array_intersect_uassoc — 带索引检查计算数组的交集，用回调函数比较索引
+
+array_intersect_ukey — 用回调函数比较键名来计算数组的交集
+
+array_intersect — 计算数组的交集
+
+array_key_exists — 检查给定的键名或索引是否存在于数组中
+
+array_keys — 返回数组中所有的键名
+
+array_map — 将回调函数作用到给定数组的单元上
+
+array_merge_recursive — 递归地合并一个或多个数组
+
+array_merge — 合并一个或多个数组
+
+array_multisort — 对多个数组或多维数组进行排序
+
+array_pad — 用值将数组填补到指定长度
+
+array_pop — 将数组最后一个单元弹出（出栈）
+
+array_product — 计算数组中所有值的乘积
+
+array_push — 将一个或多个单元压入数组的末尾（入栈）
+
+array_rand — 从数组中随机取出一个或多个单元
+
+array_reduce — 用回调函数迭代地将数组简化为单一的值
+
+array_reverse — 返回一个单元顺序相反的数组
+
+array_search — 在数组中搜索给定的值，如果成功则返回相应的键名
+
+array_shift — 将数组开头的单元移出数组
+
+array_slice — 从数组中取出一段
+
+array_splice — 把数组中的一部分去掉并用其它值取代
+
+array_sum — 计算数组中所有值的和
+
+array_udiff_assoc — 带索引检查计算数组的差集，用回调函数比较数据
+
+array_udiff_uassoc — 带索引检查计算数组的差集，用回调函数比较数据和索引
+
+array_udiff — 用回调函数比较数据来计算数组的差集
+
+array_uintersect_assoc — 带索引检查计算数组的交集，用回调函数比较数据
+
+array_uintersect_uassoc — 带索引检查计算数组的交集，用回调函数比较数据和索引
+
+array_uintersect — 计算数组的交集，用回调函数比较数据
+
+array_unique — 移除数组中重复的值
+
+array_unshift — 在数组开头插入一个或多个单元
+
+array_values — 返回数组中所有的值
+
+array_walk_recursive — 对数组中的每个成员递归地应用用户函数
+
+array_walk — 对数组中的每个成员应用用户函数
+
+array — 新建一个数组
+
+arsort — 对数组进行逆向排序并保持索引关系
+
+asort — 对数组进行排序并保持索引关系
+
+compact — 建立一个数组，包括变量名和它们的值
+
+count — 计算数组中的单元数目或对象中的属性个数
+
+current — 返回数组中的当前单元
+
+each — 返回数组中当前的键／值对并将数组指针向前移动一步
+
+end — 将数组的内部指针指向最后一个单元
+
+extract — 从数组中将变量导入到当前的符号表
+
+in_array — 检查数组中是否存在某个值
+
+key — 从关联数组中取得键名
+
+krsort — 对数组按照键名逆向排序
+
+ksort — 对数组按照键名排序
+
+list — 把数组中的值赋给一些变量
+
+natcasesort — 用“自然排序”算法对数组进行不区分大小写字母的排序
+
+natsort — 用“自然排序”算法对数组排序
+
+next — 将数组中的内部指针向前移动一位
+
+pos — current() 的别名
+
+prev — 将数组的内部指针倒回一位
+
+range — 建立一个包含指定范围单元的数组
+
+reset — 将数组的内部指针指向第一个单元
+
+rsort — 对数组逆向排序
+
+shuffle — 将数组打乱
+
+sizeof — count() 的别名
+
+sort — 对数组排序
+
+uasort — 使用用户自定义的比较函数对数组中的值进行排序并保持索引关联
+
+uksort — 使用用户自定义的比较函数对数组中的键名进行排序
+
+usort — 使用用户自定义的比较函数对数组中的值进行排序
+
+json js对象简谱 是一种轻量级的数据交换格式
+语法规则：
+对象表示为键值对
+数据由逗号分隔
+花括号保存对象
+方括号包含数组
+{"键"："值"}使用冒号分隔
+json是js对象字符串表示法，本质是一个字符串
+实现从JSON对象转换为JS字符串，使用 JSON.stringify() 方法
+JSON 表示数组的方式也是使用方括号 []。["值","值","值"]
+pear channel-discover pear.phpdoc.org 
+pear install phpdoc/phpDocumentor 
+
+$(document).ready(function(){.... })
+取代页面中的window.onload;
+希望在页面加载完，自动执行定义js代码
+
+Javascript 只有在DOM元素已经定义以后才可以对其执行某种操作
+
+jQuery使用document.ready来保证所要执行的代码是在DOM元素被加载完成的情况下执行。
+
+
+逻辑控制写在控制器，数据处理写在model中
+
+event    js event 对象
+treeId   String  对应 zTree 的 treeId，便于用户操控
+zTree 的唯一标识，初始化后，等于 用户定义的 zTree 容器的 id 属性值。
+treeNode      JSON   被点击的节点 JSON 数据对象
+clickFlag  Number 节点被点击后的选中操作类型
+idKey  默认值："id"   节点数据中保存唯一标识的属性名称
+pIdKey  节点数据中保存其父节点唯一标识的属性名称
+默认值："pId"
+
+getSelectedNodes 
+获取 zTree 当前被选中的节点数据集合
+
+请通过 zTree 对象执行此方法。
+
+返回值Array(JSON)
+当前被选中的节点数据集合
+
+1. 获取当前被选中的节点数据集合
+var treeObj = $.fn.zTree.getZTreeObj("tree");
+var nodes = treeObj.getSelectedNodes();
+
+jquery 对象，第一个属性值是原 dom 对象
+ $("#boxA")[0].parentNode
+相当于 document.getElementById("boxA").parentNode;
+要分清楚Dom对象和Jquery对象，后者是对前者的封装，parentNode.id是Dom对象的属性，[index]是取第index+1个匹配元素的DOM对象
+$("#boxA") 返回的是一个数组。
+#id 根据给定的ID匹配一个元素。
+$("#myDiv");
+[ <div id="myDiv">id="myDiv"</div> ]
+element
+根据给定的元素名匹配所有元素
+$("div");
+.class
+根据给定的类匹配元素。
+$(".myClass");
+*匹配所有元素
+selector1,selector2,selectorN
+将每一个选择器匹配到的元素合并后一起返回。
+ancestor descendant
+在给定的祖先元素下匹配所有的后代元素
+任何有效选择器  用以匹配元素的选择器，并且它是第一个选择器的后代元素
+$("form input")
+
+parent > child
+在给定的父元素下匹配所有的子元素
+$("form > input")
+
+prev + next
+匹配所有紧接在 prev 元素后的 next 元素
+$("label + input")//可以同级
+
+prev ~ siblings
+匹配 prev 元素之后的所有 siblings 元素
+找到所有与表单同辈的 input 元
+$("form ~ input")
+
+jquery 基础变量定义
+var $i=$("#D1");
+var i=$("#D2");
+function(){
+     //这里获取控件对象值
+     var d1=$i.val();
+     var d2=$(i).val();
+}
+
+jQuery.ajax(url,[settings])
+通过 HTTP 请求加载远程数据。
+$.ajax() 返回其创建的 XMLHttpRequest 对象。
+所有的选项都可以通过$.ajaxSetup()函数来全局设置。
+回调函数
+
+如果要处理$.ajax()得到的数据，则需要使用回调函数。beforeSend、error、dataFilter、success、complete。
+
+beforeSend 在发送请求之前调用，并且传入一个XMLHttpRequest作为参数。
+error 在请求出错时调用。传入XMLHttpRequest对象，描述错误类型的字符串以及一个异常对象（如果有的话）
+dataFilter 在请求成功之后调用。传入返回的数据以及"dataType"参数的值。并且必须返回新的数据（可能是处理过的）传递给success回调函数。
+success 当请求之后调用。传入返回后的数据，以及包含成功代码的字符串。
+complete 当请求完成之后调用这个函数，无论成功或失败。传入XMLHttpRequest对象，以及一个包含成功或错误代码的字符串。
+
+url:一个用来包含发送请求的URL字符串。
+settings:AJAX 请求设置。所有选项都是可选的。
+
+async 默认设置下，所有请求均为异步请求
+
+complete(XHR, TS)
+请求完成后回调函数 (请求成功或失败之后均调用)。参数： XMLHttpRequest 对象和一个描述成功请求类型的字符串
+function (XMLHttpRequest, textStatus) {
+    this; // 调用本次AJAX请求时传递的options参数
+}
+
+contents
+一个以"{字符串:正则表达式}"配对的对象，用来确定jQuery将如何解析响应，给定其内容类型
+
+context  Object
+
+这个对象用于设置Ajax相关回调函数的上下文。也就是说，让回调函数内this指向这个对象（如果不设定这个参数，那么this就指向调用本次AJAX请求时传递的options参数）。比如指定一个DOM元素作为context参数，这样就设置了success回调函数的上下文为这个DOM元素。就像这样
+
+$.ajax({ url: "test.html", context: document.body, success: function(){
+    $(this).addClass("done");
+}});
+
+data  Object,String
+
+发送到服务器的数据。将自动转换为请求字符串格式。GET 请求中将附加在 URL 后。查看 processData 选项说明以禁止此自动转换。必须为 Key/Value 格式。如果为数组，jQuery 将自动为不同值对应同一个名称。如 {foo:["bar1", "bar2"]} 转换为 "&foo=bar1&foo=bar2"。
+
+dataFilter  Function
+
+给Ajax返回的原始数据的进行预处理的函数。提供data和type两个参数：data是Ajax返回的原始数据，type是调用jQuery.ajax时提供的dataType参数。函数返回的值将由jQuery进一步处理。
+
+"xml": 返回 XML 文档，可用 jQuery 处理。
+
+"html": 返回纯文本 HTML 信息；包含的script标签会在插入dom时执行。
+
+function (data, type) {
+    // 对Ajax返回的原始数据进行预处理
+    return data  // 返回处理后的数据
+}
+
+dataType  String
+
+预期服务器返回的数据类型。
+
+"json": 返回 JSON 数据 
+
+success(data, textStatus, jqXHR)  Function,Array
+
+请求成功后的回调函数。参数：由服务器返回，并根据dataType参数进行处理后的数据；描述状态的字符串
+type  默认: "GET") 请求方式 ("POST" 或 "GET")， 默认为 "GET"。
+
+load(url, [data], [callback])
+
+载入远程 HTML 文件代码并插入至 DOM 中。
+
+url:待装入 HTML 网页网址。
+
+data:发送至服务器的 key/value 数据。在jQuery 1.3中也可以接受一个字符串了。
+
+callback:载入成功时回调函数。
+
+$("#links").load("/Main_Page #p-Getting-Started li");
+
+通过远程 HTTP GET 请求载入信息。
+
+这是一个简单的 GET 请求功能以取代复杂 $.ajax 。请求成功时可调用回调函数。
+
+url:待载入页面的URL地址
+
+data:待发送 Key/value 参数。
+
+callback:载入成功时回调函数。
+
+type:返回内容格式，xml, html, script, json, text, _default。
+
+类包含作用域的名称
+
+echo __CLASS__;-
+1
+类作用域的名称
+
+echo dirname(__CLASS__);
+1
+类不包含作用域的名称
+
+echo basename (__CLASS__);
+
+
+THINK_PATH 框架系统目录 
+ROOT_PATH 框架应用根目录
+APP_PATH 应用目录（默认为application）
+CONF_PATH 配置目录（默认为APP_PATH）
+LIB_PATH 系统类库目录（默认为 THINK_PATH.'library/'）
+CORE_PATH 系统核心类库目录 （默认为 LIB_PATH.'think/'）
+TRAIT_PATH 系统trait目录（默认为 LIB_PATH.'traits/'）
+EXTEND_PATH 扩展类库目录（默认为 ROOT_PATH . 'extend/')
+VENDOR_PATH 第三方类库目录（默认为 ROOT_PATH . 'vendor/'）
+RUNTIME_PATH 应用运行时目录（默认为 ROOT_PATH.'runtime/'）
+LOG_PATH 应用日志目录 （默认为 RUNTIME_PATH.'log/'）
+CACHE_PATH 项目模板缓存目录（默认为 RUNTIME_PATH.'cache/'）
+TEMP_PATH 应用缓存目录（默认为 RUNTIME_PATH.'temp/'）
+以上是所有的路径常量
+
+
+一个前台页面 一个后台管理页面
+
+元字符，特殊意义
+[]表示单个字符 的原子表 内^取反
+{m}表示对前面原子的数量限制 表示m的次数
+[0-9]{m}四位数字 {m,}至少m次 {im,n}m到n次之间
+*表示对前面原子的数量限制，任意次{0,}
++表示对前面原子至少一次{1,}
+?表示可有可无，{0,1}
+（）表示一个整体的原子
+（red）字串red
+|表示或
+^用在正则块的开头处，必须以指定的开头
+$用在正则单元的结尾，表示以指定的结尾
+.表示任意一个除换行符之外的字符
+
+还有转义字符
+\d匹配一个数字[0-9]
+\D匹配除数字外任何一个字符[^0-9]
+\w 为[0-9a-zA-Z_]
+\W 取反
+\s 表示匹配一个空白字符 [\f\n\r\t\v]
+\f 表示一个换页符 \x0c  \cL
+\n 表示一个换行符 \x0a \cJ
+\r 回车符 \x0d \cM
+\t 制表符 \x0p \cI
+\v 垂直制表符 \x0b \ck
+
+模式修正符
+！不区分大小写
+s表示匹配视为单行 .支持换行符
+U 拒绝贪婪匹配
+preg_match_all 全局匹配 返回共计个数
+preg_match 只匹配一次 返回0 或1
+格式
+result//1  =preg_match(正则，被匹配字符串，存放结果的变量名，获取匹配索引位置，起始偏移量)
+
+preg_split 正则分割字符串
+
+preg_replace 执行正则搜索和替换
+
+'.+[']\s
+'demo'\s*=>\s*\[.* 全部
+
+lib都是第三方类库文件
+static是css js静态文件
+
+think\View类中定义了几个常量 __ROOT__是public目录
+可以使用替换键 ctrl+R
+
+继承基类控制器，Base，可以继承一些常量或方法
+
+{load}简化项目外部资源引入，统一导入提高效率
+ css标签也可以
+
+composer config -l -g
+
+PHP规范注释
+所有的文档标记都是在每一行的*后面以@开头，如果在一段话的中间出来的@标记，当做普通内容被忽略
+@access 指明关键字的存放权限 private pubilic protected
+使用范围：class function var define module
+@author指明作者
+@const 使用范围 define 用来指明define 的常量
+@final 使用范围 class function var 指明关键字是一个最终
+的类，方法，属性，禁止派生修改
+@global指明在此函数中引用的全局变量
+@name 为关键字指定一个别名
+@package 用于逻辑上将一个或几个关键字分到一组
+@abstruct 说明是抽象类
+@param 指明一个函数的参数
+@return 指明一个方法或函数的返回值
+@static 指明关键字的静态的
+@var 指明变量的类型
+@version 指明版本信息
+@todo 指明应该改进，或没实现的地方
+@link可以通过link指到文档中的任何一个关键字
+@ingore用于在文档中忽略指定的关键字
+/**
+*
+*/
+
+规范注释的php代码 :
+
+<?php
+/**
+* 文件名(sample2.php)
+*
+* 功能描述（略）
+*
+* @author steve <liuzhiqun@facedoing.com>
+* @version 1.0
+* @package sample2
+*/
+
+/**
+* 包含文件
+*/
+include_once 'sample3.php';
+
+/**
+* 声明全局变量
+* @global integer $GLOBALS['_myvar']
+* @name $_myvar
+*/
+$GLOBALS['_myvar'] = 6;
+
+/**
+* 声明全局常量
+*/
+define('NUM', 6);
+
+/**
+* 类名
+*
+* 类功能描述
+*
+* @package sample2
+* @subpackage classes(如果是父类 就添加)
+*/
+class myclass {
+
+/**
+* 声明普通变量
+*
+* @accessprivate
+* @var integer|string
+*/
+var $firstvar = 6;
+
+/**
+* 创建构造函数 {@link $firstvar}
+*/
+function myclass() {
+$this->firstvar = 7;
+}
+
+/**
+* 定义函数
+*
+* 函数功能描述
+*
+* @global string $_myvar
+* @staticvar integer $staticvar
+* @param string $param1
+* @param string $param2
+* @return integer|string
+*/
+function firstFunc($param1, $param2 = 'optional') {
+static $staticvar = 7;
+global $_myvar;
+return $staticvar;
+}
+}
+?>
+
+alter table category_list AUTO_INCREMENT=9;
+
+常量调整
+5.1取消了所有的框架内置常量，如需获取，请使用`App`类的内置方法获取，例如：
+|5.0常量|5.1获取方法|
+|---|---|
+|EXT| 取消，固定使用 `.php`|
+|IS_WIN|取消|
+|IS_CLI|取消|
+|ENV_PREFIX|取消，固定使用`PHP_`|
+|THINK_START_TIME|App::getBeginTime()|
+|THINK_START_MEM|App::getBeginMem()|
+|THINK_VERSION| App::version()|
+|THINK_PATH|App::getThinkPath()|
+|LIB_PATH|App::getThinkPath() . 'library/'|
+|CORE_PATH|App::getThinkPath() . 'library/think/'|
+|APP_PATH|App::getAppPath()|
+|CONFIG_PATH| App::getConfigPath()|
+|CONFIG_EXT|App::getConfigExt()|
+|ROOT_PATH|App::getRootPath()|
+|EXTEND_PATH| App::getRootPath() . 'extend/' |
+|VENDOR_PATH| App::getRootPath() . 'vendor/' |
+|RUNTIME_PATH|App::getRuntimePath()|
+|LOG_PATH| App::getRuntimePath() . 'log/' |
+|CACHE_PATH| App::getRuntimePath() . 'cache/' |
+|TEMP_PATH| App::getRuntimePath() . 'temp/' |
+|MODULE_PATH|App::getModulePath()|
+复制代码
+另外也可以通过`Env`类的`get`方法获取这些路径变量（不区分大小写），例如：
+Env::get('root_path');

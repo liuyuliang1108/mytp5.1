@@ -1,0 +1,406 @@
+1.安装phpstudy -》安装php及Apache
+2.部署项目
+3.配置本地虚拟域名与虚拟主机绑定（域名，对应的网站文件目录）（修改apache的vhosts.conf文件）和域名与ip地址绑定
+本地hosts 域名与ip地址绑定（与本地ip127.0.0.1绑定）
+
+4.配置php环境变量（Pach  C:\phpStudy\PHPTutorial\php\php-7.0.12-nts\），可以使用php命令行模式
+
+5.安装phpstorm  先破解（0.0.0.0 account.jetbrains.com 复制到hosts文件中 屏蔽联网），再安装汉化包（汉化包放入C:\Program Files\JetBrains\PhpStorm 2018.3.4\lib）
+
+设置中 配置php的解释器 设置中选择php版本解释器
+  
+再配置项目运行环境  
+setting》tools》terminal选择项目路径WWW路径
+
+配置本地服务器Apache 工具》deployment》configuration>local or mounted folder
+ 工具》deployment》type：local or mounted folder
+folder:  C:\phpStudy\PHPTutorial\Apache\bin
+connection web sever url: http://tp5.0.dev  
+mappings（映射） local path:为项目根目录 入口目录C:\phpStudy\PHPTutorial\WWW\tp5.0\public
+web sever url: http://locallhost
+mapping local path:为项目根目录 入口目录C:\phpStudy\PHPTutorial\WWW\tp5.0\public
+deployment pach:/tp5.0想对于Apache，server  root path 即www目录
+web pach：/ 映射到相对于域名服务的地址
+
+工具》deployment》type：in local  
+connection web sever url: http://tp5.0.dev  mappings（映射） local path:为项目根目录 入口目录C:\phpStudy\PHPTutorial\WWW\tp5.0\public
+
+.htaccess重写路由，隐藏入口文件RewriteRule ^(.*)$ index.php?/$1 [QSA,PT,L]
+
+xdebug配置 配置监听
+
+
+调试js console 命令控制台 加上设置断点进行调试
+设置断点后 会显示此时作用域中所有变量和值
+
+sources面板 暂停/恢复 脚本执行 （程序执行到下一断点）
+step over next function call 执行到下一函数调用 （跳到下一行）
+step into next function call 进入当前函数
+step out of current call 跳出当前函数
+deactive/active all breakpoints 关闭或开启所有断点（不会取消）
+pause on exceptions 异常情况自动断点设置
+
+设置dom断点
+一、当节点内部子节点变化时断点 break on subtree modifications  子节点增删交换顺序触发断点，断点定位脚本
+二、当节点属性发生变化时断点 break on attibutes modifications  子节点属性改变不会触发
+三、当节点被移除时断点 break on node removal
+
+XHR breakpoints
+xml httprequest对象 作用：专为异步而生的断点调试功能
+一个+号，break url中contains ajax
+当异步请求触发时的url满足此条件，js逻辑会自动产生断点，xhr.send()语句
+自定义断点规则
+
+enent listener breakpoints 事件监听断点，即根据事件名称进行断点设置，当事件被触发时，断点到事件绑定的位置，会列出所有页面及脚本事件，鼠标，键盘，动画，定时器，xhr极大降低事件方面业务逻辑的调试难度
+
+配置xdebug
+
+[XDebug]
+zend_extension = C:\phpStudy\PHPTutorial\php\php-7.0.12-nts\ext\php_xdebug.dll
+;开启远程调试
+
+xdebug.remote_enable = On
+;开启自动开启调试，即可网页传入请求，触发断点
+xdebug.remote_autostart = 1
+;客户机ip
+
+xdebug.remote_host="127.0.0.1"
+
+;客户机xdebug监听端口和调试协议
+
+xdebug.remote_port=9001
+
+xdebug.remote_handler=dbgp
+
+;idekey 区分大小写
+
+xdebug.idekey="PHPSTORM"
+
+xdebug.profiler_enable = off
+xdebug.profiler_enable_trigger = off
+
+xdebug.profiler_output_name = cachegrind.out.%t.%p
+;idekey 区分大小写
+
+xdebug.profiler_output_dir="C:\phpStudy\PHPTutorial\tmp\xdebug"
+xdebug.trace_output_dir="C:\phpStudy\PHPTutorial\tmp\xdebug"
+
+php程序的远程调试、单步调试、跟踪等高级功能。工欲善其事必先利其器，
+
+Xdebug的工作原理可以总结为下面几个步骤
+
+1）IDE（比如PhpStorm，下文所述的客户端）中已经集成了一个遵循BGDp协议（一个专门用来调试的协议）的Xdebug插件。当要debug的时候，点击一些IDE的某个按钮，启动这个插件。该插件会启动一个9000的端口监听远程服务器发过来的debug信息。
+
+2）浏览器向Httpd服务器发送一个带有XDEBUG_SESSION_START参数的请求，Httpd收到这个请求之后交给后端的PHP进行处理（下面就忽略Httpd，直接把Php叫做Server）。
+
+3）Php看到这个请求是带了XDEBUG_SESSION_START?参数，就告诉Xdebug，“嘿，我要debug喔，你准备一下”。这时，Xdebug这时会向来源ip客户端的9000端口（即客户端，也即是IDE）发送一个debug请求，然后客户端的9000端口响应这个请求，那么debug就开始了。
+
+4）Php知道Xdebug已经准备好了，那么就开始开始一行一行的执行代码，但是每执行一行都会让Xdebug过滤一下。
+
+5）Xdebug开始过滤代码，Xdebug在过滤每一行代码的时候，都会暂停代码的执行，然后向客户端的9000端口发送该行代码的执行情况，等待客户端的决策（是一句代码还是下一个断点待）。
+
+6）相应，客户端（IDE）收到Xdebug发送过来的执行情况，就可以把这些信息展示给开发者看了，包括一些变量的值等。同时向Xdebug发送下一步应该什么。
+
+先配置php解释器和xdebug拓展路径（设置 语言 PHP cli ...）
+debug 设置端口9001
+```dbgp proxy ide key PHPSTORM host:tp5.1.com//这填本地 端口80
+
+````validate
+C:\phpStudy\PHPTutorial\WWW\tp5.1\public
+http://tp5.1.com
+
+servers 设置服务器端信息 name:blog 域名tp5.1.com 端口80
+
+再配置一个配置  +php web page   name：blog server:blog start url: /
+
+使用方法：
+先点击电话 开始监听 小虫子 再设置一个端点  网页向服务端发送一个请求，F8步过 一行一行过 F7 步入  先结束 再点击电话结束监听 恢复
+
+ctrl+all+v 变量重构
+
+您可以在 Editor | Live Templates 设置/首选项页面上配置代码模板。
+
+代码补全功能可以在声明变量时为变量建议一个名称
+
+如果光标位于方法调用的括号之间，请按 Ctrl+P 调出有效参数列表。
+
+使用 Ctrl+Shift+F7(Edit | Find | Highlight Usages in File)快速高亮当前文件中某个变量的用法。
+
+使用 F3 和 Shift+F3 浏览高亮的用法。
+
+LocalVCS(本地 VCS)
+请从上下文菜单中调用 Local History | Show History。
+
+使用 Alt+向上箭头 和 Alt+向下箭头 快速在编辑器中的方法之间移动。
+
+要查看所选类的继承层次，按 Ctrl+H (Navigate | Type Hierarchy)。您还可以直接从编辑器调用层次结构视图以查看当前编辑的类的层次结构。
+
+右键单击左侧 gutter 中的断点标记可调用弹出式菜单，该菜单允许您快速启用/禁用断点或调整其属性。
+
+EvaluateExpressionInEditor(编辑器中计算表达式)
+要在调试程序时轻松计算任何表达式，请在编辑器中选择其文本(您可以多次按 Ctrl+W 以高效执行此操作)，然后按 Alt+F8。
+
+QuickEvaluateExpression(快速计算表达式) [汉化反馈]
+要在调试程序时快速计算任何表达式的值，请按住 Alt 并单击此表达式以查看其值，计算表达式，调用方法等。
+
+C:\Windows\system32;%SystemRoot%\system32; netstat查看端口占用情况
+ctrl+shift+c 可以复制文件或文件夹路径
+将打开设置 设置为alt+s
+alt+c 复制类 方法 函数的引用 命名空间的引用
+ctrl+shift+i 对方法 函数 显示出其定义和实现的内容
+ctrl+h 显示类的层次结构 继承关系
+alt上下 跳转方法
+ctrl+o，重写方法，当前类中重写基类方法
+alt+insert可以插入一下get方法以及构造方法
+ctrl+alt+i 自动格式化缩进
+F6移动 F5复制 shift+F6重命名
+ctrl+alt+v 提取表达式为一个变量 m为方法
+ctrl+alt+n 将选中的代码，匹配内联成一个
+alt+F9 运行到光标处 F9暂停恢复
+alt+F8 计算任意表达式
+ctrl+F2停止进程
+alt+A 保存代码为模板
+alt+x 保存文件为模板
+alt+F12 可以打开终端控制台 输入php命令
+
+从当前方法返回三个变量 $status:当前状态 $result:提示信息 $data 返回数据
+打包成json格式返回前端
+
+输入变量 可以通过Request对象完成全局输入变量的检测，获取，和安全过滤，支持 系统自定义的全局变量，$_GET $_REQUEST $_SERBER $_SESSION $_COOKIE $_ENV等系统变量，以及文件上传信息，引入use think\facade\Request
+依赖注入 动态调用
+检测变量是否设置 has方法  Request::has('id','get');('name','post') 
+变量获取
+变量类型方法（‘变量名/变量修饰符’，默认值，过滤方法）
+param 获取当前请求的变量（请求类型参数和路由变量以及get请求合并，路由变量优先） env 获取$_ENV变量 route获取路由变量包括pathinfo file获取$_FILES变量
+ROOT_PATH是项目根目录 MODULE_PATH是应用目录application
+
+server 则是访问服务变量  ["DOCUMENT_ROOT"] 为访问入口目录
+["SCRIPT_FILENAME"] => string(50) "C:/phpStudy/PHPTutorial/WWW/tp5.1/public/index.php" 发送请求的地址
+Request::param('username','','strip_tags,strtolower'); // 获取param变量 并依次调用strip_tags、strtolower函数过滤 请求对象 获取变量过滤
+// 设置默认值
+2.Request::only(['id'=>0,'name'=>'']);
+// 只获取当前请求的id和name变量
+2.Request::only(['id','name']);
+// 只获取POST请求的id和name变量
+4.Request::only(['id','name'], 'post');
+// 排除id和name变量
+2.Request::except(['id','name']);
+钩子和行为，把行为抽离出来是为了无需改动框架和应用，在外围通过拓展或者配置来改变或增加一些功能
+不同行为间也具有位置共同性，有的行为作用在应用执行前，有的在模板输出后，我们把这些行为发生作用的位置称为钩子，hook，当运行到钩子上时，会被拦截下来，统一执行相关的行为，一个钩子可以注册多个行为
+
+使用：在需要的位置Hook::listen('钩子名称','参数','是否只有一次有效返回值');引入think\facade\Hook
+
+app_init 应用初始化标签位 
+
+namespace app\index\behavior;
+2.
+3.class Test 
+4.{
+5.    public function run($params)
+6.    {
+7.        // 行为逻辑
+8.    }
+9.}
+可以在行为方法中使用依赖注入
+namespace app\index\behavior;
+2.
+3.use think\Request;
+4.
+5.class Test 
+6.{
+7.    public function run(Request $request, $params)
+8.    {
+9.        // 行为逻辑
+10.    }
+11.}
+该行为绑定到app_init和app_end钩子后 就会调用相关的方法 public function appInit($params)
+
+行为绑定
+
+行为定义完成后，就需要绑定到某个标签位置才能生效，否则是不会执行的。
+// 注册 app\index\behavior\CheckLang行为类到app_init标签位
+2.Hook::add('app_init','app\\index\\behavior\\CheckLang'); 
+配置文件tags.php中也能绑定 '_overlay'=>true覆盖
+可以不用定义行为直接把闭包函数绑定到某个标签位，例如：
+1.Hook::add('app_init',function(){ 
+2.    echo 'Hello,world!';
+3.});
+
+如果标签位有传入参数的话，闭包也可以支持传入参数，例如：
+1.Hook::listen('action_init',$params);
+2.Hook::add('action_init',function($params){ 
+3.    var_dump($params);
+4.});
+Hook::exec('app\\index\\behavior\\CheckAuth',$params);直接执行行为
+由于访问控制器的参数都来自于URL请求，普通变量就是通过参数绑定自动获取，对象变量则是通过依赖注入生成。对象变量进行约束
+
+
+依赖注入的类统一由容器进行管理，大多数情况下是在自动绑定并且实例化的
+绑定闭包
+
+可以把一个闭包方法绑定到容器中
+1.bind('sayHello', function ($name) {
+2.    return 'hello,' . $name;
+3.});
+4.echo app('sayHello',['thinkphp']);
+
+// 绑定think\LoggerInterface接口实现到think\Log
+2.bind('think\LoggerInterface','think\Log')
+
+中间件主要用于拦截或过滤应用的HTTP请求，并进行必要的业务处理。;
+php think make:middleware Check
+application/http/middleware目录下面生成一个Check中间件
+<?php
+2.
+3.namespace app\http\middleware;
+4.
+5.class Check
+6.{
+7.    public function handle($request, \Closure $next)
+8.    {
+9.        if ($request->param('name') == 'think') {
+10.            return redirect('index/think');
+11.        }
+12.
+13.        return $next($request);
+14.    }
+15.}
+$codeNY=($this->imageH-($this->fontSize)/72*96)/2+($this->fontSize);
+请求信息
+
+Request对象支持获取当前的请求信息，是一个方法 获取目前的   而下面的是获取变量
+可以通过Request对象完成全局输入变量的检测、获取和安全过滤，支持包括$_GET、$_POST、$_REQUEST、$_SERVER、$_SESSION、$_COOKIE、$_ENV等系统变量，以及文件上传信息。
+如果要判断数据集是否为空 必须使用数据集对象的isEmpty方法判断
+$users = Db::name('user')->select();
+2.if($users->isEmpty()){
+3.    echo '数据集为空';
+4.}
+toArray 转换为数组 keys 返回数据中的所有键名 each 给数据的每个元素执行回调 column 返回数据中的指定列 
+filter 用回调函数过滤数据中的元素 
+
+Response对象提供了一系列方法用于设置响应参数，包括设置输出内容、状态码及header信息等，
+Response基类提供了data方法用于设置响应数据。
+1.response()->data($data);
+2.json()->data($data);
+
+json()->data($data);
+
+
+最终的输出数据就是json_encode($data)转换后的数据。
+
+如果要获取当前响应对象实例的实际输出数据可以使用getContent方法。
+最简单的响应输出是直接在路由闭包或者控制器操作方法中返回一个字符串，例如：
+1.Route::get('hello/:name', function ($name) {
+2.    return 'Hello,' . $name . '!';
+3.});
+
+$this包含类本身以及集成的父类，self指的类本身，this是指向对象实例的一个指针，在实例化的时候来确定指向，
+self是对类本身的一个引用，$this不能引用静态成员和常量
+
+ssh-keygen -t rsa -C "563021874@qq.com"
+
+
+ls查看本目录内文件 cat id_rsa.pub查看ssh密钥
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDchc48ydHFyzjhObDTr4D3SbWUdgOOlTq1HWH35zzd3V13Kr6/FU9onOGByYz94iC4GrpfqrlOHzfQq0aybRf3UzPrIdB7ugyIEJRHlJGipZcAro/rO/csyPdPPDM3F7vHBEYyh9V/Q8Igg3hz8GCow5xFNOTajtX7Cn4RkuWUnrSm0b8mKTXy7U9orfE8ymwyodNWe79bfdLZeCyQe8qMZNtdfV0BkzUdOVVl6F+Nria2rnfHx6j3GMHK2gvPp8/rFHmJP0mmUfxTK1cHC2LizRbmMXGu3V6H+wRphD7sMhRfJI2SBUPF9VDgBzUiJX0ZAqclhLdtu5fIUJlB0Ysp 563021874@qq.com
+
+ssh -T git@github.com   再输入yes
+
+再github建立一个仓库，以下是仓库地址
+git@github.com:liuyuliang1108/tp5.1.git
+
+再本地git仓库配置 连接远程仓库地址
+git remote add origin git@github.com:liuyuliang1108/tp5.1.git
+
+ssh -T git@github.com后在host文件中增加
+13.229.188.59 github.com
+
+151.101.185.194   github.global.ssl.fastly.net
+122.226.0.10  github.com  本机ip
+git push -u origin master
+
+hosts文件中保存的 github 映射 ip 过期，无法解析到正确的ip地址
+
+ 查看信息git remote -v
+推送到远程库中git push -u origin master 把当前分支master推送到远程
+由于远程库是空的，我们第一次推送master分支，加上-u git不但会把本地的master分支内容推送的远程新的master分支，还会把本地的master和远程master分支关联 在以后推送 拉取简化命令
+
+以后 只要本地做了提交 就可以通过 git push origin master 吧本地master分支最新修改推送到github
+
+git reset --hard FETCH_HEAD
+
+1、先拉下来，会自动合并的（不用操心）
+
+git pull origin master
+
+2、再上传
+
+git push -u origin master
+
+
+成功解决问题
+
+151.101.185.194   github.global.ssl.fastly.net  //ssh -m连接
+151.101.185.194 github.com        // ping的
+ALTER TABLE `wp_posts` ENGINE = MyISAM;
+Collation
+show table status from db_name LIKE 'uc%'
+
+ALTER TABLE table-name CHARACTER SET charset-name COLLATE collation-name;
+
+字符集与排列字符集的信息都存放在information_schema库中
+USE tp5
+ALTER TABLE category_list CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE category_list CHARACTER SET utf8 COLLATE utf8_general_ci;
+1.查看MYSQL数据库服务器和数据库字符集
+
+方法一：show variables like '%character%';
+方法二：show variables like 'collation%';
+
+5.查看表中所有列的字符集
+
+语法：show full columns from 表名;
+CREATE DATABASE `dbname` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+修改字段的字符集
+
+语法：alter table 表名 modify 字段名 字段属性 character set gbk
+
+alter table test1 modify name char(10) character set gbk;
+
+mysql utf-general-ci 修改成utf8mb4 方案
+1、确认编码字符集
+SHOW VARIABLES WHERE Variable_name LIKE 'character\_set\_%' OR Variable_name LIKE 'collation%';
+
+ALTER TABLE t_chat_history DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci 修改表默认字符集
+
+ALTER TABLE t_chat_history CHANGE f_text f_text VARCHAR(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; 修改字段字符集
+
+ALTER TABLE category_list DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+ps -ef|grep mysql
+character_set_results=utf8
+show variables like '%character%';
+sudo service mysqld restart
+service mysqld start
+whereis mysql
+
+ls -l|grep my.cnf
+
+在发送查询前执行一下下面这句（直接写在SQL文件的最前面）：
+SET NAMES 'utf8';
+
+它相当于下面的三句指令：
+
+SET character_set_client = utf8;
+SET character_set_results = utf8;
+SET character_set_connection = utf8;
+
+character_set_client           //客户连接所采用的字符集
+|
+character_set_connection  //MySQL连接字符集
+|
+character_set_database    //数据库所采用的字符集（表，列）
+|
+character_set_results        //客户机显示所采用的字符集
+
+http://blog.chinaunix.net/uid-29792372-id-5762913.html
