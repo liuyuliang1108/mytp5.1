@@ -404,3 +404,20 @@ character_set_database    //数据库所采用的字符集（表，列）
 character_set_results        //客户机显示所采用的字符集
 
 http://blog.chinaunix.net/uid-29792372-id-5762913.html
+
+chown -R mysql:mysql /usr/local/mysql/var
+132.232.50.253/index.php/admin/category/index
+cp -a /phpstudy/www/phpmyadmin .
+cp -a /phpstudy/www/tp5.1 .
+
+fastcgi_param PHP_ADMIN_VALUE 
+将/usr/local/nginx/conf/fastcgi.conf文件配置修改
+"open_basedir=/home/wwwroot/default/tp5.1/:/tmp/:/proc/";
+
+GRANT ALL PRIVILEGES ON *.* TO 'liuyu'@'%' IDENTIFIED BY 'grh394492474';
+
+UPDATE mysql.user SET authentication_string=PASSWORD('grh394492474') WHERE User='liuyu';
+flush privileges;
+
+防火墙设置 drop改为accept 开启远程访问3306端口
+-A INPUT -p tcp -m tcp --dport 3306 -j ACCEPT
