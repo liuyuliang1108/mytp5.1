@@ -180,7 +180,7 @@
                     return;
                 } else {
                     layer.msg('增加成功!', {icon: 1, time: 1000});
-                    parent.location.reload(); // 父页面刷新
+                    window.parent.location.reload(); // 父页面刷新
                 }
             }
 

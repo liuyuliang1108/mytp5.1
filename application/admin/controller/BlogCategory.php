@@ -8,7 +8,7 @@
 
 namespace app\admin\controller;
 
-
+use app\admin\controller\Base;
 use app\admin\model\CategoryList;
 use app\admin\model\Content;
 use app\admin\model\MqBlogCategory;
@@ -17,7 +17,7 @@ use think\Request;
 
 use think\Db;
 
-class BlogCategory extends Controller
+class BlogCategory extends Base
 {
 
 
@@ -34,6 +34,7 @@ class BlogCategory extends Controller
         }
 
     }
+
 //博客分类
     public function blogCategory()
     {
@@ -43,24 +44,25 @@ class BlogCategory extends Controller
     //保存博客
     public function saveContent(Request $request)
     {
-$result=$request->post();
-$data['title']=trim($result['title']);
-$data['order']=trim($result['order']);
-$data['child_id']=trim($result['child_id']);
-$data['content']=$result['content'];
-$data['url']='?child='.$data['child_id'].'&id='.$data['order'];
-        $data['status']=trim($result['status']);
-
+        $result = $request->post();
+        $data['title'] = trim($result['title']);
+        $data['order_id'] = trim($result['order_id']);
+        $data['child_id'] = trim($result['child_id']);
+        $data['content'] = $result['content'];
+        $data['url'] = '?child=' . $data['child_id'] . '&id=' . $data['order_id'];
+        $data['status'] = trim($result['status']);
 
 
 //调用本模型中的新增方法
         $result = Content::editData($data, 1);
 
 
-        if (array_key_exists('affected', $result) ) {
-            $result[]=['flag' => 1];
+        if (array_key_exists('affected', $result)) {
+            $result[] = ['flag' => 1];
 
-        }else {$result[]=['flag' => -1];}
+        } else {
+            $result[] = ['flag' => -1];
+        }
 
         return json_encode($result);//以json格式输出;
     }
@@ -71,111 +73,120 @@ $data['url']='?child='.$data['child_id'].'&id='.$data['order'];
 
         $where = 'child_id=' . $cId;
 
-        $data = Content::selectData($where, 1);
+        $data = CategoryList::selectData($where, 1);
         return $this->fetch('', ['data' => $data]);
     }
 
 //博客分类内容列表
+
     /**
      * AJAX分页
      */
     public function contentList(Request $request)
     {
-        $cId=1111;
+        $cId = 1111;
         $result = $request->get();
-        if (array_key_exists('cId',$result)) {
+        if (array_key_exists('cId', $result)) {
             $cId = $result['cId'];
         }
-
-        $where = 'child_id=' . $cId;
-        $data = Content::selectData($where, 0);
-
-        //计算总数量
-        $count=count($data);
-
-        if (!is_array($data)) { //记录为0
-
-            $data='';
-
+        //构造查询条件
+        $map = [
+            'child_id' => $cId];
+        $model = new Content;
+        //查询总文章数量
+        $count = $model->where($map)->count();
+        if (empty($count)) {
+            $data = '';
             return $data;
+        } else {
 
-        }else{  //查询到记录
-
-
-            //设置获取每页的条数
-            $limits = 1;
+            //设置获取每页的文章条数
+            $limits = 2;
 
             //当前页码
-            $Nowpage = array_key_exists('page',$result) ? $result['page']: 1;
+            $Nowpage = array_key_exists('page', $result) ? $result['page'] : 1;
 
-            //计算起始条数
-            $start= ($Nowpage-1)*$limits;
-
-
-                //截取当前页的数据
-                $data=array_slice($data,$start,$limits);
+            //计算起始文章条数
+            $start = ($Nowpage - 1) * $limits;
+            $data = $model->where($map)->limit($start, $limits)->all();
 
 
-
-
+            //循环输出原始数据
+            foreach ($data as $key => $value) {
+                $data[$key] = $data[$key]->getdata();
+            }
 
             $this->assign('limits', $limits); //每页字符数
             $this->assign('count', $count); //总字符
 
-            if (array_key_exists('page',$result)) {
+            if (array_key_exists('page', $result)) {
 
 
-                return $data;
+                return json($data);
             }
         }
 
 
         $this->assign('child_id', $cId); //本类id
-       return $this->fetch('',['data'=>$data]);
+        return $this->fetch('', ['data' => $data]);
     }
 
     //博客内容展示
+
     /**
      * AJAX分页
      */
     public function contentShow(Request $request)
     {
+        //初始返回参数
+        $status = 0;
+        $result = '';
+
         //获取文章编号，查询出内容
-        $result = $request->get();
-        $child=$result['child'];
-        $id=$result['id'];
-        $where = 'child_id=' . $child.' and order_id='.$id;
-        $data = Content::selectData($where, 1);
+        $data = $request->param();
+        $child = $data['child'];
+        $id = $data['id'];
+
+//构造查询条件
+        $map = [
+            'child_id' => $child,
+            'order_id' => $id,
+        ];
+
+        $model = new Content;
+        //查询此文章数据
+        $result = $model->where($map)->find();
+        if (empty($result)) {
+            $status = 0;
+            $result = '暂无查询记录';
+            return ['status' => $status, 'result' => $result];
+        } else {
+            $status = 1;
+            $value = $result->getData();
+            //将文章内容以分页符为标记，分隔为数组
+            $string = $value['content'];
+            $result = explode("|page|", $string);
+
+            //计算总页数
+            $count = count($result);
+            //当前页码
+            $Nowpage = array_key_exists('page', $data) ? $data['page'] : 1;
+
+            //输出当前页数据
+            $result = $result[$Nowpage - 1];
+
+            $this->assign('limits', 1); //每页显示一个分页符内容
+            $this->assign('count', $count); //总页数
+
+            if (array_key_exists('page', $data)) {
+
+                return json(['status' => $status, 'result' => $result]);
+            }
+            return $this->fetch('', ['data' => $value]);
 
 
-        //当前页码
-        $Nowpage = array_key_exists('page',$result) ? $result['page'] : 1;
-
-        //设置获取每页的汉字数
-        $limits = 5;
-        //每页字符数
-        $limits =$limits*3;
-        //计算总页面字符长度
-        $count = strlen($data['content']);
-
-        //计算起始字符数
-        $start= ($Nowpage-1)*$limits;
-        //截取当前页的字符
-        $data['content'] = substr($data['content'],$start,$limits);
-
-
-        $this->assign('limits', $limits); //每页字符数
-        $this->assign('count', $count); //总字符
-
-        if (array_key_exists('page',$result)) {
-
-           return json($data);
         }
-           return $this->fetch('',['data'=>$data]);
-
-
     }
-
 
 
     //删除分类
@@ -184,16 +195,15 @@ $data['url']='?child='.$data['child_id'].'&id='.$data['order'];
 
         $id = 'child_id';
         $arr = json_decode($data, true);
-        $cId=$arr['id'];
-        $result = MqBlogCategory::editData('', $id,$cId,2);
-        $data=$result['affected'];
+        $cId = $arr['id'];
+        $result = MqBlogCategory::editData('', $id, $cId, 2);
+        $data = $result['affected'];
         return json_encode($data);//以json格式输出
     }
 
 
-
     //博客分类编辑
-    public function blogCategoryEdit($cId=1,$flag=0)
+    public function blogCategoryEdit($cId = 1, $flag = 0)
     {
 
         //url get获取为字符串，转换成整数型
@@ -206,7 +216,7 @@ $data['url']='?child='.$data['child_id'].'&id='.$data['order'];
                 $remark = trim($_POST['class-demo']);
                 $child_id = $parentId * 10 + $order;
                 $value = $child_id;
-                $cId=$child_id;
+                $cId = $child_id;
                 $data = ['child_id' => $child_id, 'name' => $name, 'remark' => $remark, 'parent_id' => $parentId, 'order' => $order];
                 $id = 'child_id';
                 $result = MqBlogCategory::editData($data, $id, $value, 3);
@@ -239,25 +249,27 @@ $data['url']='?child='.$data['child_id'].'&id='.$data['order'];
      * */
     public function getTreeData()
     {   //方法：获得树数据
-        $where='child_id LIKE '."'11%'";
-        $nodeArr = CategoryList::selectData($where,2);
+        $where = 'child_id LIKE ' . "'11%'";
+        $nodeArr = CategoryList::selectData($where, 2);
 
         return json_encode($nodeArr);//以json格式输出
 
     }
 
 
-public function test(){
-    $result=MqBlogCategory::selectOne($id=1);
-    dump($result);
-}
+    public function test()
+    {
+        $result = MqBlogCategory::selectOne($id = 1);
+        dump($result);
+    }
 
-    public function test1(){
-        $one=11;
-        $where='child_id='.$one;
-     //   $result = MqBlogCategory::selectData();
-        $data=['child_id'=>221];
-       $result = MqBlogCategory::editData($data,'child_id',2);
+    public function test1()
+    {
+        $one = 11;
+        $where = 'child_id=' . $one;
+        //   $result = MqBlogCategory::selectData();
+        $data = ['child_id' => 221];
+        $result = MqBlogCategory::editData($data, 'child_id', 2);
         dump($result);
     }
 

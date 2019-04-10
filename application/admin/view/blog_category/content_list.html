@@ -17,11 +17,8 @@
 <div id="content-page"></div><!-- 被分页内容容器 -->
 
 
-<div id="layer-page"></div> <!--分页容器-->
+<div id="layer-page" style="padding-left: 35%"></div> <!--分页容器-->
 
-<div style="margin-left: 30px">
-    <button class="btn btn-primary " onclick="add_content()" type="button">新增文章</button>
-</div>
 {/block}
 
 
@@ -133,16 +130,6 @@
             contentShow($(this).attr("value"));
         })
 
-        //添加博客内容
-        function add_content() {
-            var cId = {$child_id};
-
-            if (cId == "") {
-                layer.alert("请选择一个博客分类");
-                return;
-            }
-            window.location.href = "__URL__/blog_category/addContent?cId=" + cId;
-        }
 
 </script>
 {/block}

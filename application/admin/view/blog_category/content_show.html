@@ -20,7 +20,7 @@
 </div>
 
 
-<div id="paginte"></div> <!--分页容器-->
+<div id="paginte" style="padding-left: 35%"></div> <!--分页容器-->
 
 {/block}
 
@@ -52,14 +52,15 @@
                 id: GetQueryString('id'),
                 page: curr || 1
             }, function (data) {
+
                 $(".spiner-example").css('display', 'none'); //数据加载完关闭动画
-                if (data == '') {
+                if (data.status==0) {
 
                     //传回当前页内容，将其渲染模板
                     $("#returndata").html('<td colspan="20" style="padding-top:10px;padding-bottom:10px;font-size:16px;text-align:center">暂无数据</td>');
                 } else {
 
-                    html = '<div class="panel-body">' + data.content + '</div>';
+                    html = '<div class="panel-body">' + data.result + '</div>';
                     $("#returndata").html(html);
 
                     //执行一个laypage实例

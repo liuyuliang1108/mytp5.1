@@ -9,15 +9,17 @@
 
 	<tr class="col-md-12">
 
-		<td width="200" class="col-md-2"  >
+		<td class="col-md-8">
 			<ul id="bcTree" class="ztree" style="display: inline-block">
 
 			</ul>
 
 		</td>
+		<td class="col-md-2">
+			<button class="btn btn-primary " onclick="add_content()" id="checkNodeId" value='' type="button">新增文章</button>
+		</td>
 
-
-		<td class="col-md-10"style="text-align: center"><iframe ID="cIframe" class="col-md-12" Name="cIframe" FRAMEBORDER=0 SCROLLING=AUTO width=100%  height=390px SRC="__URL__/blog_category/contentList"></iframe></td>
+		<td class="col-md-12"style="text-align: center"><iframe ID="cIframe" class="col-md-12" Name="cIframe" FRAMEBORDER=0 SCROLLING=AUTO width=100%  height=390px SRC="__URL__/blog_category/contentList"></iframe></td>
 
 	</tr>
 </table>
@@ -58,10 +60,10 @@
 				/*获取当前被选中的节点数据集合 返回json格式*/
 				var nodes = zTreeObj.getSelectedNodes();
 				//这里的逻辑是为修改和查看所预备的hidden
+				//给jquery对象赋值
 			$("#checkNodeId").val(treeNode.id);
 				$("#checkNodePid").val(nodes[0].pId);
 				var cId =treeNode.id;
-
 				//默认进入查看页面
 				content_list(0,cId);
 			}
@@ -151,7 +153,16 @@
 			});
 		});
 	}
+	//添加博客内容
+	function add_content() {
 
+		var cId = $("#checkNodeId").val();
+		if (cId == "") {
+			layer.alert("请选择一个博客分类");
+			return;
+		}
+		window.location.href = "__URL__/blog_category/addContent?cId=" + cId;
+	}
 </script>
 </body>
 </html>

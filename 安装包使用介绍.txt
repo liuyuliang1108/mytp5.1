@@ -379,6 +379,8 @@ ALTER TABLE category_list DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 ps -ef|grep mysql
 character_set_results=utf8
+init_connect='SET collation_connection=utf8_general_ci'
+init_connect='SET NAMES utf8'
 show variables like '%character%';
 sudo service mysqld restart
 service mysqld start
@@ -405,6 +407,7 @@ character_set_results        //客户机显示所采用的字符集
 
 http://blog.chinaunix.net/uid-29792372-id-5762913.html
 
+<<<<<<< Updated upstream
 chown -R mysql:mysql /usr/local/mysql/var
 132.232.50.253/index.php/admin/category/index
 cp -a /phpstudy/www/phpmyadmin .
@@ -452,3 +455,8 @@ location ~ [^/]\.php(/|$) {
 
 -A INPUT -p tcp -m tcp --dport 3306 -j ACCEPT
 
+=======
+132.232.50.253
+ftp://liuyuliang1108@132.232.50.253/tp5.1/application
+wget http://hk1.php.net/get/php-7.0.12.tar.gz/from/this/mirror
+>>>>>>> Stashed changes
