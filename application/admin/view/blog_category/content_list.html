@@ -120,14 +120,14 @@
 
 
         //展示内容
-        function contentShow(url) {
+        function articleShow(url) {
             var url = url;
-            window.location.href = "__URL__/blog_category/contentShow" + url;
+            window.location.href = "__URL__/blog_category/articleShow" + url;
         }
 
         //动态给元素绑定事件
         $("#content-page").on('click', '.item', function () {
-            contentShow($(this).attr("value"));
+            articleShow($(this).attr("value"));
         })
 
 

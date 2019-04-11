@@ -163,7 +163,7 @@ public function delArticle(Request $request){
     /**
      * AJAX分页
      */
-    public function contentShow(Request $request)
+    public function articleShow(Request $request)
     {
         //初始返回参数
         $status = 0;

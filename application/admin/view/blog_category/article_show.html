@@ -45,7 +45,7 @@
         //ajax与后台传送数据，传入当前页码，及文章编号；
         //传回当前页内容，将其渲染模板，并传回总页数等数据，执行一个laypage实例
         function Ajaxpage(curr) {
-            $.getJSON("__URL__/blog_category/contentShow", {
+            $.getJSON("__URL__/blog_category/articleShow", {
                 child_id: {$data.child_id},
                 order_id: {$data.order_id},
                 page: curr || 1
