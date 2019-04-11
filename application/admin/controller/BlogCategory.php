@@ -49,7 +49,7 @@ class BlogCategory extends Base
         $data['order_id'] = trim($result['order_id']);
         $data['child_id'] = trim($result['child_id']);
         $data['content'] = $result['content'];
-        $data['url'] = '/child_id/' . $data['child_id'] . '/order_id/' . $data['order_id'];
+        $data['url'] = '?child_id=' . $data['child_id'] . '&order_id=' . $data['order_id'];
         $data['status'] = trim($result['status']);
 
 
