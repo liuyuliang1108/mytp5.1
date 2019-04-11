@@ -460,3 +460,5 @@ location ~ [^/]\.php(/|$) {
 ftp://liuyuliang1108@132.232.50.253/tp5.1/application
 wget http://hk1.php.net/get/php-7.0.12.tar.gz/from/this/mirror
 >>>>>>> Stashed changes
+return json_encode($result);//以json格式输出;
+var data = JSON.parse(data);

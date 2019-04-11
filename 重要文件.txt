@@ -1,3 +1,4 @@
+
 基础阶段  重点：linux nginx mysql php熟练
 linux：基本命令，操作，启动，基本服务配置，包括rpm安装文件，各种服务配置
 会写简单的shell脚本，和awk/sed脚本命令
@@ -40,7 +41,34 @@ cgi.force_redirect = 0
 
 git://github.com/top-think/think.git
 
+1.下载安装
 
+查看配置
+git config --system --list
+git config --global  --list
+git config --local  --list
+git config --global user.name "liuyuliang1108"
+git config --global user.email 563021874@qq.com
+再配置代理（http.proxy) 公司
+
+配置ssh 检查SSH keys是否存在
+//查看id_rsa.pub 或 id_dsa.pub是否存在
+ls -al ~/.ssh
+
+生成新的ssh key
+ssh-keygen -t rsa
+
+检查是否成功
+//查看id_rsa.pub 或 id_dsa.pub是否存在
+ls -al ~/.ssh
+
+查看公钥
+cat ~/.ssh/id_rsa.pub 
+复制到github ssh管理中
+
+cd /home/wwwroot/default
+git clone git@github.com:liuyuliang1108/mytp5.1.git tp5.1
+//clone下来的会自动创建Git版本库 显示remote
 
 git init//创建一个git版本库
 git remote add origin https://github.com/liuyuliang1108/mytp5.1.git//建立与远程库连接

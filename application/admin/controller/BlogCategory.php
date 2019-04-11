@@ -49,24 +49,51 @@ class BlogCategory extends Base
         $data['order_id'] = trim($result['order_id']);
         $data['child_id'] = trim($result['child_id']);
         $data['content'] = $result['content'];
-        $data['url'] = '?child=' . $data['child_id'] . '&id=' . $data['order_id'];
+        $data['url'] = '/child_id/' . $data['child_id'] . '/order_id/' . $data['order_id'];
         $data['status'] = trim($result['status']);
 
 
 //调用本模型中的新增方法
-        $result = Content::editData($data, 1);
-
-
-        if (array_key_exists('affected', $result)) {
-            $result[] = ['flag' => 1];
-
-        } else {
-            $result[] = ['flag' => -1];
+        $model= new Content;
+        if (!$data['status']==2) {//新增
+            $result = $model->save($data);
+        }else{//编辑
+            $map=[
+                'child_id' => $data['child_id'],
+                'order_id' => $data['order_id'],
+            ];
+            $result = $model->save($data,$map);
         }
 
-        return json_encode($result);//以json格式输出;
-    }
+        if ($result) {
+            $result = ['flag' => 1];
+        }else{
+            $result = ['flag' => -1];
+        }
+        return json($result);//以json格式输出;
 
+    }
+public function delArticle(Request $request){
+    //获取文章编号，查询出内容
+    $data = $request->param();
+    $child = $data['child_id'];
+    $id = $data['order_id'];
+
+//构造查询条件
+    $map = [
+        'child_id' => $child,
+        'order_id' => $id,
+    ];
+    $model = new Content;
+    //查询总文章数量
+    $result = $model->where($map)->delete();
+    if ($result) {
+        $result = ['flag' => 1];
+    }else{
+        $result = ['flag' => -1];
+    }
+    return json($result);//以json格式输出;
+}
     //添加博客
     public function addContent($cId)
     {
@@ -144,8 +171,8 @@ class BlogCategory extends Base
 
         //获取文章编号，查询出内容
         $data = $request->param();
-        $child = $data['child'];
-        $id = $data['id'];
+        $child = $data['child_id'];
+        $id = $data['order_id'];
 
 //构造查询条件
         $map = [
@@ -187,8 +214,33 @@ class BlogCategory extends Base
 
         }
     }
+public function editArticle(Request $request)
+{
+    //获取文章编号，查询出内容
+    $data = $request->param();
+    $child = $data['child_id'];
+    $id = $data['order_id'];
 
+//构造查询条件
+    $map = [
+        'child_id' => $child,
+        'order_id' => $id,
+    ];
 
+    $model = new Content;
+    //查询此文章数据
+    $result = $model->where($map)->find();
+    if (empty($result)) {
+        $status = 0;
+        $result = '暂无查询记录';
+        return ['status' => $status, 'result' => $result];
+    } else {
+        $status = 1;
+        $value = $result->getData();
+        return $this->fetch('', ['data' => $value]);
+
+    }
+}
     //删除分类
     public function categoryDel($data)
     {

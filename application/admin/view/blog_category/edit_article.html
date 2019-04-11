@@ -17,7 +17,7 @@
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>文章标题：</label>
             <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="{$data.name}" placeholder="" id="articletitle" name="title">
+                <input type="text" class="input-text" value="{$data.title}" placeholder="" id="articletitle" name="title">
             </div>
         </div>
 
@@ -30,13 +30,13 @@
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-2">排序值：</label>
             <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="1" placeholder="" id="articlesort" name="order_id">
+                <input type="text" class="input-text" value="{$data.order_id}" placeholder="" id="articlesort" name="order_id">
             </div>
         </div>
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-2">关键词：</label>
             <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="" placeholder="" id="keywords" name="keywords">
+                <input type="text" class="input-text" value="{$data.keywords}" placeholder="" id="keywords" name="keywords">
             </div>
         </div>
 
@@ -48,11 +48,14 @@
         </div>
 
         <input type="hidden" id="input-status" name="status" value="" >
-
+        <!--新增的div-->
+        <div id="contentdiv"  style="display:none">
+            {$data.content}
+        </div>
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-2">文章内容：</label>
             <div class="formControls col-xs-8 col-sm-9">
-                <textarea name="content" id="editor" placeholder="Balala" autofocus></textarea>
+                <textarea name="content" id="editor"  placeholder="Balala" autofocus></textarea>
             </div>
 
         </div>
@@ -60,8 +63,7 @@
         <div class="row cl">
 
             <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
-                <button onClick="article_save(0);" class="btn btn-primary radius" type="submit"><i class="Hui-iconfont"></i> 保存并提交审核</button>
-                <button onClick="article_save(1);" class="btn btn-secondary radius" type="button"><i class="Hui-iconfont"></i> 保存草稿</button>
+                <button onClick="article_save(2);" class="btn btn-primary radius" type="submit"><i class="Hui-iconfont"></i> 保存修改</button>
                 <button onClick="removeIframe();" class="btn btn-default radius" type="button">取消</button>
             </div>
         </div>
@@ -165,23 +167,44 @@
 
                     });
 
+                    $(function() {
+                        var editor,toolbar;
 
-                    Simditor.locale = 'zh-CN';
-                    toolbar = ['title', 'bold', 'italic', 'underline', 'strikethrough', 'fontScale', 'color', '|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent', 'alignment'];
+                        var pre="";
 
-                    var editor = new Simditor({
-                        textarea: $('#editor'),
-
-                        toolbar: toolbar,
-                        pasteImage: true,//是否允许粘帖上传图片
-                        defaultImage: '<%=basePath%>asset/public/js/simditor/images/image.png',
-                        upload : {
-                            url : '<%=basePath%>article/qiniuUploadImg.action?Math.random()', //文件上传的接口地址
-                            params: null, //键值对,指定文件上传接口的额外参数,上传的时候随文件一起提交
-                            fileKey: 'ImageFile', //服务器端获取文件数据的参数名
-                            connectionCount: 3,
-                            leaveConfirm: '正在上传文件'
+                        //获取div中的pre的个数
+                        var presize=$("#contentdiv pre").length;
+                        //遍历pre
+                        for(var i=0;i<presize;i++){
+                            pre=$("#contentdiv pre").eq(i).text();
+                            $("#contentdiv pre").eq(i).text(pre);
                         }
+                        //装填到textarea中
+                        $("#editor").html($("#contentdiv").html());
+
+
+
+
+                        Simditor.locale = 'zh-CN';
+                        toolbar = ['title', 'bold', 'italic', 'underline', 'strikethrough', 'fontScale', 'color', '|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent', 'alignment'];
+
+                        editor = new Simditor({
+                            textarea: $('#editor'),
+
+                            toolbar: toolbar,
+                            pasteImage: true,//是否允许粘帖上传图片
+                            defaultImage: '<%=basePath%>asset/public/js/simditor/images/image.png',
+                            upload : {
+                                url : '<%=basePath%>article/qiniuUploadImg.action?Math.random()', //文件上传的接口地址
+                                params: null, //键值对,指定文件上传接口的额外参数,上传的时候随文件一起提交
+                                fileKey: 'ImageFile', //服务器端获取文件数据的参数名
+                                connectionCount: 3,
+                                leaveConfirm: '正在上传文件'
+                            }
+                        });
+
+
+
                     });
                 </script>
                 <!--/请在上方写此页面业务相关的脚本-->

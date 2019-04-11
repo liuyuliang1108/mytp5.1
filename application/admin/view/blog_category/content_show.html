@@ -21,7 +21,12 @@
 
 
 <div id="paginte" style="padding-left: 35%"></div> <!--分页容器-->
-
+<td class="col-md-2">
+    <button class="btn btn-primary " onclick="edit_article()"  value='' type="button">修改文章</button>
+</td>
+<td class="col-md-2">
+    <button class="btn btn-primary " onclick="del_article()"  value='' type="button">删除文章</button>
+</td>
 {/block}
 
 
@@ -29,13 +34,6 @@
 <script src="__ADMIN__/lib/layui/layui.js" charset="utf-8"></script>
 <script>
 
-    <!--获取url参数-->
-    function GetQueryString(name) {
-        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-        var r = window.location.search.substr(1).match(reg);
-        if (r != null) return unescape(r[2]);
-        return null;
-    }
 
     //使用分页模块
     layui.use('laypage', function () {
@@ -48,8 +46,8 @@
         //传回当前页内容，将其渲染模板，并传回总页数等数据，执行一个laypage实例
         function Ajaxpage(curr) {
             $.getJSON("__URL__/blog_category/contentShow", {
-                child: GetQueryString('child'),
-                id: GetQueryString('id'),
+                child_id: {$data.child_id},
+                order_id: {$data.order_id},
                 page: curr || 1
             }, function (data) {
 
@@ -81,11 +79,38 @@
                     });
                 }
             });
-
-
         }
     });
 
+    //打开编辑文章页面
+    function edit_article() {
+        window.location.href = "__URL__/blog_category/editArticle?child_id=" + {$data.child_id}+'&order_id='+{$data.order_id};
+    }
+
+    //ajax删除文章
+    function del_article() {
+
+            $.ajax({
+                url: '__URL__/blog_category/delArticle',
+                data: {"child_id": {$data.child_id},
+                "order_id":{$data.order_id}},
+                type: 'get',
+                success: function (data) {
+                    //如果php处理成功，调用此方法
+
+                    if (data.flag == 1) {
+
+                        layer.msg('删除成功!', {icon: 1, time: 1000});
+                        window.location.href ="__URL__/blog_category/contentList?cId=" + {$data.child_id};
+
+                    } else {
+                        layer.msg('删除失败!', {icon: 1, time: 1000});
+                    }
+                }
+
+            });
+
+    }
 </script>
 {/block}
 
