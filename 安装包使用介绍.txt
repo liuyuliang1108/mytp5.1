@@ -462,3 +462,16 @@ wget http://hk1.php.net/get/php-7.0.12.tar.gz/from/this/mirror
 >>>>>>> Stashed changes
 return json_encode($result);//以json格式输出;
 var data = JSON.parse(data);
+
+
+git rm -r --cached .                //清空缓存
+
+git add .                           //重新提交
+
+git commit -m "update .gitignore"   //暂存本地
+
+git push                            //推送远端
+
+以前在忽略，现在要不忽略，会继续忽略，清除缓存后才会生效
+
+以前没忽略，现在忽略了，会继续没忽略，如果里面为空的话，会将现在的文件删除，清除缓存后才不会删除
