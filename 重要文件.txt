@@ -72,9 +72,14 @@ git clone git@github.com:liuyuliang1108/mytp5.1.git tp5.1
 
 git init//创建一个git版本库
 git remote add origin https://github.com/liuyuliang1108/mytp5.1.git//建立与远程库连接
+git remote add origin https://github.com/liuyuliang1108/myconfig.git
+git remote -v 命令查看是否生效
+
 git add .//文件名或. 到缓存区
 git commit -m "描述"上传到本地库
 
+git push <远程主机名> <本地分支名>:<远程分支名>
+git push origin master:win-php
 git push -u origin master//应该是推送到主支（master）
 
 再 git clone url 指定文件夹名
