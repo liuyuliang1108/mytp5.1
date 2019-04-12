@@ -122,7 +122,10 @@
         //展示内容
         function articleShow(url) {
             var url = url;
-            window.location.href = "{:url('admin/blog_category/articleShow',[],false)}" +url;
+
+var str=trimRight("{:url('admin/blog_category/articleShow',[],false)}");
+console.log(str);
+            window.location.href = str +url;
         }
 
         //动态给元素绑定事件
