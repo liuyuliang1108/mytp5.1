@@ -19,7 +19,7 @@ return [
         '__dir__'   => [],
         'controller'   => [],
         'model'   => [],
-        'view'   => ['config_manage/config_list'],
+        'view'   => [],
     ],
     // 其他更多的模块定义
 ];

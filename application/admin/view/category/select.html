@@ -39,9 +39,35 @@
         </div>
 
         <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">创建类型：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" name="type" size="1">
+                    <option value="0" {eq name="$data.type" value="0"}
+                            selected
+                            {/eq}>module</option>
+                    <option value="1" {eq name="$data.type" value="1"}
+                            selected
+                            {/eq}>controller</option>
+                    <option value="2" {eq name="$data.type" value="2"}
+                            selected
+                            {/eq}>model</option>
+                    <option value="3" {eq name="$data.type" value="3"}
+                            selected
+                            {/eq}>action not view</option>
+                    <option value="4" {eq name="$data.type" value="4"}
+                            selected
+                            {/eq}>action and view</option>
+                    <option value="5" {eq name="$data.type" value="5"}
+                            selected
+                            {/eq}>category</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row cl">
             <label class="form-label col-xs-4 col-sm-2">分类描述remark：</label>
             <div class="formControls col-xs-8 col-sm-9">
-                <textarea name="remark" cols="" rows="" class="textarea" placeholder="{$data.remark}" datatype="*10-100"
+                <textarea id="textarea_cate" name="remark" cols="" rows="" class="textarea" placeholder="" datatype="*10-100"
                           dragonfly="true" nullmsg="备注不能为空！" onKeyUp="$.Huitextarealength(this,200)"></textarea>
                 <p class="textarea-numberbar"><em class="textarea-length">0</em>/200</p>
             </div>
@@ -104,14 +130,16 @@
             </div>
         </div>
 
-        <input type="hidden"  value="" placeholder="" id="input-edit" name="edit">
+        <!--隐藏提交id-->
+        <input type="hidden"  value="{$data.id}"  name="id">
+        <!--隐藏提交id-->
 
         <div class="row cl">
             <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
-                <button  type="button" class="btn btn-success" id=""  onclick="submit_update(1)"><i
+                <button  type="button" class="btn btn-success" id=""  onclick="submit_update(0)"><i
                         class="icon-save"></i> 修改基本信息
                 </button>
-                <button type="button"  class="btn btn-success" id=""  onclick="submit_update(0)"><i
+                <button type="button"  class="btn btn-success" id=""  onclick="submit_update(1)"><i
                         class="icon-save"></i> 修改节点
                 </button>
                 <button onClick="layer_close();" class="btn btn-default radius" type="button">
@@ -130,35 +158,76 @@
 <!--请在下方写此页面业务相关的脚本-->
 
 <script type="text/javascript">
-
+    $(function() {
+    $("#textarea_cate").val("{$data.remark}");
+});
     //Ajax请求控制器中的方法完成数据的增加
     function submit_update($key) {
         if ($key){
-            $('#input-edit').val(1);
-        } else {
-            $('#input-edit').val(2);
+            //验证child_id是否已存在
+            var formData = $("#form-category-update").serialize();
+
+            //serialize() 方法通过序列化表单值，创建 URL 编码文本字符串
+            $.ajax({
+                url: '__URL__/category/addVerify',
+                data: formData,
+                type: 'post',
+                success: function (data) {
+                    console.log(data.flag);
+                    var data = JSON.parse(data);
+                    if (data.flag == -1) {
+
+                        layer.msg('child_id已存在,请重新输入!', {icon: 2, time: 1000});
+                        return;
+                    }else {
+                        var formData = $("#form-category-update").serialize();
+                        $.ajax({
+                            url: '__URL__/category/addSave',
+                            data: formData,
+                            type: 'post',
+                            success: function (data) {
+
+                                var data = JSON.parse(data);
+
+
+                                if (data.flag == -1) {
+                                    layer.msg('修改失败!', {icon: 2, time: 1000});
+                                    return;
+                                } else {
+                                    layer.msg('修改成功!', {icon: 1, time: 1000});
+                                    window.location.reload();
+                                }
+                            }
+
+                        });
+                    }
+                }
+
+            });
+
+        }else{
+            var formData = $("#form-category-update").serialize();
+            $.ajax({
+                url: '__URL__/category/addSave',
+                data: formData,
+                type: 'post',
+                success: function (data) {
+
+                    var data = JSON.parse(data);
+
+
+                    if (data.flag == -1) {
+                        layer.msg('修改失败!', {icon: 2, time: 1000});
+                        return;
+                    } else {
+                        layer.msg('修改成功!', {icon: 1, time: 1000});
+                        window.parent.location.reload();
+                    }
+                }
+
+            });
         }
 
-        var formData = $("#form-category-update").serialize();
-        $.ajax({
-            url: '__URL__/category/addSave',
-            data: formData,
-            type: 'post',
-            success: function (data) {
-
-                var data = JSON.parse(data);
-
-
-                if (data.flag == -1) {
-                    layer.msg('修改失败!', {icon: 2, time: 1000});
-                    return;
-                } else {
-                    layer.msg('修改成功!', {icon: 1, time: 1000});
-                    window.parent.location.reload();
-                }
-            }
-
-        });
     }
 
 </script>

@@ -24,7 +24,7 @@ class Category extends Base //分类管理控制器
 
         $data = getTree($data, 0);
 
-        $this->view->assign('title','后台管理系统v1.0');
+        $this->view->assign('title', '后台管理系统v1.0');
 
         return $this->fetch('', ['menu' => $data]);
     }
@@ -51,13 +51,12 @@ class Category extends Base //分类管理控制器
 
     public function select($cId = 11, $flag = 0)//flag为0是查询操作，为1是新增查询操作
     {
+
+        $data =CategoryList::where('child_id',$cId)->find();
         if ($flag == 0) {
-            $where = 'child_id=' . $cId;
-            $data = CategoryList::selectData($where, 1);
             return $this->fetch('', ['data' => $data]);
         } else {
-            $where = 'child_id=' . $cId;
-            $data = CategoryList::selectData($where, 1);
+
             return $this->fetch('add', ['data' => $data]);
         }
 
@@ -93,136 +92,85 @@ class Category extends Base //分类管理控制器
 
     public function addSave(Request $request)//新增方法，以及修改方法//依赖注入request对象
     {
-
-        $data = $request->post();
+        //获取请求参数
+        $data = $request->param();
+        //请求参数处理
         $data['url'] = humpToLine($data['controller']) . '/' . $data['action'] . '.html';
-        $data['postman'] = '/'.$data['module'].'/'.humpToLine($data['controller']) . '/' . $data['action'] . '.html';
-        $id = 'child_id';
+        $data['postman'] = '/' . $data['module'] . '/' . humpToLine($data['controller']) . '/' . $data['action'] . '.html';
         $data['parent_id'] = intval($data['parent_id']);
         $data['order'] = intval($data['order']);
-        $data[$id] = $data['parent_id'] * 10 + $data['order'];
-        $value = $data[$id];
+        $data['child_id'] = $data['parent_id'] * 10 + $data['order'];
+
 
         $data['view'] = humpToLine($data['action']);
 
-        if (array_key_exists('demo-radio', $data)){
-            $radio=$data['demo-radio'];
-            unset($data['demo-radio']);
-        }
+//调用本模型中的新增方法
 
 
-        if (!array_key_exists('edit', $data)) {//增加模式
+        if (array_key_exists('id', $data)) {//调用本模型中的更新方法
+            $category =new CategoryList;
+            $result = $category->isUpdate()->save($data);
 
-            //调用本模型中的新增方法
-            $result = CategoryList::editData($data, $id, $value, 1);
+        }else{//调用本模型中的新增方法
+            $category =new CategoryList;
+            $result = $category->save($data);
+            switch ($data['type']) {
 
-            if ($result['exist']) {
-                return '该child_id已存在，重新输入';
-            } else {    //调用本模型中的创建方法
-
-                if (!empty($data['action'])) {
-                    if ($radio == 'index') {    //创建index方法
-
+                case 0:
+                    {
+                        //创建模块module
+                        $result['create'] = CategoryList::createTool($data, 4);
+                        break;
+                    }
+                case 1:
+                    {
                         //创建控制器
                         $result['create'] = CategoryList::createTool($data, 1);
-
-
-                    } elseif ($radio == 'server') { //创建不带视图的方法
-
+                        break;
+                    }
+                case 2:
+                    {
+                        ///创建模型model
+                        $result['create'] = CategoryList::createTool($data, 3);
+                        break;
+                    }
+                case 3:
+                    {//创建不带视图方法
                         //创建控制器
                         $result['create'] = CategoryList::createTool($data, 1);
-
-                    } else {                                 //创建带视图view的方法
-
-                            //创建控制器
+                        break;
+                    }
+                case 4:
+                    {//创建带视图方法
+                        //创建控制器
                         $result['create'] = CategoryList::createTool($data, 1);
                         $build = include APP_PATH . 'build.php';
-                            $result = Build::run($build);
+                        $result = Build::run($build);
 
                         //创建视图
                         $result['create'] = CategoryList::createTool($data, 2);
-
+                        break;
                     }
-                } elseif (empty($data['controller']) && !empty($data['model'])) {
+            }
 
-                    //创建模型model
-                    $result['create'] = CategoryList::createTool($data, 3);
-
-
-                } elseif (empty($data['controller']) && empty($data['model'])) {
-                    //创建模块module
-                    $result['create'] = CategoryList::createTool($data, 4);
-                }
-
-
+            if (!$data['type'] == 5) {
                 if ($result['create']) {
                     $build = include APP_PATH . 'build.php';
                     //生成文件
                     Build::run($build);
                 }
-
-
-
-
-
-                if (array_key_exists('affected', $result) ) {
-                    $result[]=['flag' => 1];
-
-                }else {$result[]=['flag' => -1];}
-                return json_encode($result);//以json格式输出
-
             }
 
-
-
-
-
-        } else {                  //修改update模式
-            switch ($data['edit']) {
-
-                case 1:
-                    {
-
-                        //修改基本信息
-                        $flag = 3;
-                        unset($data['edit']);
-
-                        $result = CategoryList::editData($data, $id, $value, $flag);
-
-                        if (array_key_exists('affected', $result) ) {
-                            $result['flag']=1;
-
-                        }else {
-                            $result['flag']=-1;
-                        }
-
-                        return json_encode($result);//以json格式输出
-                        break;
-                    }
-
-                case 2:
-                    {
-
-                        //修改节点等信息
-                        $flag = 4;
-
-                        unset($data['edit']);
-                        $result = CategoryList::editData($data, $id, $value, $flag);
-
-                        if (array_key_exists('affected', $result) ) {
-                            $result['flag']=1;
-
-                        }else {
-                            $result['flag']=-1;
-                        }
-                        return json_encode($result);//以json格式输出
-                        break;
-                    }
-
-            }
 
         }
 
+        if ($result) {
+            $result = ['flag' => 1];
+
+        } else {
+            $result = ['flag' => -1];
+        };
+        return json_encode($result);//以json格式输出
     }
 
 

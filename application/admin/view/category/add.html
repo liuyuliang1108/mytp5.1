@@ -39,6 +39,20 @@
         </div>
 
         <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-2">创建类型：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+        <select class="select" name="type" size="1">
+            <option value="0">module</option>
+            <option value="1">controller</option>
+            <option value="2">model</option>
+            <option value="3">action not view</option>
+            <option value="4">action and view</option>
+            <option value="5">category</option>
+        </select>
+        </div>
+        </div>
+
+        <div class="row cl">
             <label class="form-label col-xs-4 col-sm-2">分类描述remark：</label>
             <div class="formControls col-xs-8 col-sm-9">
                 <textarea name="remark" cols="" rows="" class="textarea" placeholder="{$data.remark}" datatype="*10-100"
@@ -71,41 +85,10 @@
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>方法名称action：</label>
             <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="" placeholder="" id="" name="action">
+                <input type="text" class="input-text" value="index" placeholder="" id="" name="action">
             </div>
         </div>
 
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>方法类型action：</label>
-
-            <div class="radio-box">
-                <input type="radio" id="radio-1" name="demo-radio" value="index" checked>
-                <label for="radio-2">index方法</label>
-            </div>
-            <div class="radio-box">
-                <input type="radio" id="radio-2" name="demo-radio" value="server">
-                <label for="radio-2">服务类方法</label>
-            </div>
-            <div class="radio-box">
-                <input type="radio" id="radio-3" name="demo-radio" value="view">
-                <label for="radio-1">视图类方法</label>
-            </div>
-        </div>
-
-
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>视图模板名称view：</label>
-            <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="" placeholder="" id="" name="view">
-            </div>
-        </div>
-
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>URL地址：</label>
-            <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="" placeholder="" id="" name="url">
-            </div>
-        </div>
 
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>显示状态status：</label>
@@ -118,7 +101,7 @@
         <div class="row cl">
             <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
                 <button class="btn btn-primary radius" onclick="submit_add()" type="button"><i class="Hui-iconfont">&#xe632;</i>
-                    创建文件目录及创建文件，并填写基础信息到数据库
+                    创建
                 </button>
                 <button onClick="layer_close();" class="btn btn-default radius" type="button">
                     &nbsp;&nbsp;取消&nbsp;&nbsp;

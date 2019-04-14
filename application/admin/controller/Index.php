@@ -7,7 +7,7 @@
  */
 
 namespace app\admin\controller;
-
+use think\Console;
 use think\Controller;
 
 class Index extends Controller
@@ -32,5 +32,10 @@ class Index extends Controller
 
         return $this->fetch();
     }
+    public function hello($name)
+    {
+        $output = Console::call('hello ' . $name);
 
+        return $output->fetch();
+    }
 }

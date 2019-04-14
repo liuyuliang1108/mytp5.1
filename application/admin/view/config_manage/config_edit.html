@@ -1,4 +1,16 @@
-{include file='base/_meta' /}
+{extend name='base/base_content' /}
+
+
+{block name="seo"}
+<title>{$title|default='页面标题'}</title>
+<meta name="keywords" content="{$keywords|default='页面关键字'}">
+<meta name="description" content="{$description|default='页面描述'}">
+</head>
+<body>
+{/block}
+
+
+{block name="content"}
 <article class="page-container">
 	<form class="form form-horizontal" id="form-config-edit">
 		<div class="row cl">
@@ -7,26 +19,37 @@
 				<input type="text" class="input-text" value="{$config_info.name}" placeholder="" id="configName" name="name">
 			</div>
 		</div>
-
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>工作环境</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="{$config_info.work_env}" placeholder="" id="work_env" name="work_env">
+			</div>
+		</div>
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-3">类型：</label>
 			<div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:150px;">
 			<select class="select" name="type" size="1">
 				<option value="0"
-						{eq name="$config_info.type" value="0"}
+						{eq name="$config_info.type" value="win"}
 						selected
 						{/eq}
 				>win</option>
 				<option value="1"
-						{eq name="$config_info.type" value="1"}
+						{eq name="$config_info.type" value="linux"}
 						selected
 						{/eq}
 				>linux</option>
-				<option value="0">win</option>
-				<option value="1">linux</option>
 			</select>
 			</span> </div>
 		</div>
+
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>配置文件名</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="{:implode(',',$config_info.file_name)}" placeholder="" id="fileName" name="file_name">
+			</div>
+		</div>
+
 
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>配置项所在目录</label>
@@ -47,12 +70,12 @@
 			<div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:150px;">
 			<select class="select" name="status" size="1">
 				<option value="0"
-						{eq name="$config_info.type" value="0"}
+						{eq name="$config_info.status" value="已停用"}
 						selected
 						{/eq}
-				>不启用</option>
+				>停用</option>
 				<option value="1"
-						{eq name="$config_info.type" value="1"}
+						{eq name="$config_info.status" value="已启用"}
 						selected
 						{/eq}
 				>启用</option>
@@ -63,7 +86,7 @@
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>版本描述</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="{$config_info.description}" placeholder="" id="configDescription" name="description">
+				<input type="text" class="input-text" value="{:implode(';',$config_info.description)}" placeholder="" id="configDescription" name="description">
 			</div>
 		</div>
 		<!--隐藏提交id-->
@@ -77,7 +100,10 @@
 	</form>
 </article>
 
-{include file='base/_footer' /}
+{/block}
+
+
+{block name="js"}
 <!--请在下方写此页面业务相关的脚本-->
 <script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
 <script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/validate-methods.js"></script>
@@ -110,6 +136,7 @@ $(function(){
 				url: "{:url('config_manage/configEditSave')}" ,
 				success: function(data){
 					layer.msg('修改成功!',{icon:1,time:1000});
+					window.location.reload();
 				},
                 error: function(XmlHttpRequest, textStatus, errorThrown){
 					layer.msg('error!',{icon:1,time:1000});
@@ -121,7 +148,7 @@ $(function(){
 		}
 	});
 });
-</script> 
-<!--/请在上方写此页面业务相关的脚本-->
+</script>
+{/block}
 </body>
 </html>

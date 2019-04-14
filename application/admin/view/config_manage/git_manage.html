@@ -5,7 +5,6 @@
 <title>{$title|default='页面标题'}</title>
 <meta name="keywords" content="{$keywords|default='页面关键字'}">
 <meta name="description" content="{$description|default='页面描述'}">
-<link href="__ADMIN__/static/h-ui.admin/css/H-ui.login.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 {/block}
@@ -14,13 +13,7 @@
 {block name="content"}
 
 <div class="page-container">
-    <!--除admin用户外，其他用户不可见-->
-    {eq name="$Think.session.user_info.name" value="admin"}
-    <div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l">
-        <a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
-        <a href="javascript:;" onclick="unDelete()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe600;</i> 批量恢复</a>
-        <a href="javascript:;" onclick="config_add('添加配置项','{:url('config_manage/configAdd')}','800','500')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加配置项</a>
-    {/eq}
+
     <table class="table table-border table-bordered table-bg">
         <thead>
         <tr>
@@ -29,13 +22,14 @@
         <tr class="text-c">
             <th width="25"><input type="checkbox" name="" value=""></th>
             <th width="40">ID</th>
-            <th width="60">配置项名</th>
+            <th width="40">配置项名</th>
+            <th width="40">工作环境</th>
             <th width="40">类型</th>
+            <th width="80">配置文件名</th>
             <th width="160">所在目录</th>
             <th width="40">版本号</th>
             <th width="40">是否启用当前版本</th>
             <th width="150">版本描述</th>
-            <th width="100">操作</th>
         </tr>
         </thead>
         <tbody>
@@ -43,43 +37,37 @@
             <td><input type="checkbox" value="" name=""></td>
             <td>{$vo.id}</td>
             <td>{$vo.name}</td>
+            <td>{$vo.work_env}</td>
             <td>{$vo.type}</td>
+            <td>{:implode(',',$vo.file_name)}</td>
             <td>{$vo.dir}</td>
             <td>{$vo.version}</td>
             <!--启用停用权限仅admin用户使用-->
             {eq name="$Think.session.user_info.name" value="admin"}
             <td class="td-status">
                 {if condition="$vo.status eq '已启用'"}
-                <span class="label label-success radius">{$vo.status}</span></td>
+                <span class="label label-success radius">{$vo.status}</span>
             {else/}
             <span class="label radius">{$vo.status}</span>
             {/if}
             </td>
             {/eq}
-            <td>{$vo.description}</td>
+            <td>{:implode(';',$vo.description)}</td>
 
-            <td class="td-manage">
-                <!--启用停用权限及删除仅admin用户使用-->
-                {eq name="$Think.session.user_info.name" value="admin"}
-                <a style="text-decoration:none" onClick="
-                {if condition="$vo.status eq '已启用'"}
-                config_stop(this,'{$vo.id}')" href="javascript:;" title="停用"><i class="Hui-iconfont">&#xe631;</i></a>
-                {else/}
-                config_start(this,'{$vo.id}')" href="javascript:;" title="启用"><i class="Hui-iconfont">&#xe615;</i></a>
-                {/if}
-                {/eq}
-                <a title="编辑" href="javascript:;" onclick="config_edit('配置编辑','{:url('config_manage/configEdit',['id'=>$vo.id])}','800','500')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a>
-                {eq name="$Think.session.user_info.name" value="admin"}
-                <a title="删除" href="javascript:;" onclick="config_del(this,'{$vo.id}')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a>
-                {/eq}
-                {eq name="$Think.session.user_info.name" value="admin"}
-                <a href="javascript:;" onclick="git_manage('git管理','{:url('config_manage/gitManage',['id'=>$vo.id])}','800','500')" class="btn btn-primary radius">
-                    <i class="Hui-iconfont"></i> git管理</a>
-                {/eq}
-            </td>
         </tr>
         </tbody>
     </table>
+        {if condition="$vo.type eq 'win'"}
+        <a href="javascript:void(0);" onclick="init_win_load()" class="btn btn-primary radius">
+    <i class="Hui-iconfont"></i>init-win-config-load-to-git</a>
+    <a href="javascript:void(0);" onclick="open_dir()" class="btn btn-primary radius">
+        <i class="Hui-iconfont"></i>open-dir</a>
+        {else/}
+        <a href="javascript:;" onclick="init_linux_load()" class="btn btn-primary radius">
+                    <i class="Hui-iconfont"></i>init-linux-config-load-to-git</a>
+        {/if}
+    <a href="javascript:void(0);" onclick="copy_to_git()" class="btn btn-primary radius">
+        <i class="Hui-iconfont"></i>copy_to_git</a>
 </div>
 
 {/block}
@@ -101,113 +89,33 @@
         h		弹出层高度（缺省调默认值）
     */
 
-    /*管理员-删除*/
-    function config_del(obj,id){
-        layer.confirm('确认要删除吗？',function(index){
-            $.ajax({
-                type: 'get',
-                url: "{:url('config_manage/configDelete')}",
-                data:{id:id},
-                dataType: 'json',
-                success: function(data){
-                    $(obj).parents("tr").remove();
-                    layer.msg('已删除!',{icon:1,time:1000});
-                },
-                error:function(data) {
-                    console.log(data.msg);
-                },
-            });
+    /*初始化 配置项git仓库*/
+    function init_win_load(){
+        var url="{:url('admin/config_manage/initWinLoad',['id'=>$vo.id])}";
+
+        window.open(url);
+    }
+/*copy配置项git仓库，并配置工作环境*/
+function copy_to_git() {
+    var url="{:url('admin/config_manage/copyToGit',['id'=>$vo.id])}";
+
+    window.open(url);
+}
+
+/*打开配置项所在目录*/
+    function open_dir() {
+        var dir="{$vo.dir}";
+        var str=dir.replace('\\','@');
+        $.ajax({
+            type: 'post',
+            url: "{:url('admin/config_manage/openDir')}",
+            data: {dir:str},
+            dataType: 'json',
+            success: function (data) {
+
+                layer.msg('已打开!', {icon: 5, time: 1000});
+            }
         });
-    }
-
-
-    /*配置项-停用*/
-    function config_stop(obj,id) {
-        layer.confirm('确认要停用吗？', function (index) {
-            //此处请求后台程序，下方是成功后的前台处理……
-            $.ajax({
-                type: 'get',
-                url: "{:url('config_manage/configStop')}",
-                data: {id: id},
-                dataType: 'json',
-                success: function (data) {
-                    $(obj).parents("tr").find(".td-manage").prepend('<a onClick="config_start(this,id)" href="javascript:;" title="启用" style="text-decoration:none"><i class="Hui-iconfont">&#xe615;</i></a>');
-                    $(obj).parents("tr").find(".td-status").html('<span class="label label-default radius">已禁用</span>');
-                    $(obj).remove();
-                    layer.msg('已停用!', {icon: 5, time: 1000});
-                }
-            });
-        });
-    }
-
-    /*配置项-启用*/
-    function config_start(obj,id){
-        layer.confirm('确认要启用吗？',function(index){
-            //此处请求后台程序，下方是成功后的前台处理……
-            $.ajax({
-                type: 'get',
-                url: "{:url('Config_manage/configStart')}",
-                data:{id:id},
-                dataType: 'json',
-                success: function(data) {
-                    $(obj).parents("tr").find(".td-manage").prepend('<a onClick="config_stop(this,id)" href="javascript:;" title="停用" style="text-decoration:none"><i class="Hui-iconfont">&#xe631;</i></a>');
-                    $(obj).parents("tr").find(".td-status").html('<span class="label label-success radius">已启用</span>');
-                    $(obj).remove();
-                    layer.msg('已启用!', {icon: 6,time:1000});
-                }
-            });
-        });
-    }
-
-    /*管理员-增加*/
-    function config_add(title,url,w,h){
-        layer_show(title,url,w,h);
-    }
-
-    /*配置项-编辑*/
-    function config_edit(title,url,w,h){
-
-        layer_show(title,url,w,h);
-    }
-
-    /*配置项-删除*/
-    function config_del(obj,id){
-        layer.confirm('确认要删除吗？',function(index){
-            $.ajax({
-                type: 'get',
-                url: "{:url('config_manage/configDelete')}",
-                data:{id:id},
-                dataType: 'json',
-                success: function(data){
-                    $(obj).parents("tr").remove();
-                    layer.msg('已删除!',{icon:1,time:1000});
-                },
-                error:function(data) {
-                    console.log(data.msg);
-                },
-            });
-        });
-    }
-    /*配置项-删除恢复*/
-    function unDelete(){
-        layer.confirm('确认要恢复吗？',function(index){
-            //此处请求后台程序，下方是成功后的前台处理……
-            $.ajax({
-                type: 'get',
-                url: "{:url('config_manage/unDelete')}",
-                dataType: 'json',
-                success: function(data) {
-                    layer.msg('已恢复!', {icon: 6,time:1000});
-                    window.location.reload();
-                }
-            });
-        });
-    }
-
-    /*git管理*/
-    function git_manage(title,url,w,h){
-
-        layer_show(title,url,w,h);
     }
 
     function selecttime(flag){
@@ -236,6 +144,7 @@
                 WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})}
         }
     }
+
 </script>
 {/block}
 </body>

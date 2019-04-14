@@ -5,7 +5,6 @@
 <title>{$title|default='页面标题'}</title>
 <meta name="keywords" content="{$keywords|default='页面关键字'}">
 <meta name="description" content="{$description|default='页面描述'}">
-<link href="__ADMIN__/static/h-ui.admin/css/H-ui.login.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 {/block}
@@ -35,8 +34,10 @@
         <tr class="text-c">
             <th width="25"><input type="checkbox" name="" value=""></th>
             <th width="40">ID</th>
-            <th width="60">配置项名</th>
+            <th width="40">配置项名</th>
+            <th width="40">工作环境</th>
             <th width="40">类型</th>
+            <th width="80">配置文件名</th>
             <th width="160">所在目录</th>
             <th width="40">版本号</th>
             <th width="40">是否启用当前版本</th>
@@ -50,7 +51,9 @@
             <td><input type="checkbox" value="{$key}" name=""></td>
             <td>{$vo.id}</td>
             <td>{$vo.name}</td>
+            <td>{$vo.work_env}</td>
             <td>{$vo.type}</td>
+            <td>{:implode(',',$vo.file_name)}</td>
             <td>{$vo.dir}</td>
             <td>{$vo.version}</td>
             <!--启用停用权限仅admin用户使用-->
@@ -63,7 +66,7 @@
             {/if}
             </td>
             {/eq}
-            <td>{$vo.description}</td>
+            <td>{:implode(';',$vo.description)}</td>
 
             <td class="td-manage">
                 <!--启用停用权限及删除仅admin用户使用-->
@@ -109,24 +112,6 @@
         h		弹出层高度（缺省调默认值）
     */
 
-    /*管理员-删除*/
-    function config_del(obj,id){
-        layer.confirm('确认要删除吗？',function(index){
-            $.ajax({
-                type: 'get',
-                url: "{:url('config_manage/configDelete')}",
-                data:{id:id},
-                dataType: 'json',
-                success: function(data){
-                    $(obj).parents("tr").remove();
-                    layer.msg('已删除!',{icon:1,time:1000});
-                },
-                error:function(data) {
-                    console.log(data.msg);
-                },
-            });
-        });
-    }
 
 
     /*配置项-停用*/
@@ -167,7 +152,7 @@
         });
     }
 
-    /*管理员-增加*/
+    /*配置项-增加*/
     function config_add(title,url,w,h){
         layer_show(title,url,w,h);
     }
@@ -180,7 +165,7 @@
 
     /*配置项-删除*/
     function config_del(obj,id){
-        layer.confirm('确认要删除吗？',function(index){
+        layer.confirm('确认要删除吗？',function(){
             $.ajax({
                 type: 'get',
                 url: "{:url('config_manage/configDelete')}",
