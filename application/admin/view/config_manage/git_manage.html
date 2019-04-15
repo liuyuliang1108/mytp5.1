@@ -58,24 +58,37 @@
         </tbody>
     </table>
         {if condition="$vo.type eq 'win'"}
-        <a href="javascript:void(0);" onclick="init_win_load()" class="btn btn-primary radius">
+        <a href="javascript:void(0);" onclick="init_load({$vo.id},'win')" class="btn btn-primary radius">
     <i class="Hui-iconfont"></i>init-win-config-load-to-git</a>
-    <a href="javascript:void(0);" onclick="open_dir()" class="btn btn-primary radius">
+    <a href="javascript:void(0);" onclick="open_dir({$vo.id})" class="btn btn-primary radius">
         <i class="Hui-iconfont"></i>open-dir</a>
         {else/}
-        <a href="javascript:;" onclick="init_linux_load()" class="btn btn-primary radius">
+        <a href="javascript:;" onclick="init_load({$vo.id},'linux')" class="btn btn-primary radius">
                     <i class="Hui-iconfont"></i>init-linux-config-load-to-git</a>
         {/if}
     <a href="javascript:void(0);" onclick="copy_to_git()" class="btn btn-primary radius">
         <i class="Hui-iconfont"></i>copy_to_git</a>
 </div>
-
+<div class="row cl">
+    <label class="form-label col-xs-2 col-sm-1" style="margin-left: 40px;margin-top: 35px">运行命令:</label>
+    <div class="formControls col-xs-10 col-sm-8">
+                <textarea id="textarea_cate" name="remark" cols="" rows="" class="textarea" placeholder="" datatype="*10-100"
+                          dragonfly="true" nullmsg="运行命令！" ></textarea>
+    </div>
+    <a href="javascript:void(0);" id="cp-btn" class="btn btn-primary radius"style="margin-top: 10px">
+        <i class="Hui-iconfont"></i>复制到剪辑板</a>
+    {if condition="$vo.type eq 'win'"}
+    <a href="javascript:void(0);" onclick="exec_cmd({$vo.id},'win')" class="btn btn-primary radius" style="margin-top: 20px">
+        <i class="Hui-iconfont"></i>直接运行命令</a>
+    {/if}
+</div>
 {/block}
 
 
 {block name="js"}
 <!--请在下方写此页面业务相关的脚本-->
 <script type="text/javascript" src="__ADMIN__/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="__ADMIN__/lib/jquery-zclip/jquery.zclip.js"></script>
 <script type="text/javascript" src="__ADMIN__/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="__ADMIN__/lib/laypage/1.2/laypage.js"></script>
 
@@ -88,13 +101,46 @@
         w		弹出层宽度（缺省调默认值）
         h		弹出层高度（缺省调默认值）
     */
-
+    $(function(){
+        $("#cp-btn").zclip({
+            path:'__ADMIN__/lib/jquery-zclip/ZeroClipboard.swf', //记得把ZeroClipboard.swf引入到项目中
+            copy:function(){
+                return $('#textarea_cate').val();
+            }
+        });
+    });
     /*初始化 配置项git仓库*/
-    function init_win_load(){
-        var url="{:url('admin/config_manage/initWinLoad',['id'=>$vo.id])}";
-
-        window.open(url);
+    function init_load(id,attr){
+        $.ajax({
+            type: 'post',
+            url: "{:url('admin/config_manage/initLoad')}",
+            data: {id:id,
+            attr:attr},
+            dataType: 'json',
+            success: function (data) {
+                $("#textarea_cate").val(data.cmd);
+                layer.msg('命令已生成!', {icon: 6, time: 1000});
+            }
+        });
     }
+/*执行命令*/
+    function exec_cmd(id,attr) {
+        $.ajax({
+            type: 'post',
+            url: "{:url('admin/config_manage/execCmd')}",
+            data: {flag:1,
+                id:id,
+                attr:attr},
+            dataType: 'json',
+            success: function (data) {
+                $("#textarea_cate").val(data.cmd);
+                if (data.flag == 1) {
+                    layer.msg('命令已执行成功!', {icon: 6, time: 1000});
+                }
+            }
+    });
+    }
+
 /*copy配置项git仓库，并配置工作环境*/
 function copy_to_git() {
     var url="{:url('admin/config_manage/copyToGit',['id'=>$vo.id])}";
@@ -103,17 +149,15 @@ function copy_to_git() {
 }
 
 /*打开配置项所在目录*/
-    function open_dir() {
-        var dir="{$vo.dir}";
-        var str=dir.replace('\\','@');
+    function open_dir(id) {
         $.ajax({
             type: 'post',
             url: "{:url('admin/config_manage/openDir')}",
-            data: {dir:str},
+            data: {id:id},
             dataType: 'json',
             success: function (data) {
 
-                layer.msg('已打开!', {icon: 5, time: 1000});
+                layer.msg('已打开!', {icon: 6, time: 1000});
             }
         });
     }

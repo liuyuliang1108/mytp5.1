@@ -153,7 +153,7 @@ class ConfigManage extends Base
         return $this->fetch();
     }
 
-    public function initWinLoad($id)
+    public function initLoad($id,$attr)
     {
 
         //获取传入参数
@@ -168,44 +168,87 @@ class ConfigManage extends Base
         $workEnv=$list['work_env'];
         $fileName=$list['file_name'];
 
+        //进入配置项目录
         $somecontent = "cd $dir";
+        //克隆配置git管理项目至临时文件夹
         $somecontent.="&& git clone git@github.com:liuyuliang1108/myconfig.git tmpgit";
-        //移到tmpgit内文件，移到出来，再把文件夹复制出来，再删除目录
-        $somecontent.="&& move tmpgit\*.* ./";
-        $somecontent.="&& attrib -h tmpgit\.git";
-        $somecontent.="&& move tmpgit\.git ./";
-        $somecontent.="&& attrib +h .git";
-        $somecontent.="&& rd tmpgit";
-        $somecontent.="&& git reset --hard HEAD";
-        //修改.gitignore文件
-        $somecontent.="&& echo.>>.gitignore";
-        //遍历配置文件名,写入git管理目录
-        foreach ($fileName as $value){
-            $somecontent.="&& echo !$value >>.gitignore";
+        if ($attr=='win') {
+            //将tmpgit内文件及文件夹移出，再删除目录
+            $somecontent.="&& move tmpgit\*.* ./";
+            //将.git隐藏文件夹 去除隐藏状态
+            $somecontent.="&& attrib -h tmpgit\.git";
+            $somecontent.="&& move tmpgit\.git ./";
+            //再将.git文件夹加上隐藏状态
+            $somecontent.="&& attrib +h .git";
+            //删除临时文件夹
+            $somecontent.="&& rd tmpgit";
+            //更新git管理文件夹状态
+            $somecontent.="&& git reset --hard HEAD";
+            //修改.gitignore文件
+            $somecontent.="&& echo.>>.gitignore";
+            //遍历配置文件名,写入git管理目录
+            foreach ($fileName as $value){
+                $somecontent.="&& echo !$value >>.gitignore";
+            }
+            //修改README.md文件
+            $somecontent.="&& echo.>>README.md";
+            $somecontent.="&& echo ---------------------------------------------------------->>README.md";
+            $somecontent.="&& echo @config-title : $name>>README.md";
+            $somecontent.="&& echo @config-work_env : $workEnv>>README.md";
+            $somecontent.="&& echo @version : v$version>>README.md";
+            $somecontent.="&& echo @version : v$version>>README.md";
+            $somecontent.="&& echo @type : $type>>README.md";
+            $desc= implode(';',$description);
+            $somecontent.="&& echo @description : $desc>>README.md";
+        }elseif($attr=='linux'){
+            //给tmpgit执行权限
+            $somecontent .= "&& chmod +x tmpgit";
+            //将tmpgit内文件及文件夹移出，再删除目录
+            $somecontent .= "&& mv tmpgit/* .";
+            $somecontent .= "&& mv tmpgit/.[^.]* .";
+            //删除临时文件夹
+            $somecontent .= "&& rmdir tmpgit";
+            //更新git管理文件夹状态
+            $somecontent .= "&& git reset --hard HEAD";
+            //修改.gitignore文件
+            $somecontent .= "&& echo ''>>.gitignore";
+            //遍历配置文件名,写入git管理目录
+            foreach ($fileName as $value){
+                $somecontent.="&& echo '!$value' >>.gitignore";
+            }
+            //修改README.md文件
+            $somecontent.="&& echo ''>>README.md";
+            $somecontent.="&& echo '----------------------------------------------------------'>>README.md";
+            $somecontent.="&& echo '@config-title : $name'>>README.md";
+            $somecontent.="&& echo '@config-work_env : $workEnv'>>README.md";
+            $somecontent.="&& echo '@version : v$version'>>README.md";
+            $somecontent.="&& echo '@version : v$version'>>README.md";
+            $somecontent.="&& 'echo @type : $type'>>README.md";
+            $desc= implode(';',$description);
+            $somecontent.="&& 'echo @description : $desc'>>README.md";
         }
-        //修改README.md文件
-        $somecontent.="&& echo.>>README.md";
-        $somecontent.="&& echo ---------------------------------------------------------->>README.md";
-        $somecontent.="&& echo @config-title : $name>>README.md";
-        $somecontent.="&& echo @config-work_env : $workEnv>>README.md";
-        $somecontent.="&& echo @version : v$version>>README.md";
-        $somecontent.="&& echo @version : v$version>>README.md";
-        $somecontent.="&& echo @type : $type>>README.md";
-        $desc= implode(';',$description);
-        $somecontent.="&& echo @description : $desc>>README.md";
 
         $somecontent.="&& git add .";
         $somecontent.="&& git commit -m 'v$version,$desc'";
         $somecontent.="&& git push -u origin master:$type-$name-$workEnv";
+        $data=['cmd'=>$somecontent];
+return $data;
 
-        echo '<br>执行命令'.$somecontent;
-        $result=exec($somecontent,$output);
-        var_dump($result);
-        dump($output);
-        echo "正在打开目录 $dir ";
-        exec("start explorer $dir");
-        //第一步根据参数编辑README.md文件
-
+    }
+    public function execCmd($flag,$id,$attr){
+        if ($flag==1) {
+            $data=self::initLoad($id,$attr);//获取初始化命令
+        }else{
+            $data=self::copyGit($attr,$id);//获取copy命令
+        }
+        //执行命令
+        exec($data['cmd'],$output,$flag);
+        if ($flag==0) {
+            $data['flag']=1;
+        }else{
+            $data['flag']=0;
+        }
+        return $data;
     }
 
     /*config工作环境编辑*/
@@ -233,17 +276,26 @@ class ConfigManage extends Base
         $copyType=$copy['type'];
         $copyName=$copy['name'];
         $copyWorkEnv=$copy['work_env'];
+        $somecontent = "cd $dir";
+        $somecontent.="&& git clone -b $copyType-$copyName-$copyWorkEnv git@github.com:liuyuliang1108/myconfig.git tmpgit";
         if ( $type=='win') {
-            $somecontent = "cd $dir";
-            $somecontent.="&& git clone -b $copyType-$copyName-$copyWorkEnv git@github.com:liuyuliang1108/myconfig.git tmpgit";
-            //移到tmpgit内文件，移到出来，再把文件夹复制出来，再删除目录
+            //将tmpgit内文件及文件夹移出，再删除目录
             $somecontent.="&& move tmpgit\*.* ./";
+            //将.git隐藏文件夹 去除隐藏状态
             $somecontent.="&& attrib -h tmpgit\.git";
             $somecontent.="&& move tmpgit\.git ./";
+            //再将.git文件夹加上隐藏状态
             $somecontent.="&& attrib +h .git";
+            //删除临时文件夹
             $somecontent.="&& rd tmpgit";
+            //更新git管理文件夹状态
             $somecontent.="&& git reset --hard HEAD";
-
+            //修改.gitignore文件
+            $somecontent.="&& echo.>>.gitignore";
+            //遍历配置文件名,写入git管理目录
+            foreach ($fileName as $value){
+                $somecontent.="&& echo !$value >>.gitignore";
+            }
             //修改README.md文件
             $somecontent.="&& echo.>>README.md";
             $somecontent.="&& echo ---------------------------------------------------------->>README.md";
@@ -254,29 +306,55 @@ class ConfigManage extends Base
             $somecontent.="&& echo @type : $type>>README.md";
             $desc= implode(';',$description);
             $somecontent.="&& echo @description : $desc>>README.md";
+        }elseif($type=='linux'){
+            //给tmpgit执行权限
+            $somecontent .= "&& chmod +x tmpgit";
+            //将tmpgit内文件及文件夹移出，再删除目录
+            $somecontent .= "&& mv tmpgit/* .";
+            $somecontent .= "&& mv tmpgit/.[^.]* .";
+            //删除临时文件夹
+            $somecontent .= "&& rmdir tmpgit";
+            //更新git管理文件夹状态
+            $somecontent .= "&& git reset --hard HEAD";
+            //修改.gitignore文件
+            $somecontent .= "&& echo ''>>.gitignore";
+            //遍历配置文件名,写入git管理目录
+            foreach ($fileName as $value){
+                $somecontent.="&& echo '!$value' >>.gitignore";
+            }
+            //修改README.md文件
+            $somecontent.="&& echo ''>>README.md";
+            $somecontent.="&& echo '----------------------------------------------------------'>>README.md";
+            $somecontent.="&& echo '@config-title : $name'>>README.md";
+            $somecontent.="&& echo '@config-work_env : $workEnv'>>README.md";
+            $somecontent.="&& echo '@version : v$version'>>README.md";
+            $somecontent.="&& echo '@version : v$version'>>README.md";
+            $somecontent.="&& 'echo @type : $type'>>README.md";
+            $desc= implode(';',$description);
+            $somecontent.="&& 'echo @description : $desc'>>README.md";
+        }
 
             //copy提交后再比较修改，再提交
             $somecontent.="&& git add . ";
             $somecontent.="&& git commit -m 'v$version,$desc'";
             $somecontent.="&& git push -u origin $copyType-$copyName-$copyWorkEnv:$type-$name-$workEnv";
-            echo '<br>执行命令'.$somecontent;
-            $result=exec($somecontent,$output);
-            echo "正在打开目录 $dir //copy提交后再比较修改，再提交";
-            exec("start explorer $dir");
-            var_dump($result);
-            dump($output);
+        $data=['cmd'=>$somecontent];
+        return $data;
         }
 
-    }
+
 
 //打开配置目录
 
     public function openDir(Request $request)
     {
         //获取传入参数
-$data=$request->param();
-$dir=$data['dir'];
-        $dir=str_replace('@','\\',$dir);
+        $attr = $request->param();
+        $id = $attr['id'];
+
+        $list = Config::get($id);//获取传入配置项信息
+        $dir=$list['dir'];
+
         exec("start explorer $dir",$out,$result);
         if ($result==0) {
             return ['data'=>true];

@@ -94,11 +94,24 @@
 
 	<div class="row cl">
 		<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
-			<input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;新增环境，并copy to git&nbsp;&nbsp;">
+			<input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;新增环境，并生成copy to git命令&nbsp;&nbsp;">
 		</div>
 	</div>
 	</form>
+	<form class="form form-horizontal" id="form-config-cmd">
+	<div class="row cl">
+		<label class="form-label col-xs-4 col-sm-3">生成命令：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+                <textarea id="textarea_cate" name="remark" cols="" rows="" class="textarea" placeholder="" datatype="*10-100"
+						  dragonfly="true" nullmsg="备注不能为空！"></textarea>
+			<input type="hidden" id="copy-id" name="copy-id" value="{$config_info.id}">
+			<a href="javascript:void(0);" id="cp-btn" class="btn btn-primary radius"style="margin-top: 10px">
+				<i class="Hui-iconfont"></i>复制到剪辑板</a>
+			<div id="exec-btn"> </div>
+		</div>
+	</div>
 
+	</form>
 </article>
 
 {/block}
@@ -110,6 +123,9 @@
 <script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/validate-methods.js"></script>
 <script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/messages_zh.js"></script>
 <script type="text/javascript">
+	var attr ='{$config_info.id}';
+	var id=0;
+
 $(function(){
 	$('.skin-minimal input').iCheck({
 		checkboxClass: 'icheckbox-blue',
@@ -138,10 +154,24 @@ $(function(){
 				success: function(data){
 					var data = JSON.parse(data);
 					layer.msg('新增环境成功!',{icon:1,time:1000});
-
-					var url="{:url('admin/config_manage/copyGit',['copyId'=>$config_info.id],false)}"+'/id/'+data.id;
-
-					window.open(url);
+					var html='';
+					if(data.type=='win'){
+						html='<a href="javascript:void(0);"  class="btn btn-primary radius" style="margin-top: 20px;">';
+						html+='<i class="Hui-iconfont"></i>运行命令</a>';
+						$("#exec-btn").html(html);
+					}
+					$.ajax({
+						type: 'post',
+						url: "{:url('admin/config_manage/copyGit')}",
+						data: {copyId:$('#copy-id').val(),
+							id:data.id},
+						dataType: 'json',
+						success: function (data) {
+							$("#textarea_cate").val(data.cmd);
+							layer.msg('命令已生成!', {icon: 6, time: 1000});
+							id=data.id;
+						}
+					});
 				},
                 error: function(XmlHttpRequest, textStatus, errorThrown){
 					layer.msg('error!',{icon:1,time:1000});
@@ -153,6 +183,27 @@ $(function(){
 		}
 	});
 });
+//动态给元素绑定事件
+$("#exec-btn").on('click', '.item', function () {
+	exec_cmd();
+})
+/*执行命令*/
+function exec_cmd() {
+	$.ajax({
+		type: 'post',
+		url: "{:url('admin/config_manage/execCmd')}",
+		data: {flag:0,
+			id:id,
+			attr:attr},
+		dataType: 'json',
+		success: function (data) {
+			$("#textarea_cate").val(data.cmd);
+			if (data.flag == 1) {
+				layer.msg('命令已执行成功!', {icon: 6, time: 1000});
+			}
+		}
+	});
+}
 </script>
 {/block}
 </body>
