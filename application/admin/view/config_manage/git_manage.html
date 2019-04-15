@@ -57,6 +57,8 @@
         </tr>
         </tbody>
     </table>
+    <form class="form form-horizontal">
+        <div class="row cl">
         {if condition="$vo.type eq 'win'"}
         <a href="javascript:void(0);" onclick="init_load({$vo.id},'win')" class="btn btn-primary radius">
     <i class="Hui-iconfont"></i>init-win-config-load-to-git</a>
@@ -68,7 +70,10 @@
         {/if}
     <a href="javascript:void(0);" onclick="copy_to_git()" class="btn btn-primary radius">
         <i class="Hui-iconfont"></i>copy_to_git</a>
-</div>
+            <a href="javascript:void(0);" onclick="update_version()" class="btn btn-primary radius">
+                <i class="Hui-iconfont"></i>update_version</a>
+        </div>
+
 <div class="row cl">
     <label class="form-label col-xs-2 col-sm-1" style="margin-left: 40px;margin-top: 35px">运行命令:</label>
     <div class="formControls col-xs-10 col-sm-8">
@@ -82,6 +87,7 @@
         <i class="Hui-iconfont"></i>直接运行命令</a>
     {/if}
 </div>
+    </form>
 {/block}
 
 
@@ -147,6 +153,12 @@ function copy_to_git() {
 
     window.open(url);
 }
+    /*更新版本*/
+    function update_version() {
+        var url="{:url('admin/config_manage/updateVersion',['id'=>$vo.id])}";
+
+        window.open(url);
+    }
 
 /*打开配置项所在目录*/
     function open_dir(id) {

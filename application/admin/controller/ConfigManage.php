@@ -61,8 +61,9 @@ class ConfigManage extends Base
         //获取传入参数
         $attr = $request->param();
         $id = $attr['id'];
-        //使用D方法更新
-        $data = Db::table('config')->where(['id' => $id])->update(['status' => 0]);
+        //使用模型save方法,返回bool值
+        $object = new Config;
+        $data = $object->isUpdate()->save(['status' => 0], ['id' => $id]);
         return $data;
     }
 
@@ -73,8 +74,10 @@ class ConfigManage extends Base
         //获取传入参数
         $attr = $request->param();
         $id = $attr['id'];
-        //使用D方法更新
-        $data = Db::table('config')->where(['id' => $id])->update(['status' => 1]);
+        //使用模型save方法,返回bool值
+        $object = new Config;
+        $data = $object->isUpdate()->save(['status' => 1], ['id' => $id]);
+
         return $data;
     }
 
@@ -184,6 +187,8 @@ class ConfigManage extends Base
             $somecontent.="&& rd tmpgit";
             //更新git管理文件夹状态
             $somecontent.="&& git reset --hard HEAD";
+            //切换本地分支
+            $somecontent.="&& git checkout –b $type-$name-$workEnv";
             //修改.gitignore文件
             $somecontent.="&& echo.>>.gitignore";
             //遍历配置文件名,写入git管理目录
@@ -210,6 +215,8 @@ class ConfigManage extends Base
             $somecontent .= "&& rmdir tmpgit";
             //更新git管理文件夹状态
             $somecontent .= "&& git reset --hard HEAD";
+            //切换本地分支
+            $somecontent.="&& git checkout –b $type-$name-$workEnv";
             //修改.gitignore文件
             $somecontent .= "&& echo ''>>.gitignore";
             //遍历配置文件名,写入git管理目录
@@ -230,7 +237,7 @@ class ConfigManage extends Base
 
         $somecontent.="&& git add .";
         $somecontent.="&& git commit -m 'v$version,$desc'";
-        $somecontent.="&& git push -u origin master:$type-$name-$workEnv";
+        $somecontent.="&& git push -u origin $type-$name-$workEnv:$type-$name-$workEnv";
         $data=['cmd'=>$somecontent];
 return $data;
 
@@ -238,9 +245,12 @@ return $data;
     public function execCmd($flag,$id,$attr){
         if ($flag==1) {
             $data=self::initLoad($id,$attr);//获取初始化命令
-        }else{
+        }elseif($flag==0){
             $data=self::copyGit($attr,$id);//获取copy命令
+        }elseif($flag==2){
+            $data=self::updateCmd($id,0);
         }
+
         //执行命令
         exec($data['cmd'],$output,$flag);
         if ($flag==0) {
@@ -253,6 +263,16 @@ return $data;
 
     /*config工作环境编辑*/
     public function copyToGit($id)
+    {
+        //使用模型get方法,返回model对象
+        $result = Config::get(['id' => $id]);
+        //模板赋值
+        $this->view->assign('config_info', $result);
+        /*渲染模板*/
+        return $this->fetch();
+    }
+    /*config更新版本*/
+    public function updateVersion($id)
     {
         //使用模型get方法,返回model对象
         $result = Config::get(['id' => $id]);
@@ -290,6 +310,8 @@ return $data;
             $somecontent.="&& rd tmpgit";
             //更新git管理文件夹状态
             $somecontent.="&& git reset --hard HEAD";
+            //切换本地分支
+            $somecontent.="&& git checkout –b $type-$name-$workEnv";
             //修改.gitignore文件
             $somecontent.="&& echo.>>.gitignore";
             //遍历配置文件名,写入git管理目录
@@ -316,6 +338,8 @@ return $data;
             $somecontent .= "&& rmdir tmpgit";
             //更新git管理文件夹状态
             $somecontent .= "&& git reset --hard HEAD";
+            //切换本地分支
+            $somecontent.="&& git checkout –b $type-$name-$workEnv";
             //修改.gitignore文件
             $somecontent .= "&& echo ''>>.gitignore";
             //遍历配置文件名,写入git管理目录
@@ -337,13 +361,59 @@ return $data;
             //copy提交后再比较修改，再提交
             $somecontent.="&& git add . ";
             $somecontent.="&& git commit -m 'v$version,$desc'";
-            $somecontent.="&& git push -u origin $copyType-$copyName-$copyWorkEnv:$type-$name-$workEnv";
+            $somecontent.="&& git push -u origin $type-$name-$workEnv:$type-$name-$workEnv";
         $data=['cmd'=>$somecontent];
         return $data;
         }
 
+//生成更新版本命令
+public function updateCmd($id,$attr){
+    if (!$attr) {//修改版本启用状态信息
+        //使用模型save方法,返回bool值
+        $object = new Config;
+        $object->isUpdate()->save(['status' => 0], ['id' => $attr]);
+    }
+    //使用模型get方法,返回model对象
+    $list = Config::get(['id' => $id]);
+    $name=$list['name'];
+    $dir=$list['dir'];
+    $version=$list['version'];
+    $description=$list['description'];
+    $type=$list['type'];
+    $workEnv=$list['work_env'];
+    $fileName=$list['file_name'];
+    $somecontent = "cd $dir";
+    if ( $type=='win') {
+        //修改README.md文件
+        $somecontent.="&& echo.>>README.md";
+        $somecontent.="&& echo ---------------------------------------------------------->>README.md";
+        $somecontent.="&& echo @config-title : $name>>README.md";
+        $somecontent.="&& echo @config-work_env : $workEnv>>README.md";
+        $somecontent.="&& echo @version : v$version>>README.md";
+        $somecontent.="&& echo @version : v$version>>README.md";
+        $somecontent.="&& echo @type : $type>>README.md";
+        $desc= implode(';',$description);
+        $somecontent.="&& echo @description : $desc>>README.md";
+    }elseif($type=='linux'){
+        //修改README.md文件
+        $somecontent.="&& echo ''>>README.md";
+        $somecontent.="&& echo '----------------------------------------------------------'>>README.md";
+        $somecontent.="&& echo '@config-title : $name'>>README.md";
+        $somecontent.="&& echo '@config-work_env : $workEnv'>>README.md";
+        $somecontent.="&& echo '@version : v$version'>>README.md";
+        $somecontent.="&& echo '@version : v$version'>>README.md";
+        $somecontent.="&& 'echo @type : $type'>>README.md";
+        $desc= implode(';',$description);
+        $somecontent.="&& 'echo @description : $desc'>>README.md";
+    }
 
-
+    //提交版本修改
+    $somecontent.="&& git add . ";
+    $somecontent.="&& git commit -m 'v$version,$desc'";
+    $somecontent.="&& git push";
+    $data=['cmd'=>$somecontent];
+    return $data;
+}
 //打开配置目录
 
     public function openDir(Request $request)
