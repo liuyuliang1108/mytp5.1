@@ -18,7 +18,7 @@ return [
         '__file__'   => [],
         '__dir__'   => [],
         'controller'   => [],
-        'model'   => [],
+        'model'   => ['grand'],
         'view'   => [],
     ],
     // 其他更多的模块定义
