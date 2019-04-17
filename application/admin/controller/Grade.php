@@ -178,33 +178,3 @@ class Grade extends Base
 
 }
 
-/*班级列表模板*/
-public function gradeList()
-{
-/*模板赋值*/
-$this->view->assign('title', '班级列表');
-$this->view->assign('keywords', '班级列表关键字');
-$this->view->assign('description', '班级列表描述');
-
-/*获取所有班级列表数据 返回对象数组*/
-$grade = GradeModel::all();
-
-/*获取记录总数*/
-$count = GradeModel::count();
-
-/*遍历grade表*/
-foreach ($grade as $value) {
-$data = [
-'id' => $value->id,
-'name' => $value->name,
-'length' => $value->length,
-'price' => $value->price,
-'status' => $value->status,
-'create_time' => $value->create_time,
-/*用关联方法teacher属性方法访问teacher表中数据*/
-'teacher' => isset($value->teacher->name) ? $value->teacher->name : '<span style="color:red;">未分配</span>'
-];
-
-/*每次关联查询结果保存到数组$gradeList中*/
-$gradeList[] = $data;
-}

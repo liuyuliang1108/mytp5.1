@@ -75,4 +75,40 @@ class Base extends Controller
             file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
         }
     }
+    /**
+     * 创建默认控制器
+     * @access protected
+     * @param  string $module 模块名
+     * @param  string $controller 控制器名
+     * @param  string $model 模型名
+     * @param  string $name 中文名称
+     * @param  bool   $suffix 类库后缀
+     * @return void
+     */
+    protected function buildController($module, $controller,$model, $suffix = false)
+    {
+
+        $filename = APP_PATH . ($module ? $module . '/' : '') . 'controller' . '/' . $controller . ($suffix ? 'Controller' : '') . '.php';
+        if (!is_file($filename)) {//如果已存在该文件则不创建
+            $content = file_get_contents( APP_PATH. 'common' . '/'. 'controller' . '/' . 'Base' . '.php');
+            $content = str_replace(['{$module}','{$model}' , '{$controller}'], [$module,$model,$controller], $content);
+            file_put_contents($filename, $content);
+        }
+    }
+    /**
+     * 创建默认模型model
+     * @access protected
+     * @param  string $module 模块名
+     * @param  string $model 模型名
+     * @return void
+     */
+    protected function buildModel($module, $model)
+    {
+        $filename = APP_PATH . ($module ? $module . '/' : '') . 'model' . '/' .$model . '.php';
+        if (!is_file($filename)) {//如果已存在该文件则不创建
+            $content = file_get_contents( APP_PATH. 'common' . '/'. 'model' . '/' . 'Base' . '.php');
+            $content = str_replace(['{$module}','{$model}'], [$module,$model], $content);
+            file_put_contents($filename, $content);
+        }
+    }
 }

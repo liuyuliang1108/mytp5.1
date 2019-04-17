@@ -8,10 +8,6 @@ class Test extends Base
     public function output()
     {
 
-        system('start explorer C:\phpStudy\PHPTutorial\php\php-7.0.12-nts');
-
-
-
 
     }
 }

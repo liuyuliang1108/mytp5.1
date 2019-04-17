@@ -124,14 +124,18 @@ class Category extends Base //分类管理控制器
                         }
                     case 1:
                         {
-                            //创建控制器
-                            $result['create'] = CategoryList::createTool($data, 1);
+                            //创建默认控制器
+                            self::buildController($data['module'], $data['controller'],$data['model']);
                             break;
                         }
                     case 2:
                         {
-                            ///创建模型model
-                            $result['create'] = CategoryList::createTool($data, 3);
+                            //创建默认模型model
+                            self::buildModel($data['module'], $data['model']);
+                            //并创建对应控制器
+                            if ($data['controller']) {
+                                self::buildController($data['module'], $data['controller'],$data['model']);
+                            }
                             break;
                         }
                     case 3:
@@ -147,7 +151,7 @@ class Category extends Base //分类管理控制器
                         }
                 }
 
-                if ($data['type'] == 5||$data['type'] == 3) {
+                if ($data['type'] == 5||$data['type'] == 3||$data['type'] == 1||$data['type'] == 2) {
                     $result = ['flag' => 1];
                 }else{
                     if ($result['create']) {
@@ -158,7 +162,7 @@ class Category extends Base //分类管理控制器
                 }
                 $action=$category->status;
                 $model=$data['model'].'Model';
-                $name='班级';
+                $name=$data['name'];
                 switch ($data['status']){
 
                     case 100:{
@@ -170,6 +174,7 @@ class Category extends Base //分类管理控制器
                     }
                     case 202:{
                         self::buildAction($data['module'],$data['controller'],$model, $action,$name);
+                        self::buildTpl($data['module'], $data['controller'],$action,$name);
                         break;
                     }
                 }

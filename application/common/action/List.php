@@ -1,12 +1,12 @@
-/*{$name}列表模板*/
+/*{$name}模板*/
 public function {$controllerName}List()
 {
 /*模板赋值*/
-$this->view->assign('title', '{$name}列表');
-$this->view->assign('keywords', '{$name}列表关键字');
-$this->view->assign('description', '{$name}列表描述');
+$this->view->assign('title', '{$name}');
+$this->view->assign('keywords', '{$name}关键字');
+$this->view->assign('description', '{$name}描述');
 
-/*获取所有{$name}列表数据 返回对象数组*/
+/*获取所有{$name}数据 返回对象数组*/
 ${$controllerName} = {$model}::all();
 
 /*获取记录总数*/
@@ -27,4 +27,5 @@ $data = [
 
 /*每次关联查询结果保存到数组${$controllerName}List中*/
 ${$controllerName}List[] = $data;
+}
 }
