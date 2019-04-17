@@ -14,11 +14,34 @@ use think\Model;
 
 class CategoryList extends Model
 {
+    //构造生成器
+//数据表中状态字段，status返回值处理
+    public function getStatusAttr($value)
+    {
+        $status = [
+            100 => 'login_default',
+            101 => 'setStatus',
+            102 => 'AddSave',
+            103 => 'EditSave',
+            104 => 'Delete',
+            105 => 'unDelete',
+            106 => 'getTreeData',
+            107 => 'idVerify',
+            200 => 'view_default',
+            201 => 'index',
+            202 => 'List',
+            203 => 'Add',
+            204 => 'Edit',
+            0=>'other',
+        ];
+        return  $status[$value];
+    }
 
     //构造一个条件查询器，查询结果为对象或由对象组成的数组,返回一个数组
 //分类查询方法
     static function selectData($where = "", $flag = 0, $key = 0)
     {
+
         //$where为空""时，查询结果由对象组成的数组，返回整表数据,并且当$flag=1时，返回对象属性数组
         //$where不为空时，条件查询
         //$flag为0，查询结果为由对象组成的数组；$flag为1，查询结果为对象。$flag为2时，返回对象属性数组

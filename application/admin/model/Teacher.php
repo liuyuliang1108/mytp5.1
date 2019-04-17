@@ -38,12 +38,12 @@ class Teacher extends Model
         //'file_name',
         //'description',
     ];
-    //定义关联方法
-    public function teacher()
+/*    //定义关联方法
+    public function grade()
     {
         //班级表 与 教师teacher表 一对一 关联
-        return $this ->hasOne('Teacher');
-    }
+        return $this ->hasOne('Grade');
+    }*/
     //定义关联方法 反关联
     public function grade()
     {

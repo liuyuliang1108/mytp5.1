@@ -18,8 +18,8 @@ return [
         '__file__'   => [],
         '__dir__'   => [],
         'controller'   => [],
-        'model'   => ['grand'],
-        'view'   => [],
+        'model'   => [],
+        'view'   => ['grade/grade_list'],
     ],
     // 其他更多的模块定义
 ];

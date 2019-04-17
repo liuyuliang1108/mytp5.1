@@ -5,16 +5,16 @@ namespace app\admin\controller;
 use \app\admin\controller\Base;
 use app\admin\model\Config;
 use think\Request;
-use think\Db;
+
 
 class ConfigManage extends Base
 {
-    /*配置项列表*/
+    /*配置列表模板*/
     public function configList()
     {
-        $this->view->assign('title', '配置项列表');
-        $this->view->assign('keywords', '配置项列表');
-        $this->view->assign('description', '配置项列表展示实例');
+        $this->view->assign('title', '配置列表');
+        $this->view->assign('keywords', '配置列表关键字');
+        $this->view->assign('description', '配置列表描述');
 
         $this->view->count = Config::count();
         $this->view->assign('count', $this->view->count);
@@ -25,14 +25,18 @@ class ConfigManage extends Base
         return $this->fetch();
     }
 
-    /*config添加*/
+    /*配置添加模板*/
     public function configAdd()
     {
+        /*模板赋值*/
+        $this->view->assign('title', '配置添加');
+        $this->view->assign('keywords', '配置添加关键字');
+        $this->view->assign('description', '配置添加描述');
         /*渲染模板*/
         return $this->fetch();
     }
 
-    /*config项目增加*/
+    /*配置增加保存*/
     public function configAddSave(Request $request)
     {
         //获取传入参数
@@ -54,7 +58,7 @@ class ConfigManage extends Base
 
     }
 
-    /*config停用*/
+    /*配置停用*/
     public function configStop(Request $request)
     {
 
@@ -67,7 +71,7 @@ class ConfigManage extends Base
         return $data;
     }
 
-    /*config启用*/
+    /*配置启用*/
     public function configStart(Request $request)
     {
 
@@ -81,9 +85,13 @@ class ConfigManage extends Base
         return $data;
     }
 
-    /*config编辑*/
+    /*配置编辑模板*/
     public function configEdit(Request $request)
     {
+        /*模板赋值*/
+        $this->view->assign('title', '配置编辑');
+        $this->view->assign('keywords', '配置编辑关键字');
+        $this->view->assign('description', '配置编辑描述');
         //获取传入参数
         $attr = $request->param();
         $id = $attr['id'];
@@ -95,7 +103,7 @@ class ConfigManage extends Base
         return $this->fetch();
     }
 
-    /*config角色编辑*/
+    /*配置角色编辑*/
     public function configEditSave(Request $request)
     {
         //获取传入参数
@@ -110,7 +118,7 @@ class ConfigManage extends Base
         return $data;
     }
 
-    /*Config删除*/
+    /*配置删除*/
     public function configDelete(Request $request)
     {
 
@@ -123,7 +131,7 @@ class ConfigManage extends Base
         return $data;
     }
 
-    /*Config删除恢复*/
+    /*配置删除恢复*/
     public function unDelete()
     {
         //软删除恢复

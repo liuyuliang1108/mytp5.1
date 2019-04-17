@@ -8,7 +8,7 @@
 
 namespace app\admin\model;
 use think\Model;
-use traits\model\SoftDelete;
+use think\model\concern\SoftDelete;
 class Grade extends Model
 {   //班级表
     //引用软删除

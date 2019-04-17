@@ -94,82 +94,95 @@ class Category extends Base //分类管理控制器
     {
         //获取请求参数
         $data = $request->param();
-        //请求参数处理
+
+        //数据处理
         $data['url'] = humpToLine($data['controller']) . '/' . $data['action'] . '.html';
         $data['postman'] = '/' . $data['module'] . '/' . humpToLine($data['controller']) . '/' . $data['action'] . '.html';
         $data['parent_id'] = intval($data['parent_id']);
         $data['order'] = intval($data['order']);
         $data['child_id'] = $data['parent_id'] * 10 + $data['order'];
-
-
         $data['view'] = humpToLine($data['action']);
-
-//调用本模型中的新增方法
-
 
         if (array_key_exists('id', $data)) {//调用本模型中的更新方法
             $category =new CategoryList;
             $result = $category->isUpdate()->save($data);
 
-        }else{//调用本模型中的新增方法
-            $category =new CategoryList;
+        }else {//调用本模型中的新增方法
+            $category = new CategoryList;
             $result = $category->save($data);
-            switch ($data['type']) {
+            if (!$result) {
 
-                case 0:
-                    {
-                        //创建模块module
-                        $result['create'] = CategoryList::createTool($data, 4);
-                        break;
-                    }
-                case 1:
-                    {
-                        //创建控制器
-                        $result['create'] = CategoryList::createTool($data, 1);
-                        break;
-                    }
-                case 2:
-                    {
-                        ///创建模型model
-                        $result['create'] = CategoryList::createTool($data, 3);
-                        break;
-                    }
-                case 3:
-                    {//创建不带视图方法
-                        //创建控制器
-                        $result['create'] = CategoryList::createTool($data, 1);
-                        break;
-                    }
-                case 4:
-                    {//创建带视图方法
-                        //创建控制器
-                        $result['create'] = CategoryList::createTool($data, 1);
+            } else {
+                $result = [];
+                switch ($data['type']) {
+
+                    case 0:
+                        {
+                            //创建模块module
+                            $result['create'] = CategoryList::createTool($data, 4);
+                            break;
+                        }
+                    case 1:
+                        {
+                            //创建控制器
+                            $result['create'] = CategoryList::createTool($data, 1);
+                            break;
+                        }
+                    case 2:
+                        {
+                            ///创建模型model
+                            $result['create'] = CategoryList::createTool($data, 3);
+                            break;
+                        }
+                    case 3:
+                        {//创建不带视图方法
+                            break;
+                        }
+                    case 4:
+                        {//创建带视图方法
+
+                            //创建视图
+                            $result['create'] = CategoryList::createTool($data, 2);
+                            break;
+                        }
+                }
+
+                if ($data['type'] == 5||$data['type'] == 3) {
+                    $result = ['flag' => 1];
+                }else{
+                    if ($result['create']) {
                         $build = include APP_PATH . 'build.php';
-                        $result = Build::run($build);
+                        //生成文件
+                        Build::run($build);
+                    }
+                }
+                $action=$category->status;
+                $model=$data['model'].'Model';
+                $name='班级';
+                switch ($data['status']){
 
-                        //创建视图
-                        $result['create'] = CategoryList::createTool($data, 2);
+                    case 100:{
                         break;
                     }
-            }
-
-            if (!$data['type'] == 5) {
-                if ($result['create']) {
-                    $build = include APP_PATH . 'build.php';
-                    //生成文件
-                    Build::run($build);
+                    case 101:{
+                        self::buildAction($data['module'],$data['controller'],$model, $action,$name);
+                        break;
+                    }
+                    case 202:{
+                        self::buildAction($data['module'],$data['controller'],$model, $action,$name);
+                        break;
+                    }
                 }
             }
 
 
+            if ($result) {
+                $result = ['flag' => 1];
+
+            } else {
+                $result = ['flag' => -1];
+            };
         }
-
-        if ($result) {
-            $result = ['flag' => 1];
-
-        } else {
-            $result = ['flag' => -1];
-        };
         return json_encode($result);//以json格式输出
     }
 

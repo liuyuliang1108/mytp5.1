@@ -32,4 +32,47 @@ class Base extends Controller
             $this->error('用户已登录，请勿重复登录',url('admin/category/index'));
         }
     }
+    /**
+     * 创建方法
+     * @access protected
+     * @param  string $module 模块名
+     * @param  string $controller 控制器名
+     * @param  string $model 模型名
+     * @param  string $action 方法名
+     * @param  string $name 中文名称
+     * @param  bool   $suffix 类库后缀
+     * @return void
+     */
+    protected function buildAction($module, $controller, $model,$action,$name, $suffix = false)
+    {
+        $controllerName=strtolower($controller);
+        $filename = APP_PATH . ($module ? $module . '/' : '') . 'controller' . '/' . $controller . ($suffix ? 'Controller' : '') . '.php';
+        if (is_file($filename)) {
+            $content = file_get_contents( APP_PATH. 'common' . '/'. 'action' . '/' . $action. '.php');
+            $content = str_replace(['{$controllerName}', '{$model}', '{$name}'], [$controllerName,$model,$name], $content);
+            file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
+        }
+    }
+    /**
+     * 创建模型
+     * @access protected
+     * @param  string $module 模块名
+     * @param  string $controller 控制器名
+     * @param  string $model 模型名
+     * @param  string $action 方法名
+     * @param  string $name 中文名称
+     * @param  bool   $suffix 类库后缀
+     * @return void
+     */
+    protected function buildTpl($module, $controller,$action,$name, $suffix = false)
+    {
+        $controllerName=strtolower($controller);
+        $tplName=humpToLine($controller.$action);
+        $filename = APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $controller . ($suffix ? 'Model' : '') .'/' .$tplName. '.html';
+        if (is_file($filename)) {
+            $content = file_get_contents( APP_PATH. 'common' . '/'. 'tpl' . '/' . $action. '.html');
+            $content = str_replace(['{$controllerName}',  '{$name}'], [$controllerName,$name], $content);
+            file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
+        }
+    }
 }

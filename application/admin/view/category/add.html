@@ -89,14 +89,27 @@
             </div>
         </div>
 
-
         <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>显示状态status：</label>
-            <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="" placeholder="" id="" name="status">
-            </div>
+            <label class="form-label col-xs-4 col-sm-3">方法类型</label>
+            <div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:150px;">
+			<select class="select" name="status" size="1">
+                <option value="0">其他</option>
+                <option value="100">默认逻辑层无视图方法：</option>
+                <option value="101">setStatus</option>
+                <option value="102">addSave</option>
+                <option value="103">editSave</option>
+				<option value="104">delete</option>
+				<option value="105">unDelete</option>
+				<option value="106">getTreeData</option>
+				<option value="107">idVerify</option>
+                 <option value="200">默认渲染视图方法：</option>
+                <option value="201">index</option>
+                <option value="202">list</option>
+                <option value="203">add</option>
+				<option value="204">edit</option>
+			</select>
+			</span> </div>
         </div>
-
 
         <div class="row cl">
             <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
