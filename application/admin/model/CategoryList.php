@@ -14,28 +14,11 @@ use think\Model;
 
 class CategoryList extends Model
 {
-    //构造生成器
-//数据表中状态字段，status返回值处理
-    public function getStatusAttr($value)
-    {
-        $status = [
-            100 => 'login_default',
-            101 => 'setStatus',
-            11002 => 'AddSave',
-            103 => 'EditSave',
-            104 => 'Delete',
-            105 => 'unDelete',
-            106 => 'getTreeData',
-            107 => 'idVerify',
-            200 => 'view_default',
-            201 => 'index',
-            202 => 'List',
-            21003 => 'Add',
-            204 => 'Edit',
-            0=>'other',
-        ];
-        return  $status[$value];
-    }
+    // 设置json类型字段
+    protected $json = [
+        'status',
+    ];
+
 
     //构造一个条件查询器，查询结果为对象或由对象组成的数组,返回一个数组
 //分类查询方法

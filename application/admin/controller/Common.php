@@ -88,6 +88,13 @@ class Common extends Base
         $object = new CommonModel;
     //返回bool值
         $data = $object->save($attr);
+    //创建基础文件
+        if ($attr['type']==1) {
+            self::buildBaseAction($attr['value']);
+        }elseif($attr['type']==2){
+            self::buildBaseAction($attr['value']);
+            self::buildBaseTpl($attr['value']);
+        }
         if ($data) {
     //json格式输出
             return json_encode($object);
@@ -96,6 +103,4 @@ class Common extends Base
         }
     }
 }
-
-
 

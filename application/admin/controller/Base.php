@@ -45,12 +45,18 @@ class Base extends Controller
      */
     protected function buildAction($module, $controller, $model,$action,$name, $suffix = false)
     {
+        $actionName=$action;
         //控制器名大驼峰转小驼峰
         $littleController=$controller;
+        //判断是否有对应基础方法
+        $filename=APP_PATH. 'common' . '/'. 'action' . '/' . $action. '.php';
+        if (!is_file($filename)){
+            $action='Base';
+        }
         $filename = APP_PATH . ($module ? $module . '/' : '') . 'controller' . '/' . $controller . ($suffix ? 'Controller' : '') . '.php';
         if (is_file($filename)) {
             $content = file_get_contents( APP_PATH. 'common' . '/'. 'action' . '/' . $action. '.php');
-            $content = str_replace(['{$littleController}', '{$model}', '{$name}'], [$littleController,$model,$name], $content);
+            $content = str_replace(['{$littleController}', '{$model}', '{$name}','{$actionName}'], [$littleController,$model,$name,$actionName], $content);
             file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
         }
     }
@@ -59,20 +65,31 @@ class Base extends Controller
      * @access protected
      * @param  string $module 模块名
      * @param  string $controller 控制器名
-     * @param  string $model 模型名
      * @param  string $action 方法名
      * @param  string $name 中文名称
+     * @param  string $attr 是否控制器前缀
      * @param  bool   $suffix 类库后缀
      * @return void
      */
-    protected function buildTpl($module, $controller,$action,$name, $suffix = false)
+    protected function buildTpl($module, $controller,$action,$name,$attr, $suffix = false)
     {
         //控制器名大驼峰转小驼峰
         $littleController=$controller;
         //控制器名大驼峰转下划线
         $controllerName=humpToLine($controller);;
         $tplName=humpToLine($controller.$action);
-        $filename = APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $controllerName . ($suffix ? 'Model' : '') .'/' .$tplName. '.html';
+        //判断是否有对应基础模板
+        $filename=APP_PATH. 'common' . '/'. 'tpl' . '/' . $action. '.html';
+        if (!is_file($filename)){
+            $action='Base';
+        }
+        //判断是否需控制器名前缀
+        if ($attr) {
+            $filename = APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $controllerName . ($suffix ? 'Model' : '') .'/' .$tplName. '.html';
+        }else{
+            $filename = APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' .$tplName. '.html';
+        }
+
         if (is_file($filename)) {
             $content = file_get_contents( APP_PATH. 'common' . '/'. 'tpl' . '/' . $action. '.html');
             $content = str_replace(['{$littleController}',  '{$name}'], [$littleController,$name], $content);
@@ -91,7 +108,10 @@ class Base extends Controller
      */
     protected function buildController($module, $controller,$model, $suffix = false)
     {
-
+        if ($controller==$model) {
+            //如果模型与控制器名相同，则给模型设置一个别名
+            $model=$model.'Model';
+        }
         $filename = APP_PATH . ($module ? $module . '/' : '') . 'controller' . '/' . $controller . ($suffix ? 'Controller' : '') . '.php';
         if (!is_file($filename)) {//如果已存在该文件则不创建
             $content = file_get_contents( APP_PATH. 'common' . '/'. 'controller' . '/' . 'Base' . '.php');
@@ -112,6 +132,34 @@ class Base extends Controller
         if (!is_file($filename)) {//如果已存在该文件则不创建
             $content = file_get_contents( APP_PATH. 'common' . '/'. 'model' . '/' . 'Base' . '.php');
             $content = str_replace(['{$module}','{$model}'], [$module,$model], $content);
+            file_put_contents($filename, $content);
+        }
+    }
+    /**
+     * 创建公共基础方法
+     * @access protected
+     * @param  string $baseName 基础方法名
+     * @return void
+     */
+    protected function buildBaseAction($baseName)
+    {
+        $filename = APP_PATH  . 'common' . '/' .'action' . '/' . $baseName . '.php';
+        if (!is_file($filename)) {//如果已存在该文件则不创建
+            $content = '{$littleController}'."\n".'{$name}'."\n".'{$model}';
+            file_put_contents($filename, $content);
+        }
+    }
+    /**
+     * 创建公共基础模板
+     * @access protected
+     * @param  string $baseName 基础模板名
+     * @return void
+     */
+    protected function buildBaseTpl($baseName)
+    {
+        $filename = APP_PATH  . 'common' . '/' .'tpl' . '/' . $baseName . '.html';
+        if (!is_file($filename)) {//如果已存在该文件则不创建
+            $content = '{$littleController}'."\n".'{$name}';
             file_put_contents($filename, $content);
         }
     }

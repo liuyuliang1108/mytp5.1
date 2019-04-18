@@ -47,6 +47,24 @@ class Common extends Model
         ];
         return $status[$value];
     }
+    //数据表中类型字段，type返回值处理
+    public function getTypeAttr($value)
+    {
+        $type = [
+            1 => '1.不需渲染视图方法',
+            2 => '2.渲染视图方法',
+        ];
+        return $type[$value];
+    }
+    //数据表中参数字段，attr返回值处理
+    public function getAttrAttr($value)
+    {
+        $attr = [
+            0 => '0.不需控制器名前缀',
+            1 => '1.需控制器名前缀',
+        ];
+        return $attr[$value];
+    }
     //定义关联方法
   /*  public function teacher()
     {

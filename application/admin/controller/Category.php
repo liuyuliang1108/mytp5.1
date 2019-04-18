@@ -10,6 +10,7 @@ namespace app\admin\controller;
 
 use think\facade\Build;
 use app\admin\controller\Base;
+use \app\admin\model\Common as CommonModel;
 use app\admin\model\CategoryList;
 use think\Request;
 
@@ -43,12 +44,6 @@ class Category extends Base //分类管理控制器
         return $this->fetch('');
     }
 
-    public function add()
-    {
-
-        return $this->fetch();
-    }
-
     public function select($cId = 11, $flag = 0)//flag为0是查询操作，为1是新增查询操作
     {
 
@@ -56,7 +51,15 @@ class Category extends Base //分类管理控制器
         if ($flag == 0) {
             return $this->fetch('', ['data' => $data]);
         } else {
-
+            /*获取所有公共模板数据 返回对象数组*/
+            //以类型分类，获取二维对象数组
+            $model = new CommonModel;
+            $list=[];
+            $typeNub=$model->max('type');
+            for ($i=1;$i<=$typeNub;$i++) {
+                $list[$i]=CommonModel::all(['type'=>$i]);
+            }
+            $this->view->assign('list', $list);
             return $this->fetch('add', ['data' => $data]);
         }
 
@@ -99,9 +102,25 @@ class Category extends Base //分类管理控制器
         $data['url'] = humpToLine($data['controller']) . '/' . $data['action'] . '.html';
         $data['postman'] = '/' . $data['module'] . '/' . humpToLine($data['controller']) . '/' . $data['action'] . '.html';
         $data['parent_id'] = intval($data['parent_id']);
-        $data['order'] = intval($data['order']);
+        //自动获取order
+        $model = new CategoryList;
+        $order=$model->where(['parent_id'=>$data['parent_id']])->max('order');
+        if ($order) {
+            $data['order']=$order+1;
+
+        }else{
+            $data['order']=1;
+        }
         $data['child_id'] = $data['parent_id'] * 10 + $data['order'];
         $data['view'] = humpToLine($data['action']);
+        //将字符串转为索引数组
+        $data['status']=substr($data['status'],0, -1) ;
+        $data['status'] = explode ( '|', $data['status'] );
+        //并将字符型数组转成整型数组
+        foreach($data['status'] as $key=>$value)
+        {
+            $data['status'][$key]=(int)$value;
+        }
 
         if (array_key_exists('id', $data)) {//调用本模型中的更新方法
             $category =new CategoryList;
@@ -139,56 +158,58 @@ class Category extends Base //分类管理控制器
                             break;
                         }
                     case 3:
-                        {//创建不带视图方法
+                        {//创建方法
                             break;
                         }
                     case 4:
-                        {//创建带视图方法
-
-                            //创建视图
-                            $result['create'] = CategoryList::createTool($data, 2);
+                        {//创建分类
                             break;
                         }
                 }
 
-                if ($data['type'] == 5||$data['type'] == 3||$data['type'] == 1||$data['type'] == 2) {
-                    $result = ['flag' => 1];
-                }else{
+                if ($data['type'] == 1) {
                     if ($result['create']) {
                         $build = include APP_PATH . 'build.php';
                         //生成文件
                         Build::run($build);
                     }
+                }else{
+                    $result = ['flag' => 1];
                 }
-                $action=$category->status;
-                $model=$data['model'].'Model';
-                //获取控制器中文名
-                $result=CategoryList::get(['child_id'=>$data['parent_id']]);
-                $name=$result->name;
-                switch ($data['status']){
 
-                    case 100:{
-                        break;
+                    $model=$data['model'].'Model';
+                    //获取控制器中文名
+                    $result=CategoryList::get(['child_id'=>$data['parent_id']]);
+                    $name=$result->name;
+
+                if ($data['type']==3) {
+                    if ($data['status'][0]==10000) {
+                        //创建默认无视图方法
+                        self::buildAction($data['module'],$data['controller'],$model, $data['action'],$name);
+                    }elseif ($data['status'][0]==20000){
+                        self::buildAction($data['module'],$data['controller'],$model, $data['action'],$name);
+                        self::buildTpl($data['module'], $data['controller'],$data['action'],$name,0);
+                    }else{
+                        //获取传入公共模板信息
+                        $list = CommonModel::all(['index'=>$data['status']]);
+                        foreach ($list as $key=>$value){
+
+                            $action=$value->value;
+                            $attr=$value->attr;
+                            switch ($value->type){
+                                case 1:{
+                                    self::buildAction($data['module'],$data['controller'],$model, $action,$name);
+                                    break;
+                                }
+                                case 2:{
+                                    self::buildAction($data['module'],$data['controller'],$model, $action,$name);
+                                    self::buildTpl($data['module'], $data['controller'],$action,$name,$attr);
+                                    break;
+                                }
+                            }
+                        }
                     }
-                    case 101:{
-                        self::buildAction($data['module'],$data['controller'],$model, $action,$name);
-                        break;
                     }
-                    case 202:{
-                        self::buildAction($data['module'],$data['controller'],$model, $action,$name);
-                        self::buildTpl($data['module'], $data['controller'],$action,$name);
-                        break;
-                    }
-                    case 21003:{
-                        self::buildAction($data['module'],$data['controller'],$model, $action,$name);
-                        self::buildTpl($data['module'], $data['controller'],$action,$name);
-                        break;
-                    }
-                    case 11002:{
-                        self::buildAction($data['module'],$data['controller'],$model, $action,$name);
-                        break;
-                    }
-                }
             }
 
 
