@@ -1,5 +1,5 @@
 /*{$name}模板*/
-public function {$controllerName}List()
+public function {$littleController}List()
 {
 /*模板赋值*/
 $this->view->assign('title', '{$name}');
@@ -7,13 +7,13 @@ $this->view->assign('keywords', '{$name}关键字');
 $this->view->assign('description', '{$name}描述');
 
 /*获取所有{$name}数据 返回对象数组*/
-${$controllerName} = {$model}::all();
+${$littleController} = {$model}::all();
 
 /*获取记录总数*/
 $count = {$model}::count();
 
-/*遍历{$controllerName}表*/
-foreach (${$controllerName} as $value) {
+/*遍历{$littleController}表*/
+foreach (${$littleController} as $value) {
 $data = [
 'id' => $value->id,
 'name' => $value->name,
@@ -25,7 +25,13 @@ $data = [
 'teacher' => isset($value->teacher->name) ? $value->teacher->name : '<span style="color:red;">未分配</span>'
 ];
 
-/*每次关联查询结果保存到数组${$controllerName}List中*/
-${$controllerName}List[] = $data;
+/*每次关联查询结果保存到数组${$littleController}List中*/
+${$littleController}List[] = $data;
 }
+/*模板赋值*/
+$this->view->assign('{$littleController}List', ${$littleController}List);
+$this->view->assign('count', $count);
+
+/*渲染模板*/
+return $this->fetch();
 }

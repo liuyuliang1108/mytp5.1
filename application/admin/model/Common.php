@@ -38,6 +38,15 @@ class Common extends Model
         //'file_name',
         //'description',
     ];
+    //数据表中状态字段，status返回值处理
+    public function getStatusAttr($value)
+    {
+        $status = [
+            0 => '已停用',
+            1 => '已启用',
+        ];
+        return $status[$value];
+    }
     //定义关联方法
   /*  public function teacher()
     {

@@ -19,7 +19,7 @@ return [
         '__dir__'   => [],
         'controller'   => [],
         'model'   => [],
-        'view'   => ['common/common_list'],
+        'view'   => ['common/common_add'],
     ],
     // 其他更多的模块定义
 ];

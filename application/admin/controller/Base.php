@@ -45,11 +45,12 @@ class Base extends Controller
      */
     protected function buildAction($module, $controller, $model,$action,$name, $suffix = false)
     {
-        $controllerName=strtolower($controller);
+        //控制器名大驼峰转小驼峰
+        $littleController=$controller;
         $filename = APP_PATH . ($module ? $module . '/' : '') . 'controller' . '/' . $controller . ($suffix ? 'Controller' : '') . '.php';
         if (is_file($filename)) {
             $content = file_get_contents( APP_PATH. 'common' . '/'. 'action' . '/' . $action. '.php');
-            $content = str_replace(['{$controllerName}', '{$model}', '{$name}'], [$controllerName,$model,$name], $content);
+            $content = str_replace(['{$littleController}', '{$model}', '{$name}'], [$littleController,$model,$name], $content);
             file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
         }
     }
@@ -66,12 +67,15 @@ class Base extends Controller
      */
     protected function buildTpl($module, $controller,$action,$name, $suffix = false)
     {
-        $controllerName=strtolower($controller);
+        //控制器名大驼峰转小驼峰
+        $littleController=$controller;
+        //控制器名大驼峰转下划线
+        $controllerName=humpToLine($controller);;
         $tplName=humpToLine($controller.$action);
-        $filename = APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $controller . ($suffix ? 'Model' : '') .'/' .$tplName. '.html';
+        $filename = APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $controllerName . ($suffix ? 'Model' : '') .'/' .$tplName. '.html';
         if (is_file($filename)) {
             $content = file_get_contents( APP_PATH. 'common' . '/'. 'tpl' . '/' . $action. '.html');
-            $content = str_replace(['{$controllerName}',  '{$name}'], [$controllerName,$name], $content);
+            $content = str_replace(['{$littleController}',  '{$name}'], [$littleController,$name], $content);
             file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
         }
     }

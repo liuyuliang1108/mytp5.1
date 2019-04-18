@@ -21,7 +21,7 @@ class CategoryList extends Model
         $status = [
             100 => 'login_default',
             101 => 'setStatus',
-            102 => 'AddSave',
+            11002 => 'AddSave',
             103 => 'EditSave',
             104 => 'Delete',
             105 => 'unDelete',
@@ -30,7 +30,7 @@ class CategoryList extends Model
             200 => 'view_default',
             201 => 'index',
             202 => 'List',
-            203 => 'Add',
+            21003 => 'Add',
             204 => 'Edit',
             0=>'other',
         ];

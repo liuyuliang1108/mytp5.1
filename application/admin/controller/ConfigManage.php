@@ -41,6 +41,11 @@ class ConfigManage extends Base
     {
         //获取传入参数
         $attr = $request->param();
+        //数据处理
+        //自动处理排序
+        $object = new Config;
+        $nub=$object->whereBetween('index',[$attr['type']*10000+$attr['attr']*1000,]);
+        $attr['index']=$attr['type']*10000+$attr['attr']*1000+$attr['order'];
         //将字符串转为索引数组
         $attr['file_name'] = explode ( ',', $attr['file_name'] );
         $attr['description'] = explode ( ';', $attr['description'] );
@@ -54,8 +59,6 @@ class ConfigManage extends Base
         }else{
             return null ;
         }
-
-
     }
 
     /*配置停用*/
@@ -223,8 +226,10 @@ class ConfigManage extends Base
             $somecontent .= "&& rmdir tmpgit";
             //更新git管理文件夹状态
             $somecontent .= "&& git reset --hard HEAD";
+            //创建本地分支
+            $somecontent.="&& git branch $type-$name-$workEnv";
             //切换本地分支
-            $somecontent.="&& git checkout –b $type-$name-$workEnv";
+            $somecontent.="&& git checkout $type-$name-$workEnv";
             //修改.gitignore文件
             $somecontent .= "&& echo ''>>.gitignore";
             //遍历配置文件名,写入git管理目录
@@ -238,9 +243,9 @@ class ConfigManage extends Base
             $somecontent.="&& echo '@config-work_env : $workEnv'>>README.md";
             $somecontent.="&& echo '@version : v$version'>>README.md";
             $somecontent.="&& echo '@version : v$version'>>README.md";
-            $somecontent.="&& 'echo @type : $type'>>README.md";
+            $somecontent.="&& echo '@type : $type'>>README.md";
             $desc= implode(';',$description);
-            $somecontent.="&& 'echo @description : $desc'>>README.md";
+            $somecontent.="&& echo '@description : $desc'>>README.md";
         }
 
         $somecontent.="&& git add .";
@@ -346,8 +351,10 @@ return $data;
             $somecontent .= "&& rmdir tmpgit";
             //更新git管理文件夹状态
             $somecontent .= "&& git reset --hard HEAD";
+            //创建本地分支
+            $somecontent.="&& git branch $type-$name-$workEnv";
             //切换本地分支
-            $somecontent.="&& git checkout –b $type-$name-$workEnv";
+            $somecontent.="&& git checkout $type-$name-$workEnv";
             //修改.gitignore文件
             $somecontent .= "&& echo ''>>.gitignore";
             //遍历配置文件名,写入git管理目录
@@ -361,9 +368,9 @@ return $data;
             $somecontent.="&& echo '@config-work_env : $workEnv'>>README.md";
             $somecontent.="&& echo '@version : v$version'>>README.md";
             $somecontent.="&& echo '@version : v$version'>>README.md";
-            $somecontent.="&& 'echo @type : $type'>>README.md";
+            $somecontent.="&& echo '@type : $type'>>README.md";
             $desc= implode(';',$description);
-            $somecontent.="&& 'echo @description : $desc'>>README.md";
+            $somecontent.="&& echo '@description : $desc'>>README.md";
         }
 
             //copy提交后再比较修改，再提交
@@ -410,9 +417,9 @@ public function updateCmd($id,$attr){
         $somecontent.="&& echo '@config-work_env : $workEnv'>>README.md";
         $somecontent.="&& echo '@version : v$version'>>README.md";
         $somecontent.="&& echo '@version : v$version'>>README.md";
-        $somecontent.="&& 'echo @type : $type'>>README.md";
+        $somecontent.="&& echo '@type : $type'>>README.md";
         $desc= implode(';',$description);
-        $somecontent.="&& 'echo @description : $desc'>>README.md";
+        $somecontent.="&& echo '@description : $desc'>>README.md";
     }
 
     //提交版本修改

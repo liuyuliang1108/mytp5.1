@@ -162,7 +162,9 @@ class Category extends Base //分类管理控制器
                 }
                 $action=$category->status;
                 $model=$data['model'].'Model';
-                $name=$data['name'];
+                //获取控制器中文名
+                $result=CategoryList::get(['child_id'=>$data['parent_id']]);
+                $name=$result->name;
                 switch ($data['status']){
 
                     case 100:{
@@ -175,6 +177,15 @@ class Category extends Base //分类管理控制器
                     case 202:{
                         self::buildAction($data['module'],$data['controller'],$model, $action,$name);
                         self::buildTpl($data['module'], $data['controller'],$action,$name);
+                        break;
+                    }
+                    case 21003:{
+                        self::buildAction($data['module'],$data['controller'],$model, $action,$name);
+                        self::buildTpl($data['module'], $data['controller'],$action,$name);
+                        break;
+                    }
+                    case 11002:{
+                        self::buildAction($data['module'],$data['controller'],$model, $action,$name);
                         break;
                     }
                 }
@@ -240,61 +251,6 @@ class Category extends Base //分类管理控制器
         };
         return json_encode($result);//以json格式输出
 
-    }
-
-    public function test()
-    {
-        $array = ['ttt' => [
-            '__file__' => "",
-            '__dir__' => "",
-            'controller' => "",
-            'model' => "'" . 'zzz' . "'",
-            'view' => "",
-        ]
-        ];
-        return buildReplace($array) ? 1 : 0;
-    }
-
-    public function test2()
-    {
-        //  相关的知识点： 正表达式： preg_match_all -- 进行全局正则表达式匹配 preg_replace -- 执行正则表达式的搜索和替换 文件的读和写 file_put_contents--文件写入函数 file_get_contents()--文件
-
-//执行配置文件的修改操作
-        $filename = APP_PATH . 'build.php';
-        dump($filename);
-//echo "<pre>";
-//var_dump($_POST);
-//echo "</pre>";
-
-        $string = file_get_contents($filename);
-//DB_HOST    localhost
-        $data = ['__dir__' => 'hello'];
-        foreach ($data as $key => $val) {
-
-            //定义正则来查找内容，这里面的key为form表单里面的name
-            $yx = "/'$key'\s*=>\s*\[.*/";
-
-            //将内容匹配成对应的key和修改的值
-            $re = "'$key'   => ['$val'],";
-
-            //替换内容
-            $string = preg_replace($yx, $re, $string);
-        }
-
-
-//写入成功
-        file_put_contents($filename, $string);
-
-        $string = file_get_contents($filename);
-
-    }
-
-    public function test4()
-    {
-        $build = include APP_PATH . 'build.php';
-        dump($build);
-        $result = Build::run($build);
-        dump($result);
     }
 }
 

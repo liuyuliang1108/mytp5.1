@@ -34,11 +34,12 @@
             <th width="25"><input type="checkbox" name="" value=""></th>
             <th width="40">ID</th>
             <th width="40">公共模板列表名</th>
-            <th width="40">学制</th>
-            <th width="40">学费</th>
-            <th width="40">启用状态</th>
-            <th width="60"创建时间</th>
-            <th width="40">班主任</th>
+            <th width="40">文件名</th>
+            <th width="40">类型</th>
+            <th width="40">索引</th>
+            <th width="40">参数</th>
+            <th width="40">状态</th>
+            <th width="60">创建时间</th>
             <th width="100">操作</th>
         </tr>
         </thead>
@@ -48,10 +49,10 @@
             <td><input type="checkbox" value="{$key}" name=""></td>
             <td>{$vo.id}</td>
             <td>{$vo.name}</td>
-            <td>{$vo.length}</td>
-            <td>{$vo.price}</td>
-        <!-- <td>{:implode(',',$vo.file_name)}</td>-->
-
+            <td>{$vo.value}</td>
+            <td>{$vo.type}</td>
+            <td>{$vo.index}</td>
+            <td>{$vo.attr}</td>
             <!--启用停用权限仅admin用户使用-->
             {eq name="$Think.session.user_info.name" value="admin"}
             <td class="td-status">
@@ -62,7 +63,7 @@
             {/if}
             </td>
             {/eq}
-            <td>{$vo.teacher}</td>
+            <td>{$vo.create_time}</td>
 
             <td class="td-manage">
                 <!--启用停用权限及删除仅admin用户使用-->
