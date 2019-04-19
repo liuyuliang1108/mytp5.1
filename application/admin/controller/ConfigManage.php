@@ -193,8 +193,10 @@ class ConfigManage extends Base
             $somecontent.="&& rd tmpgit";
             //更新git管理文件夹状态
             $somecontent.="&& git reset --hard HEAD";
+            //创建本地分支
+            $somecontent.="&& git branch $type-$name-$workEnv";
             //切换本地分支
-            $somecontent.="&& git checkout –b $type-$name-$workEnv";
+            $somecontent.="&& git checkout $type-$name-$workEnv";
             //修改.gitignore文件
             $somecontent.="&& echo.>>.gitignore";
             //遍历配置文件名,写入git管理目录
@@ -325,8 +327,10 @@ return $data;
             $somecontent.="&& rd tmpgit";
             //更新git管理文件夹状态
             $somecontent.="&& git reset --hard HEAD";
+            //创建本地分支
+            $somecontent.="&& git branch $type-$name-$workEnv";
             //切换本地分支
-            $somecontent.="&& git checkout –b $type-$name-$workEnv";
+            $somecontent.="&& git checkout $type-$name-$workEnv";
             //修改.gitignore文件
             $somecontent.="&& echo.>>.gitignore";
             //遍历配置文件名,写入git管理目录
