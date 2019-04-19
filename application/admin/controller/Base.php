@@ -48,35 +48,42 @@ class Base extends Controller
         $actionName=$action;
         //控制器名大驼峰转小驼峰
         $littleController=$controller;
+        //控制器名大驼峰转下划线
+        $underlineController=humpToLine($controller);
         //判断是否有对应基础方法
         $filename=APP_PATH. 'common' . '/'. 'action' . '/' . $action. '.php';
         if (!is_file($filename)){
             $action='Base';
         }
         $filename = APP_PATH . ($module ? $module . '/' : '') . 'controller' . '/' . $controller . ($suffix ? 'Controller' : '') . '.php';
-        if (is_file($filename)) {
+
             $content = file_get_contents( APP_PATH. 'common' . '/'. 'action' . '/' . $action. '.php');
             $content = str_replace(['{$littleController}', '{$model}', '{$name}','{$actionName}'], [$littleController,$model,$name,$actionName], $content);
             file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
-        }
+
     }
+
     /**
-     * 创建模型
+     * @name buildTpl
+     * @decs
+     * @abstract 申明变量/类/方法
      * @access protected
-     * @param  string $module 模块名
-     * @param  string $controller 控制器名
-     * @param  string $action 方法名
-     * @param  string $name 中文名称
-     * @param  string $attr 是否控制器前缀
-     * @param  bool   $suffix 类库后缀
-     * @return void
+     * 关联数据库：
+     * @param $module
+     * @param $controller
+     * @param $action
+     * @param $name
+     * @param $attr
+     * @param bool $suffix
+     * User: yliang_liu
+     * Created on: 2019/4/19 10:33
      */
     protected function buildTpl($module, $controller,$action,$name,$attr, $suffix = false)
     {
         //控制器名大驼峰转小驼峰
         $littleController=$controller;
         //控制器名大驼峰转下划线
-        $controllerName=humpToLine($controller);;
+        $underlineController=humpToLine($controller);
         $tplName=humpToLine($controller.$action);
         //判断是否有对应基础模板
         $filename=APP_PATH. 'common' . '/'. 'tpl' . '/' . $action. '.html';
@@ -85,16 +92,15 @@ class Base extends Controller
         }
         //判断是否需控制器名前缀
         if ($attr) {
-            $filename = APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $controllerName . ($suffix ? 'Model' : '') .'/' .$tplName. '.html';
+            $filename = APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $underlineController . ($suffix ? 'Model' : '') .'/' .$tplName. '.html';
         }else{
             $filename = APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' .$tplName. '.html';
         }
 
-        if (is_file($filename)) {
             $content = file_get_contents( APP_PATH. 'common' . '/'. 'tpl' . '/' . $action. '.html');
-            $content = str_replace(['{$littleController}',  '{$name}'], [$littleController,$name], $content);
+            $content = str_replace(['{$littleController}','{$underlineController}','{$name}'], [$littleController,$underlineController,$name], $content);
             file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
-        }
+
     }
     /**
      * 创建默认控制器
@@ -145,7 +151,7 @@ class Base extends Controller
     {
         $filename = APP_PATH  . 'common' . '/' .'action' . '/' . $baseName . '.php';
         if (!is_file($filename)) {//如果已存在该文件则不创建
-            $content = '{$littleController}'."\n".'{$name}'."\n".'{$model}';
+            $content = '{$littleController}小驼峰控制器名'."\n".'{$name}控制器中文名'."\n".'{$model}模型名';
             file_put_contents($filename, $content);
         }
     }
@@ -159,7 +165,7 @@ class Base extends Controller
     {
         $filename = APP_PATH  . 'common' . '/' .'tpl' . '/' . $baseName . '.html';
         if (!is_file($filename)) {//如果已存在该文件则不创建
-            $content = '{$littleController}'."\n".'{$name}';
+            $content = '{$littleController}小驼峰控制器名'."\n".'{$underlineController}下划线控制器名'."\n".'{$name}控制器中文名';
             file_put_contents($filename, $content);
         }
     }

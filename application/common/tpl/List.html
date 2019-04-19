@@ -23,7 +23,7 @@
     <div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l">
         <a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
         <a href="javascript:;" onclick="unDelete()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe600;</i> 批量恢复</a>
-        <a href="javascript:;" onclick="{$controllerName}_add('添加{$name}','{:url('{$controllerName}/{$controllerName}Add')}','800','500')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加{$name}</a>
+        <a href="javascript:;" onclick="{$underlineController}_add('添加{$name}','{:url('{$underlineController}/{$littleController}Add')}','800','500')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加{$name}</a>
     </span> <span class="r">共有数据：<strong>{$count}</strong> 条</span> </div>
     {/eq}
     <table class="table table-border table-bordered table-bg">
@@ -44,7 +44,7 @@
         </tr>
         </thead>
         <tbody>
-        {volist name='{$controllerName}List' id='vo'}
+        {volist name='list' id='vo'}
         <tr class="text-c">
             <td><input type="checkbox" value="{$key}" name=""></td>
             <td>{$vo.id}</td>
@@ -70,17 +70,17 @@
                 {eq name="$Think.session.user_info.name" value="admin"}
                 <a style="text-decoration:none" onClick="
                 {if condition="$vo.status eq '已启用'"}
-                {$controllerName}_stop(this,'{$vo.id}')" href="javascript:;" title="停用"><i class="Hui-iconfont">&#xe631;</i></a>
+                {$underlineController}_stop(this,'{$vo.id}')" href="javascript:;" title="停用"><i class="Hui-iconfont">&#xe631;</i></a>
                 {else/}
-                {$controllerName}_start(this,'{$vo.id}')" href="javascript:;" title="启用"><i class="Hui-iconfont">&#xe615;</i></a>
+                {$underlineController}_start(this,'{$vo.id}')" href="javascript:;" title="启用"><i class="Hui-iconfont">&#xe615;</i></a>
                 {/if}
                 {/eq}
-                <a title="编辑" href="javascript:;" onclick="{$controllerName}_edit('{$name}编辑','{:url('{$controllerName}/{$controllerName}Edit',['id'=>$vo.id])}','800','500')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a>
+                <a title="编辑" href="javascript:;" onclick="{$underlineController}_edit('{$name}编辑','{:url('{$underlineController}/{$littleController}Edit',['id'=>$vo.id])}','800','500')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a>
                 {eq name="$Think.session.user_info.name" value="admin"}
-                <a title="删除" href="javascript:;" onclick="{$controllerName}_del(this,'{$vo.id}')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a>
+                <a title="删除" href="javascript:;" onclick="{$underlineController}_del(this,'{$vo.id}')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a>
                 {/eq}
                 {eq name="$Think.session.user_info.name" value="admin"}
-                <a href="javascript:;" onclick="git_manage('git管理','{:url('{$controllerName}/gitManage',['id'=>$vo.id])}','800','500')" class="btn btn-primary radius">
+                <a href="javascript:;" onclick="git_manage('git管理','{:url('{$underlineController}/gitManage',['id'=>$vo.id])}','800','500')" class="btn btn-primary radius">
                     <i class="Hui-iconfont"></i> git管理</a>
                 {/eq}
             </td>
@@ -112,16 +112,16 @@
 
 
     /*{$name}-停用*/
-    function {$controllerName}_stop(obj,id) {
+    function {$underlineController}_stop(obj,id) {
         layer.confirm('确认要停用吗？', function (index) {
             //此处请求后台程序，下方是成功后的前台处理……
             $.ajax({
                 type: 'get',
-                url: "{:url('{$controllerName}/setStatus')}",
+                url: "{:url('{$underlineController}/setStatus')}",
                 data: {id: id},
                 dataType: 'json',
                 success: function (data) {
-                    $(obj).parents("tr").find(".td-manage").prepend('<a onClick="{$controllerName}_start(this,id)" href="javascript:;" title="启用" style="text-decoration:none"><i class="Hui-iconfont">&#xe615;</i></a>');
+                    $(obj).parents("tr").find(".td-manage").prepend('<a onClick="{$underlineController}_start(this,id)" href="javascript:;" title="启用" style="text-decoration:none"><i class="Hui-iconfont">&#xe615;</i></a>');
                     $(obj).parents("tr").find(".td-status").html('<span class="label label-default radius">已禁用</span>');
                     $(obj).remove();
                     layer.msg('已停用!', {icon: 5, time: 1000});
@@ -131,16 +131,16 @@
     }
 
     /*{$name}-启用*/
-    function {$controllerName}_start(obj,id){
+    function {$underlineController}_start(obj,id){
         layer.confirm('确认要启用吗？',function(index){
             //此处请求后台程序，下方是成功后的前台处理……
             $.ajax({
                 type: 'get',
-                url: "{:url('{$controllerName}/setStatus')}",
+                url: "{:url('{$underlineController}/setStatus')}",
                 data:{id:id},
                 dataType: 'json',
                 success: function(data) {
-                    $(obj).parents("tr").find(".td-manage").prepend('<a onClick="{$controllerName}_stop(this,id)" href="javascript:;" title="停用" style="text-decoration:none"><i class="Hui-iconfont">&#xe631;</i></a>');
+                    $(obj).parents("tr").find(".td-manage").prepend('<a onClick="{$underlineController}_stop(this,id)" href="javascript:;" title="停用" style="text-decoration:none"><i class="Hui-iconfont">&#xe631;</i></a>');
                     $(obj).parents("tr").find(".td-status").html('<span class="label label-success radius">已启用</span>');
                     $(obj).remove();
                     layer.msg('已启用!', {icon: 6,time:1000});
@@ -150,22 +150,22 @@
     }
 
     /*{$name}-增加*/
-    function {$controllerName}_add(title,url,w,h){
+    function {$underlineController}_add(title,url,w,h){
         layer_show(title,url,w,h);
     }
 
     /*{$name}-编辑*/
-    function {$controllerName}_edit(title,url,w,h){
+    function {$underlineController}_edit(title,url,w,h){
 
         layer_show(title,url,w,h);
     }
 
     /*{$name}-删除*/
-    function {$controllerName}_del(obj,id){
+    function {$underlineController}_del(obj,id){
         layer.confirm('确认要删除吗？',function(){
             $.ajax({
                 type: 'get',
-                url: "{:url('{$controllerName}/{$controllerName}Delete')}",
+                url: "{:url('{$underlineController}/{$littleController}Delete')}",
                 data:{id:id},
                 dataType: 'json',
                 success: function(data){
@@ -184,7 +184,7 @@
             //此处请求后台程序，下方是成功后的前台处理……
             $.ajax({
                 type: 'get',
-                url: "{:url('{$controllerName}/unDelete')}",
+                url: "{:url('{$underlineController}/unDelete')}",
                 dataType: 'json',
                 success: function(data) {
                     layer.msg('已恢复!', {icon: 6,time:1000});

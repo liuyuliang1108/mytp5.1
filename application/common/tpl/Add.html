@@ -116,7 +116,7 @@ $(function(){
 		submitHandler:function(form){
 			$(form).ajaxSubmit({
 				type: 'post',
-				url: "{:url('{$littleController}/{$littleController}AddSave')}" ,
+				url: "{:url('{$underlineController}/{$littleController}AddSave')}" ,
 				success: function(data){
 
 					layer.msg('添加成功!',{icon:1,time:1000});

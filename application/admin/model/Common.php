@@ -31,7 +31,7 @@ class Common extends Model
 
     //字段类型转换
     protected $type =[
-        //   'id'=>'integer',
+           'id'=>'integer',
     ];
     // 设置json类型字段
     protected $json = [

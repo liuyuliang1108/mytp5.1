@@ -52,16 +52,16 @@ class Grade extends Base
     public function setStatus(Request $request)
     {
         //获取传入班级id
-        $grade_id = $request->param('id');
+        $id = $request->param('id');
 
         //查询数据表
-        $result = GradeModel::get($grade_id);
+        $result = GradeModel::get($id);
 
         //启用和禁用状态处理
-        if ($result->getDate('status') == 1) {
-            GradeModel::update(['status' => 0], ['id' => $grade_id]);
+        if ($result->status == '已启用') {
+            GradeModel::update(['status' => 0], ['id' => $id]);
         } else {
-            GradeModel::update(['status' => 1], ['id' => $grade_id]);
+            GradeModel::update(['status' => 1], ['id' => $id]);
         }
     }
 

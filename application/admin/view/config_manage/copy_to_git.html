@@ -16,13 +16,13 @@
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>配置项名称</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="{$config_info.name}" placeholder="" id="configName" name="name">
+				<input type="text" class="input-text" value="{$info.name}" placeholder="" id="configName" name="name">
 			</div>
 		</div>
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>工作环境</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="{$config_info.work_env}" placeholder="" id="work_env" name="work_env">
+				<input type="text" class="input-text" value="{$info.work_env}" placeholder="" id="work_env" name="work_env">
 			</div>
 		</div>
 		<div class="row cl">
@@ -32,12 +32,12 @@
 
 			<select class="select" name="type" size="1">
 				<option value="0"
-						{eq name="$config_info.type" value="win"}
+						{eq name="$info.type" value="win"}
 						selected
 						{/eq}
 				>win</option>
 				<option value="1"
-						{eq name="$config_info.type" value="linux"}
+						{eq name="$info.type" value="linux"}
 						selected
 						{/eq}
 				>linux</option>
@@ -48,7 +48,7 @@
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>配置文件名</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="{:implode(',',$config_info.file_name)}" placeholder="" id="fileName" name="file_name">
+				<input type="text" class="input-text" value="{:implode(',',$info.file_name)}" placeholder="" id="fileName" name="file_name">
 			</div>
 		</div>
 
@@ -56,14 +56,14 @@
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>配置项所在目录</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="{$config_info.dir}" placeholder="" id="configDir" name="dir">
+				<input type="text" class="input-text" value="{$info.dir}" placeholder="" id="configDir" name="dir">
 			</div>
 		</div>
 
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>配置项版本</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="{$config_info.version}" placeholder="" id="configVersion" name="version">
+				<input type="text" class="input-text" value="{$info.version}" placeholder="" id="configVersion" name="version">
 			</div>
 		</div>
 
@@ -72,12 +72,12 @@
 			<div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:150px;">
 			<select class="select" name="status" size="1">
 				<option value="0"
-						{eq name="$config_info.status" value="已停用"}
+						{eq name="$info.status" value="已停用"}
 						selected
 						{/eq}
 				>停用</option>
 				<option value="1"
-						{eq name="$config_info.status" value="已启用"}
+						{eq name="$info.status" value="已启用"}
 						selected
 						{/eq}
 				>启用</option>
@@ -88,15 +88,17 @@
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>版本描述</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="{:implode(';',$config_info.description)}" placeholder="" id="configDescription" name="description">
+				<input type="text" class="input-text" value="{:implode(';',$info.description)}" placeholder="" id="configDescription" name="description">
 			</div>
 		</div>
 
 	<div class="row cl">
 		<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
-			<input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;新增环境，并生成copy to git命令&nbsp;&nbsp;">
+			<input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;新增环境，并生成命令&nbsp;&nbsp;">
 		</div>
 	</div>
+
+
 	</form>
 	<form class="form form-horizontal" id="form-config-cmd">
 	<div class="row cl">
@@ -104,7 +106,7 @@
 		<div class="formControls col-xs-8 col-sm-9">
                 <textarea id="textarea_cate" name="remark" cols="" rows="" class="textarea" placeholder="" datatype="*10-100"
 						  dragonfly="true" nullmsg="备注不能为空！"></textarea>
-			<input type="hidden" id="copy-id" name="copy-id" value="{$config_info.id}">
+			<input type="hidden" id="copy-id" name="copy-id" value="{$info.id}">
 			<a href="javascript:void(0);" id="cp-btn" class="btn btn-primary radius"style="margin-top: 10px">
 				<i class="Hui-iconfont"></i>复制到剪辑板</a>
 			<div id="exec-btn"> </div>
@@ -124,8 +126,14 @@
 <script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/validate-methods.js"></script>
 <script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/messages_zh.js"></script>
 <script type="text/javascript">
-	var attr ='{$config_info.id}';
+	var attr ='{$info.id}';
 	var id=0;
+	{if condition="$flag eq '0'"}
+	var url="{:url('admin/config_manage/copyGit')}";
+	{else/}
+		var url="{:url('admin/config_manage/copyInit')}";
+		{/if}
+
 
 $(function(){
 	$('.skin-minimal input').iCheck({
@@ -156,7 +164,7 @@ $(function(){
 		submitHandler:function(form){
 			$(form).ajaxSubmit({
 				type: 'post',
-				url: "{:url('config_manage/configAddSave')}" ,
+				url: "{:url('admin/config_manage/configAddSave')}" ,
 				success: function(data){
 					var data = JSON.parse(data);
 					layer.msg('新增环境成功!',{icon:1,time:1000});
@@ -168,7 +176,7 @@ $(function(){
 					}
 					$.ajax({
 						type: 'post',
-						url: "{:url('admin/config_manage/copyGit')}",
+						url: url,
 						data: {copyId:$('#copy-id').val(),
 							id:data.id},
 						dataType: 'json',
@@ -198,7 +206,7 @@ function exec_cmd() {
 	$.ajax({
 		type: 'post',
 		url: "{:url('admin/config_manage/execCmd')}",
-		data: {flag:0,
+		data: {flag:{$flag},
 			id:id,
 			attr:attr},
 		dataType: 'json',

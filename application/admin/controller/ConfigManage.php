@@ -42,10 +42,7 @@ class ConfigManage extends Base
         //获取传入参数
         $attr = $request->param();
         //数据处理
-        //自动处理排序
-        $object = new Config;
-        $nub=$object->whereBetween('index',[$attr['type']*10000+$attr['attr']*1000,]);
-        $attr['index']=$attr['type']*10000+$attr['attr']*1000+$attr['order'];
+
         //将字符串转为索引数组
         $attr['file_name'] = explode ( ',', $attr['file_name'] );
         $attr['description'] = explode ( ';', $attr['description'] );
@@ -61,31 +58,29 @@ class ConfigManage extends Base
         }
     }
 
-    /*配置停用*/
-    public function configStop(Request $request)
+    /**
+     * @name setStatus
+     * @decs 设定状态
+     * @abstract 申明变量/类/方法
+     * @access public protected static
+     * 关联数据库：
+     * @param Request $request
+     * User: yliang_liu
+     * Created on: 2019/4/19 14:01
+     */
+    public function setStatus(Request $request)
     {
+        //获取传入公共模板id
+        $id = $request->param('id');
 
-        //获取传入参数
-        $attr = $request->param();
-        $id = $attr['id'];
-        //使用模型save方法,返回bool值
-        $object = new Config;
-        $data = $object->isUpdate()->save(['status' => 0], ['id' => $id]);
-        return $data;
-    }
-
-    /*配置启用*/
-    public function configStart(Request $request)
-    {
-
-        //获取传入参数
-        $attr = $request->param();
-        $id = $attr['id'];
-        //使用模型save方法,返回bool值
-        $object = new Config;
-        $data = $object->isUpdate()->save(['status' => 1], ['id' => $id]);
-
-        return $data;
+        //查询数据表
+        $model=Config::get($id);
+        //启用和禁用状态处理
+        if ($model->status == '已启用') {
+            Config::update(['status' => 0], ['id' => $id]);
+        } else {
+            Config::update(['status' => 1], ['id' => $id]);
+        }
     }
 
     /*配置编辑模板*/
@@ -167,7 +162,7 @@ class ConfigManage extends Base
         return $this->fetch();
     }
 
-    public function initLoad($id,$attr)
+    public function initLoad($id)
     {
 
         //获取传入参数
@@ -186,7 +181,7 @@ class ConfigManage extends Base
         $somecontent = "cd $dir";
         //克隆配置git管理项目至临时文件夹
         $somecontent.="&& git clone git@github.com:liuyuliang1108/myconfig.git tmpgit";
-        if ($attr=='win') {
+        if ($type=='win') {
             //将tmpgit内文件及文件夹移出，再删除目录
             $somecontent.="&& move tmpgit\*.* ./";
             //将.git隐藏文件夹 去除隐藏状态
@@ -216,7 +211,7 @@ class ConfigManage extends Base
             $somecontent.="&& echo @type : $type>>README.md";
             $desc= implode(';',$description);
             $somecontent.="&& echo @description : $desc>>README.md";
-        }elseif($attr=='linux'){
+        }elseif($type=='linux'){
             //给tmpgit执行权限
             $somecontent .= "&& chmod +x tmpgit";
             //将tmpgit内文件及文件夹移出，再删除目录
@@ -257,7 +252,7 @@ return $data;
     }
     public function execCmd($flag,$id,$attr){
         if ($flag==1) {
-            $data=self::initLoad($id,$attr);//获取初始化命令
+            $data=self::initLoad($id);//获取初始化命令
         }elseif($flag==0){
             $data=self::copyGit($attr,$id);//获取copy命令
         }elseif($flag==2){
@@ -275,15 +270,17 @@ return $data;
     }
 
     /*config工作环境编辑*/
-    public function copyToGit($id)
+    public function copyToGit($id,$flag)
     {
         //使用模型get方法,返回model对象
-        $result = Config::get(['id' => $id]);
+        $model = Config::get(['id' => $id]);
         //模板赋值
-        $this->view->assign('config_info', $result);
+        $this->view->assign('info', $model);
+        $this->view->assign('flag', $flag);
         /*渲染模板*/
         return $this->fetch();
     }
+
     /*config更新版本*/
     public function updateVersion($id)
     {
@@ -293,6 +290,11 @@ return $data;
         $this->view->assign('config_info', $result);
         /*渲染模板*/
         return $this->fetch();
+    }
+    public function copyInit($copyId,$id){
+
+        $data = self::initLoad($id);
+        return $data;
     }
     public function copyGit($copyId,$id){
 
