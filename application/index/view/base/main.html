@@ -1,0 +1,22 @@
+
+<!--base.html是基础模板，可供其他模板继承-->
+{include file='base/meta' /}
+
+{block name="seo"}
+网站标题关键词与描述
+{/block}
+
+{block name="content"}
+页面主体内容
+{/block}
+
+<!--尾部信息及公共js文件引用-->
+{include file='base/main_footer' /}
+
+{block name="js"}
+用户自定义js脚本
+{/block}
+
+</body>
+</html>
+

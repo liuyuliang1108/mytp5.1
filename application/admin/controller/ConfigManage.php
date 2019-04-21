@@ -112,8 +112,8 @@ class ConfigManage extends Base
         $id = $attr['id'];
         //使用模型save方法,返回bool值
         $object = new Config;
-        $data = $object->isUpdate()->save($attr, ['id' => $id]);
-        return $data;
+        $object->isUpdate()->save($attr, ['id' => $id]);
+        return $object;
     }
 
     /*配置删除*/
@@ -123,9 +123,12 @@ class ConfigManage extends Base
         //获取传入参数
         $attr = $request->param();
         $id = $attr['id'];
-        //使用模型update方法,返回model对象,软删除
-        $data= Config::destroy(['id' => $id]);
-        //使用删除事件同时将is_delete字段修改为1
+
+        //使用模型update方法,将is_delete字段修改为1
+        Config::update(['is_delete' => 1], ['id' => $id]);
+
+        //使用模型destroy方法,软删除,修改delete_time字段
+        $data = Config::destroy(['id' => $id]);
         return $data;
     }
 
@@ -282,22 +285,30 @@ return $data;
         /*渲染模板*/
         return $this->fetch();
     }
+    public function cloneGit(Request $request){
+        //获取传入参数
+        $attr = $request->param();
+        //数据处理
+
+        //将字符串转为索引数组
+        $attr['file_name'] = explode ( ',', $attr['file_name'] );
+        $attr['description'] = explode ( ';', $attr['description'] );
+
+
+    }
 
     /*config更新版本*/
-    public function updateVersion($id)
+    public function updateVersion($id,$flag)
     {
         //使用模型get方法,返回model对象
         $result = Config::get(['id' => $id]);
         //模板赋值
         $this->view->assign('config_info', $result);
+        $this->view->assign('flag', $flag);
         /*渲染模板*/
         return $this->fetch();
     }
-    public function copyInit($copyId,$id){
 
-        $data = self::initLoad($id);
-        return $data;
-    }
     public function copyGit($copyId,$id){
 
         //使用模型get方法,返回model对象
@@ -388,7 +399,7 @@ return $data;
         }
 
 //生成更新版本命令
-public function updateCmd($id,$attr){
+public function updateCmd($id,$attr,$flag){
     if (!$attr) {//修改版本启用状态信息
         //使用模型save方法,返回bool值
         $object = new Config;
@@ -404,37 +415,157 @@ public function updateCmd($id,$attr){
     $workEnv=$list['work_env'];
     $fileName=$list['file_name'];
     $somecontent = "cd $dir";
-    if ( $type=='win') {
-        //修改README.md文件
-        $somecontent.="&& echo.>>README.md";
-        $somecontent.="&& echo ---------------------------------------------------------->>README.md";
-        $somecontent.="&& echo @config-title : $name>>README.md";
-        $somecontent.="&& echo @config-work_env : $workEnv>>README.md";
-        $somecontent.="&& echo @version : v$version>>README.md";
-        $somecontent.="&& echo @version : v$version>>README.md";
-        $somecontent.="&& echo @type : $type>>README.md";
-        $desc= implode(';',$description);
-        $somecontent.="&& echo @description : $desc>>README.md";
-    }elseif($type=='linux'){
-        //修改README.md文件
-        $somecontent.="&& echo ''>>README.md";
-        $somecontent.="&& echo '----------------------------------------------------------'>>README.md";
-        $somecontent.="&& echo '@config-title : $name'>>README.md";
-        $somecontent.="&& echo '@config-work_env : $workEnv'>>README.md";
-        $somecontent.="&& echo '@version : v$version'>>README.md";
-        $somecontent.="&& echo '@version : v$version'>>README.md";
-        $somecontent.="&& echo '@type : $type'>>README.md";
-        $desc= implode(';',$description);
-        $somecontent.="&& echo '@description : $desc'>>README.md";
+    if ($flag==0) {
+        $somecontent.="&& git clone -b $type-$name-$workEnv git@github.com:liuyuliang1108/myconfig.git tmpgit";
+        if ( $type=='win') {
+            //将tmpgit内文件及文件夹移出，再删除目录
+            $somecontent.="&& move tmpgit\*.* ./";
+            //将.git隐藏文件夹 去除隐藏状态
+            $somecontent.="&& attrib -h tmpgit\.git";
+            $somecontent.="&& move tmpgit\.git ./";
+            //再将.git文件夹加上隐藏状态
+            $somecontent.="&& attrib +h .git";
+            //删除临时文件夹，以及被git控制文件
+            $somecontent.="&&rd /s/q tmpgit";
+            //更新git管理文件夹状态
+            $somecontent.="&& git reset --hard HEAD";
+
+
+            //修改README.md文件
+            $somecontent.="&& echo.>>README.md";
+            $somecontent.="&& echo ---------------------------------------------------------->>README.md";
+            $somecontent.="&& echo @config-title : $name>>README.md";
+            $somecontent.="&& echo @config-work_env : $workEnv>>README.md";
+            $somecontent.="&& echo @version : v$version>>README.md";
+            $somecontent.="&& echo @version : v$version>>README.md";
+            $somecontent.="&& echo @type : $type>>README.md";
+            $desc= implode(';',$description);
+            $somecontent.="&& echo @description : $desc>>README.md";
+        }elseif($type=='linux'){
+            //给tmpgit执行权限
+            $somecontent .= "&& chmod +x tmpgit";
+            //将tmpgit内文件及文件夹移出，再删除目录
+            $somecontent .= "&& mv tmpgit/* .";
+            $somecontent .= "&& mv tmpgit/.[^.]* .";
+            //删除临时文件夹，以及被git控制文件
+            $somecontent .= "&& rm -rf tmpgit";
+            //更新git管理文件夹状态
+            $somecontent .= "&& git reset --hard HEAD";
+
+            //修改README.md文件
+            $somecontent.="&& echo ''>>README.md";
+            $somecontent.="&& echo '----------------------------------------------------------'>>README.md";
+            $somecontent.="&& echo '@config-title : $name'>>README.md";
+            $somecontent.="&& echo '@config-work_env : $workEnv'>>README.md";
+            $somecontent.="&& echo '@version : v$version'>>README.md";
+            $somecontent.="&& echo '@version : v$version'>>README.md";
+            $somecontent.="&& echo '@type : $type'>>README.md";
+            $desc= implode(';',$description);
+            $somecontent.="&& echo '@description : $desc'>>README.md";
+        }
+    }else{
+        if ( $type=='win') {
+            //修改README.md文件
+            $somecontent.="&& echo.>>README.md";
+            $somecontent.="&& echo ---------------------------------------------------------->>README.md";
+            $somecontent.="&& echo @config-title : $name>>README.md";
+            $somecontent.="&& echo @config-work_env : $workEnv>>README.md";
+            $somecontent.="&& echo @version : v$version>>README.md";
+            $somecontent.="&& echo @version : v$version>>README.md";
+            $somecontent.="&& echo @type : $type>>README.md";
+            $desc= implode(';',$description);
+            $somecontent.="&& echo @description : $desc>>README.md";
+        }elseif($type=='linux'){
+            //修改README.md文件
+            $somecontent.="&& echo ''>>README.md";
+            $somecontent.="&& echo '----------------------------------------------------------'>>README.md";
+            $somecontent.="&& echo '@config-title : $name'>>README.md";
+            $somecontent.="&& echo '@config-work_env : $workEnv'>>README.md";
+            $somecontent.="&& echo '@version : v$version'>>README.md";
+            $somecontent.="&& echo '@version : v$version'>>README.md";
+            $somecontent.="&& echo '@type : $type'>>README.md";
+            $desc= implode(';',$description);
+            $somecontent.="&& echo '@description : $desc'>>README.md";
+        }
+
     }
 
     //提交版本修改
     $somecontent.="&& git add . ";
     $somecontent.="&& git commit -m 'v$version,$desc'";
-    $somecontent.="&& git push";
+    $somecontent.="&& git push -u origin $type-$name-$workEnv:$type-$name-$workEnv";
     $data=['cmd'=>$somecontent];
     return $data;
 }
+//生成初始更新版本命令
+    public function initUpdateCmd($id,$attr){
+        if (!$attr) {//修改版本启用状态信息
+            //使用模型save方法,返回bool值
+            $object = new Config;
+            $object->isUpdate()->save(['status' => 0], ['id' => $attr]);
+        }
+        //使用模型get方法,返回model对象
+        $list = Config::get(['id' => $id]);
+        $name=$list['name'];
+        $dir=$list['dir'];
+        $version=$list['version'];
+        $description=$list['description'];
+        $type=$list['type'];
+        $workEnv=$list['work_env'];
+        $fileName=$list['file_name'];
+        $somecontent = "cd $dir";
+        $somecontent.="&& git clone -b $type-$name-$workEnv git@github.com:liuyuliang1108/myconfig.git tmpgit";
+        if ( $type=='win') {
+            //将tmpgit内文件及文件夹移出，再删除目录
+            $somecontent.="&& move tmpgit\*.* ./";
+            //将.git隐藏文件夹 去除隐藏状态
+            $somecontent.="&& attrib -h tmpgit\.git";
+            $somecontent.="&& move tmpgit\.git ./";
+            //再将.git文件夹加上隐藏状态
+            $somecontent.="&& attrib +h .git";
+            //删除临时文件夹，以及被git控制文件
+            $somecontent.="&&rd /s/q tmpgit";
+            //更新git管理文件夹状态
+            $somecontent.="&& git reset --hard HEAD";
+
+            //修改README.md文件
+            $somecontent.="&& echo.>>README.md";
+            $somecontent.="&& echo ---------------------------------------------------------->>README.md";
+            $somecontent.="&& echo @config-title : $name>>README.md";
+            $somecontent.="&& echo @config-work_env : $workEnv>>README.md";
+            $somecontent.="&& echo @version : v$version>>README.md";
+            $somecontent.="&& echo @version : v$version>>README.md";
+            $somecontent.="&& echo @type : $type>>README.md";
+            $desc= implode(';',$description);
+            $somecontent.="&& echo @description : $desc>>README.md";
+        }elseif($type=='linux'){
+            //给tmpgit执行权限
+            $somecontent .= "&& chmod +x tmpgit";
+            //将tmpgit内文件及文件夹移出，再删除目录
+            $somecontent .= "&& mv tmpgit/* .";
+            $somecontent .= "&& mv tmpgit/.[^.]* .";
+            //删除临时文件夹，以及被git控制文件
+            $somecontent .= "&& rm -rf tmpgit";
+            //更新git管理文件夹状态
+            $somecontent .= "&& git reset --hard HEAD";
+
+            //修改README.md文件
+            $somecontent.="&& echo ''>>README.md";
+            $somecontent.="&& echo '----------------------------------------------------------'>>README.md";
+            $somecontent.="&& echo '@config-title : $name'>>README.md";
+            $somecontent.="&& echo '@config-work_env : $workEnv'>>README.md";
+            $somecontent.="&& echo '@version : v$version'>>README.md";
+            $somecontent.="&& echo '@version : v$version'>>README.md";
+            $somecontent.="&& echo '@type : $type'>>README.md";
+            $desc= implode(';',$description);
+            $somecontent.="&& echo '@description : $desc'>>README.md";
+        }
+        $somecontent.="&& git add .";
+        $somecontent.="&& git commit -m 'v$version,$desc'";
+        $somecontent.="&& git push -u origin $type-$name-$workEnv:$type-$name-$workEnv";
+        $data=['cmd'=>$somecontent];
+        return $data;
+    }
 //打开配置目录
 
     public function openDir(Request $request)

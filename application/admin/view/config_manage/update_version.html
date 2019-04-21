@@ -126,6 +126,11 @@
 <script type="text/javascript">
 	var attr ='{$config_info.id}';
 	var id=0;
+	{if condition="$flag eq '0'"}
+	var url="{:url('admin/config_manage/initUpdateCmd')}";
+	{else/}
+		var url="{:url('admin/config_manage/updateCmd')}";
+		{/if}
 
 $(function(){
 	$('.skin-minimal input').iCheck({
@@ -171,7 +176,8 @@ $(function(){
 						type: 'post',
 						url: "{:url('admin/config_manage/updateCmd')}",
 						data: {id:data.id,
-						attr:attr},
+						attr:attr,
+							flag:1},
 						dataType: 'json',
 						success: function (data) {
 							$("#textarea_cate").val(data.cmd);

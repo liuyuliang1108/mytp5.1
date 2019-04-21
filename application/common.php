@@ -20,19 +20,27 @@ function auto_upload_layout(){
 
 
 
+
 function getTree($data,$pid){
     if (!is_array($data) || empty($data) ) return false;
     $tree = array();
+            foreach ($data as $key => $value) {
+                if ($value['parent_id'] == $pid) {//当相等时，说明此数组为上个数组的子目录
 
-    foreach ($data as $key => $value) {
-        if ($value['parent_id'] == $pid) {//当相等时，说明此数组为上个数组的子目录
-            $value['parent_id'] = getTree($data,$value['child_id']);//将子数组的内容遍历后赋给上级数组的pid键，html页面上循环时用到此内容
-            $tree[] = $value;
-            unset($data[$key]); //删除遍历过的数组数据
-        }
-    }
+                        $value['parent_id'] = getTree($data,$value['child_id']);//将子数组的内容遍历后赋给上级数组的pid键，html页面上循环时用到此内容
+                        $tree[] = $value;
+                        unset($data[$key]); //删除遍历过的数组数据
+
+                    }
+
+                    }
     return $tree;
+
 }
+
+
+
+
 
 /*
  * 下划线转驼峰

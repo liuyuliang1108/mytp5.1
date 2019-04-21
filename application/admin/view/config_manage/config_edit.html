@@ -98,6 +98,21 @@
 		</div>
 	</div>
 	</form>
+	<form>
+	<div class="row cl">
+		<label class="form-label col-xs-2 col-sm-1" style="margin-left: 40px;margin-top: 35px">运行命令:</label>
+		<div class="formControls col-xs-10 col-sm-8">
+                <textarea id="textarea_cate" name="remark" cols="" rows="" class="textarea" placeholder="" datatype="*10-100"
+						  dragonfly="true" nullmsg="运行命令！" ></textarea>
+		</div>
+		<a href="javascript:void(0);" id="cp-btn" class="btn btn-primary radius"style="margin-top: 10px">
+			<i class="Hui-iconfont"></i>复制到剪辑板</a>
+		{if condition="$config_info.type eq 'win'"}
+		<a href="javascript:void(0);" onclick="exec_cmd({$config_info.id},'win')" class="btn btn-primary radius" style="margin-top: 20px">
+			<i class="Hui-iconfont"></i>直接运行命令</a>
+		{/if}
+	</div>
+	</form>
 </article>
 
 {/block}
@@ -136,8 +151,31 @@ $(function(){
 				url: "{:url('config_manage/configEditSave')}" ,
 				success: function(data){
 					layer.msg('修改成功!',{icon:1,time:1000});
-					layer.close();
-					window.parent.location.reload();
+					if (data.version=="{$config_info.version}"){
+						layer.close();
+						window.parent.location.reload();
+
+					}else {
+						var html='';
+						if(data.type=='win'){
+							html='<a href="javascript:void(0);"  class="btn btn-primary radius" style="margin-top: 20px;">';
+							html+='<i class="Hui-iconfont"></i>运行命令</a>';
+							$("#exec-btn").html(html);
+						}
+						$.ajax({
+							type: 'post',
+							url: "{:url('config_manage/updateCmd')}",
+							data: {id:data.id,
+								attr:1,
+								flag:0},
+							dataType: 'json',
+							success: function (data) {
+								$("#textarea_cate").val(data.cmd);
+								layer.msg('命令已生成!', {icon: 6, time: 1000});
+								id=data.id;
+							}
+						});
+					}
 				},
                 error: function(XmlHttpRequest, textStatus, errorThrown){
 					layer.msg('error!',{icon:1,time:1000});

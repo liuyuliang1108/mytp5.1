@@ -6,7 +6,7 @@
  * Time: 15:25
  */
 
-namespace app\admin\controller;
+namespace app\index\controller;
 
 use think\Controller;
 use think\facade\Session;
@@ -29,7 +29,7 @@ class Base extends Controller
     //防止用户重复登录
     protected function alreadyLogin(){
         if (!empty(USER_ID)) {
-            $this->error('用户已登录，请勿重复登录',url('admin/category/index'));
+            $this->error('用户已登录，请勿重复登录',url('index/index'));
         }
     }
     /**
@@ -59,10 +59,6 @@ class Base extends Controller
 
             $content = file_get_contents( APP_PATH. 'common' . '/'. 'action' . '/' . $action. '.php');
             $content = str_replace(['{$littleController}', '{$model}', '{$name}','{$actionName}'], [$littleController,$model,$name,$actionName], $content);
-        //判断写入文件目录是否存在
-        if(!is_dir(APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $underlineController . ($suffix ? 'Model' : ''))){
-            mkdir((APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $underlineController . ($suffix ? 'Model' : '')));
-        }
             file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
 
     }
@@ -103,10 +99,6 @@ class Base extends Controller
 
             $content = file_get_contents( APP_PATH. 'common' . '/'. 'tpl' . '/' . $action. '.html');
             $content = str_replace(['{$littleController}','{$underlineController}','{$name}'], [$littleController,$underlineController,$name], $content);
-            //判断写入文件目录是否存在
-        if(!is_dir(APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $underlineController . ($suffix ? 'Model' : ''))){
-            mkdir((APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $underlineController . ($suffix ? 'Model' : '')));
-        }
             file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
 
     }
@@ -127,11 +119,11 @@ class Base extends Controller
             $model=$model.'Model';
         }
         $filename = APP_PATH . ($module ? $module . '/' : '') . 'controller' . '/' . $controller . ($suffix ? 'Controller' : '') . '.php';
-
+        if (!is_file($filename)) {//如果已存在该文件则不创建
             $content = file_get_contents( APP_PATH. 'common' . '/'. 'controller' . '/' . 'Base' . '.php');
             $content = str_replace(['{$module}','{$model}' , '{$controller}'], [$module,$model,$controller], $content);
-            file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
-
+            file_put_contents($filename, $content);
+        }
     }
     /**
      * 创建默认模型model
@@ -143,11 +135,11 @@ class Base extends Controller
     protected function buildModel($module, $model)
     {
         $filename = APP_PATH . ($module ? $module . '/' : '') . 'model' . '/' .$model . '.php';
-
+        if (!is_file($filename)) {//如果已存在该文件则不创建
             $content = file_get_contents( APP_PATH. 'common' . '/'. 'model' . '/' . 'Base' . '.php');
             $content = str_replace(['{$module}','{$model}'], [$module,$model], $content);
-            file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
-
+            file_put_contents($filename, $content);
+        }
     }
     /**
      * 创建公共基础方法

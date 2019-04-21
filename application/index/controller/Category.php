@@ -6,12 +6,12 @@
  * Time: 11:42
  */
 
-namespace app\admin\controller;
+namespace app\index\controller;
 
 use think\facade\Build;
-use app\admin\controller\Base;
-use \app\admin\model\Common as CommonModel;
-use app\admin\model\CategoryList;
+use app\index\controller\Base;
+use \app\index\model\Common as CommonModel;
+use app\index\model\CategoryList;
 use think\Request;
 
 class Category extends Base //分类管理控制器
@@ -38,7 +38,7 @@ class Category extends Base //分类管理控制器
 
     public function categoryManage()
     {
-        $this->isLogin();//判断用户是否登录
+       // $this->isLogin();//判断用户是否登录
 
 
         return $this->fetch('');
@@ -48,7 +48,9 @@ class Category extends Base //分类管理控制器
     {
 
         $data =CategoryList::where('child_id',$cId)->find();
+
         if ($flag == 0) {
+
             return $this->fetch('', ['data' => $data]);
         } else {
             /*获取所有公共模板数据 返回对象数组*/
@@ -100,22 +102,42 @@ class Category extends Base //分类管理控制器
 
         //数据处理
         if ($data['type']==3) {
-            $data['url'] = $data['module'] . '/' .humpToLine($data['controller']) . '/' . $data['action'] . '.html';
+            $data['url'] = '/' .$data['module'] . '/' .humpToLine($data['controller']) . '/' . $data['action'] . '.html';
         }else{
             $data['url']="javascript:;";
         }
 
         $data['postman'] = '/' . $data['module'] . '/' . humpToLine($data['controller']) . '/' . $data['action'] . '.html';
         $data['parent_id'] = intval($data['parent_id']);
-        //自动获取order
-        $model = new CategoryList;
-        $order=$model->where(['parent_id'=>$data['parent_id']])->max('order');
-        if ($order) {
-            $data['order']=$order+1;
 
+        //先判断是否更新了节点信息
+        if (array_key_exists('id', $data)) {
+            $result= CategoryList::get($data['id']);
+            $pId=$result->parent_id;
+            if (!$pId==$data['parent_id']) {
+                //自动获取order
+                $model = new CategoryList;
+                $order=$model->where(['parent_id'=>$data['parent_id']])->max('order');
+                if ($order) {
+                    $data['order']=$order+1;
+
+                }else{
+                    $data['order']=1;
+                }
+            }
         }else{
-            $data['order']=1;
+            //自动获取order
+            $model = new CategoryList;
+            $order=$model->where(['parent_id'=>$data['parent_id']])->max('order');
+            if ($order) {
+                $data['order']=$order+1;
+
+            }else{
+                $data['order']=1;
+            }
         }
+
+
         $data['child_id'] = $data['parent_id'] * 10 + $data['order'];
         $data['view'] = humpToLine($data['action']);
         //将字符串转为索引数组

@@ -148,13 +148,13 @@ class Grade extends Base
     public function gradeDelete(Request $request)
     {
         //获取传入班级id
-        $grade_id = $request->param('id');
+        $id = $request->param('id');
 
         //使用模型update方法,将is_delete字段修改为1
-        GradeModel::update(['is_delete' => 1], ['id' => $grade_id]);
+        GradeModel::update(['is_delete' => 1], ['id' => $id]);
 
         //使用模型destroy方法,软删除,修改delete_time字段
-        $data = GradeModel::destroy(['id' => $grade_id]);
+        $data = GradeModel::destroy(['id' => $id]);
 
         return $data;
     }

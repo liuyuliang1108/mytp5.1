@@ -1,0 +1,528 @@
+
+<div class="layui-footer footer">
+    <p>copyright @2017-2018 gameloft9 　　
+        <a href="http://blog.csdn.net/gameloft9" class="layui-btn layui-btn-danger layui-btn-small">博客地址</a>
+        <a href="javascript:;" class="layui-btn layui-btn-danger layui-btn-small dashang">打赏作者</a>
+    </p>
+</div>
+<!-- 底部 -->
+<!--body_tab选项卡结束标签-->
+</div>
+</div>
+<!--body_tab选项卡结束标签-->
+
+<!--layui主体结束标签-->
+</div>
+<!--layui主体结束标签-->
+
+
+
+<!-- 移动导航 -->
+<div class="site-tree-mobile layui-hide"><i class="layui-icon">&#xe602;</i></div>
+<div class="site-mobile-shade"></div>
+<script type="text/javascript" src="__LAYUI__/lib/jquery-1.91.1/jquery.min.js"></script>
+<script type="text/javascript" src="__LAYUI__/common/js/config.js"></script>
+<script type="text/javascript" src="__LAYUI__/lib/layui/layui.js"></script>
+
+<script type="text/javascript" >
+    /**
+     * 整体布局
+     * */
+    // 左侧导航菜单的间隔像素
+    var menuCell = 5;
+    var $, tab, skyconsWeather;
+    layui.config({
+        base: '__LAYUI__/common/js/'//定义基目录
+    }).extend({
+        $tool: 'tool',
+        $api:'api',
+        bodyTab:'bodyTab'
+    }).use(['bodyTab', 'form', 'element', 'layer', 'jquery', '$tool','$api'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            element = layui.element,
+            $tool = layui.$tool,
+            $api = layui.$api,
+            $ = layui.jquery;
+        /*引用模块*/
+        //触发事件
+        var active = {
+            //在这里给active绑定几项事件，后面可通过active调用这些事件
+            tabAdd: function(url,id,name) {
+                //新增一个Tab项 传入三个参数，分别对应其标题，tab页面的地址，还有一个规定的id，是标签中data-id的属性值
+                //关于tabAdd的方法所传入的参数可看layui的开发文档中基础方法部分
+                element.tabAdd('demo', {
+                    title: name,
+                    content: '<iframe data-frameid="'+id+'" scrolling="auto" frameborder="0" src="'+url+'" style="width:100%;height:99%;"></iframe>',
+                    id: id //规定好的id
+                })
+                CustomRightClick(id); //给tab绑定右击事件
+                FrameWH();  //计算ifram层的大小
+            },
+             tabChange: function (id) {
+            //切换到指定Tab项
+            element.tabChange('demo', id); //切换到：用户管理
+            $("iframe[data-frameid='"+id+"']").attr("src",$("iframe[data-frameid='"+id+"']").attr("src"))//切换后刷新框架
+        }
+
+        };
+
+
+
+       /*$("li>a[data-url!='javascript:;']").on('click', function() {  静态已存在的可以触发事件*/
+       /* $(document).on('click',"li>a[data-url!='javascript:;'],dd>a[data-url!='javascript:;'],", function() {*/
+        $(document).on('click',"a[data-url][data-url!='javascript:;']", function() {
+            var dataid = $(this);
+
+            //这时会判断右侧.layui-tab-title属性下的有lay-id属性的li的数目，即已经打开的tab项数目
+            if ($(".layui-tab-title li[lay-id]").length <= 0) {
+                //如果比零小，则直接打开新的tab项
+                active.tabAdd(dataid.attr("data-url"), dataid.attr("data-id"),dataid.attr("data-title"));
+            } else {
+                //否则判断该tab项是否以及存在
+
+                var isData = false; //初始化一个标志，为false说明未打开该tab项 为true则说明已有
+                $.each($(".layui-tab-title li[lay-id]"), function () {
+                    //如果点击左侧菜单栏所传入的id 在右侧tab项中的lay-id属性可以找到，则说明该tab项已经打开
+                    if ($(this).attr("lay-id") == dataid.attr("data-id")) {
+                        isData = true;
+                    }
+                })
+                if (isData == false) {
+                    //标志为false 新增一个tab项
+                    active.tabAdd(dataid.attr("data-url"), dataid.attr("data-id"),dataid.attr("data-title"));
+                }
+            }
+            //最后不管是否新增tab，最后都转到要打开的选项页面上
+            active.tabChange(dataid.attr("data-id"));
+        });
+
+        function CustomRightClick(id) {
+            //取消右键  rightmenu属性开始是隐藏的 ，当右击的时候显示，左击的时候隐藏
+            $('.layui-tab-title li').on('contextmenu', function () { return false; })
+            $('.layui-tab-title,.layui-tab-title li').click(function () {
+                $('.rightmenu').hide();
+            });
+            //桌面点击右击
+            $('.layui-tab-title li').on('contextmenu', function (e) {
+                var popupmenu = $(".rightmenu");
+                popupmenu.find("li").attr("data-id",id); //在右键菜单中的标签绑定id属性
+
+                //判断右侧菜单的位置
+                l = ($(document).width() - e.clientX) < popupmenu.width() ? (e.clientX - popupmenu.width()) : e.clientX;
+                t = ($(document).height() - e.clientY) < popupmenu.height() ? (e.clientY - popupmenu.height()) : e.clientY;
+                popupmenu.css({ left: l, top: t }).show(); //进行绝对定位
+                //alert("右键菜单")
+                return false;
+            });
+        }
+
+        $(".rightmenu li").click(function () {
+
+            //右键菜单中的选项被点击之后，判断type的类型，决定关闭所有还是关闭当前。
+            if ($(this).attr("data-type") == "closethis") {
+                //如果关闭当前，即根据显示右键菜单时所绑定的id，执行tabDelete
+                active.tabDelete($(this).attr("data-id"))
+            } else if ($(this).attr("data-type") == "closeall") {
+                var tabtitle = $(".layui-tab-title li");
+                var ids = new Array();
+                $.each(tabtitle, function (i) {
+                    ids[i] = $(this).attr("lay-id");
+                })
+                //如果关闭所有 ，即将所有的lay-id放进数组，执行tabDeleteAll
+                active.tabDeleteAll(ids);
+            }
+
+            $('.rightmenu').hide(); //最后再隐藏右键菜单
+        })
+        function FrameWH() {
+            var h = $(window).height() -41- 10 - 60 -10-44 -10;
+            $("iframe").css("height",h+"px");
+        }
+
+        $(window).resize(function () {
+            FrameWH();
+        })
+
+
+
+
+        /*左侧导航栏异步加载*/
+        $.ajax({
+            type: 'POST',
+            url: "{:url('/index/index/getTree')}",
+            dataType: 'json',
+            success: function (data) {
+
+                data = JSON.parse(data);
+
+                var liStr = "";
+                // 遍历生成主菜单
+                for (var i = 0; i < data.length; i++) {
+                    //console.log("--> "+JSON.stringify(data[i]));
+                    // 判断是否存在子菜单
+                    if (data[i].children != null && data[i].children.length > 0) {
+
+                        liStr += "<li class=\"layui-nav-item\"><a class=\"\" data-url=\"" + data[i].url + "\" data-id=\"" + data[i].child_id + "\" data-type=\"tabAdd\" href=\"javascript:;\" data-title=\"" + data[i].name + "\"><i class='layui-icon' >&#xe653;</i> " + data[i].name + "</a>\n" +
+                            "<dl class=\"layui-nav-child\">\n";
+                        // 遍历获取子菜单
+                        for (var k = 0; k < data[i].children.length; k++) {
+                            liStr += getChildMenu(data[i].children[k], 0);
+                        }
+                        liStr += "</dl></li>";
+                    } else {
+                        liStr += "<li class=\"layui-nav-item\"><a class=\"\" data-url=\"" + data[i].url + "\" data-id=\"" + data[i].child_id + "\" data-type=\"tabAdd\" href=\"javascript:;\" data-title=\"" + data[i].name + "\"><i class='layui-icon' >&#xe66c;</i> " + data[i].name + "</a></li>";
+                    }
+                }
+                ;
+
+                $("#navBarId").html("<ul class=\"layui-nav layui-nav-tree\"  lay-filter=\"test\">\n" + liStr + "</ul>");
+                element.init();
+            }
+
+        });
+
+
+
+
+
+
+
+
+        // 递归生成子菜单
+        function getChildMenu(subMenu,num) {
+            console.log("num: "+num);
+            num++;
+            var subStr = "";
+            if(subMenu.children!=null&&subMenu.children.length>0){
+                subStr+="<dd><ul><li class=\"layui-nav-item\" ><a style=\"margin-Left:"+num*menuCell+"px\" class=\"\" data-url=\""+subMenu.url+"\" data-id=\""+subMenu.child_id+"\" data-type=\"tabAdd\" href=\"javascript:;\" data-title=\"" + subMenu.name + "\"><i class='layui-icon' >&#xe653;</i> "+subMenu.name+"</a>" +
+                    "<dl class=\"layui-nav-child\">\n";
+                for( var j = 0; j <subMenu.children.length; j++){
+                    subStr+=getChildMenu(subMenu.children[j],num);
+                }
+                subStr+="</dl></li></ul></dd>";
+            }else{
+                subStr+="<dd><a style=\"margin-Left:"+num*menuCell+"px\" data-url=\""+subMenu.url+"\" data-id=\""+subMenu.child_id+"\" data-type=\"tabAdd\" href=\"javascript:;\" data-title=\"" + subMenu.name + "\"><i class='layui-icon' >&#xe66c;</i> "+subMenu.name+"</a></dd>";
+            }
+            return subStr;
+        }
+
+
+
+
+        //更换皮肤
+        function skins() {
+            var skin = window.sessionStorage.getItem("skin");
+            if (skin) {  //如果更换过皮肤
+                if (window.sessionStorage.getItem("skinValue") != "自定义") {
+                    $("body").addClass(window.sessionStorage.getItem("skin"));
+                } else {
+                    $(".layui-layout-admin .layui-header").css("background-color", skin.split(',')[0]);
+                    $(".layui-bg-black").css("background-color", skin.split(',')[1]);
+                    $(".hideMenu").css("background-color", skin.split(',')[2]);
+                }
+            }
+        }
+
+        skins();
+        $(".changeSkin").click(function () {
+            layer.open({
+                title: "更换皮肤",
+                area: ["310px", "280px"],
+                type: "1",
+                content: '<div class="skins_box">' +
+                    '<form class="layui-form">' +
+                    '<div class="layui-form-item">' +
+                    '<input type="radio" name="skin" value="默认" title="默认" lay-filter="default" checked="">' +
+                    '<input type="radio" name="skin" value="橙色" title="橙色" lay-filter="orange">' +
+                    '<input type="radio" name="skin" value="蓝色" title="蓝色" lay-filter="blue">' +
+                    '<input type="radio" name="skin" value="自定义" title="自定义" lay-filter="custom">' +
+                    '<div class="skinCustom">' +
+                    '<input type="text" class="layui-input topColor" name="topSkin" placeholder="顶部颜色" />' +
+                    '<input type="text" class="layui-input leftColor" name="leftSkin" placeholder="左侧颜色" />' +
+                    '<input type="text" class="layui-input menuColor" name="btnSkin" placeholder="顶部菜单按钮" />' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="layui-form-item skinBtn">' +
+                    '<a href="javascript:;" class="layui-btn layui-btn-small layui-btn-normal" lay-submit="" lay-filter="changeSkin">确定更换</a>' +
+                    '<a href="javascript:;" class="layui-btn layui-btn-small layui-btn-primary" lay-submit="" lay-filter="noChangeSkin">我再想想</a>' +
+                    '</div>' +
+                    '</form>' +
+                    '</div>',
+                success: function (index, layero) {
+                    var skin = window.sessionStorage.getItem("skin");
+                    if (window.sessionStorage.getItem("skinValue")) {
+                        $(".skins_box input[value=" + window.sessionStorage.getItem("skinValue") + "]").attr("checked", "checked");
+                    }
+                    ;
+                    if ($(".skins_box input[value=自定义]").attr("checked")) {
+                        $(".skinCustom").css("visibility", "inherit");
+                        $(".topColor").val(skin.split(',')[0]);
+                        $(".leftColor").val(skin.split(',')[1]);
+                        $(".menuColor").val(skin.split(',')[2]);
+                    }
+                    ;
+                    form.render();
+                    $(".skins_box").removeClass("layui-hide");
+                    $(".skins_box .layui-form-radio").on("click", function () {
+                        var skinColor;
+                        if ($(this).find("span").text() == "橙色") {
+                            skinColor = "orange";
+                        } else if ($(this).find("span").text() == "蓝色") {
+                            skinColor = "blue";
+                        } else if ($(this).find("span").text() == "默认") {
+                            skinColor = "";
+                        }
+                        if ($(this).find("span").text() != "自定义") {
+                            $(".topColor,.leftColor,.menuColor").val('');
+                            $("body").removeAttr("class").addClass("main_body " + skinColor + "");
+                            $(".skinCustom").removeAttr("style");
+                            $(".layui-bg-black,.hideMenu,.layui-layout-admin .layui-header").removeAttr("style");
+                        } else {
+                            $(".skinCustom").css("visibility", "inherit");
+                        }
+                    })
+                    var skinStr, skinColor;
+                    $(".topColor").blur(function () {
+                        $(".layui-layout-admin .layui-header").css("background-color", $(this).val());
+                    })
+                    $(".leftColor").blur(function () {
+                        $(".layui-bg-black").css("background-color", $(this).val());
+                    })
+                    $(".menuColor").blur(function () {
+                        $(".hideMenu").css("background-color", $(this).val());
+                    })
+
+                    form.on("submit(changeSkin)", function (data) {
+                        if (data.field.skin != "自定义") {
+                            if (data.field.skin == "橙色") {
+                                skinColor = "orange";
+                            } else if (data.field.skin == "蓝色") {
+                                skinColor = "blue";
+                            } else if (data.field.skin == "默认") {
+                                skinColor = "";
+                            }
+                            window.sessionStorage.setItem("skin", skinColor);
+                        } else {
+                            skinStr = $(".topColor").val() + ',' + $(".leftColor").val() + ',' + $(".menuColor").val();
+                            window.sessionStorage.setItem("skin", skinStr);
+                            $("body").removeAttr("class").addClass("main_body");
+                        }
+                        window.sessionStorage.setItem("skinValue", data.field.skin);
+                        layer.closeAll("page");
+                    });
+                    form.on("submit(noChangeSkin)", function () {
+                        $("body").removeAttr("class").addClass("main_body " + window.sessionStorage.getItem("skin") + "");
+                        $(".layui-bg-black,.hideMenu,.layui-layout-admin .layui-header").removeAttr("style");
+                        skins();
+                        layer.closeAll("page");
+                    });
+                },
+                cancel: function () {
+                    $("body").removeAttr("class").addClass("main_body " + window.sessionStorage.getItem("skin") + "");
+                    $(".layui-bg-black,.hideMenu,.layui-layout-admin .layui-header").removeAttr("style");
+                    skins();
+                }
+            })
+        })
+
+        //退出
+        $(".signOut").click(function () {
+            $api.LogOut(null,function (data) {
+                //清空session
+                window.sessionStorage.removeItem("menu");
+                menu = [];
+                window.sessionStorage.removeItem("curmenu");
+            });
+        });
+
+        //隐藏左侧导航
+        $(".hideMenu").click(function () {
+            $(".layui-layout-admin").toggleClass("showMenu");
+            //渲染顶部窗口
+            tab.tabMove();
+        })
+
+
+
+        //手机设备的简单适配
+        var treeMobile = $('.site-tree-mobile'),
+            shadeMobile = $('.site-mobile-shade')
+
+        treeMobile.on('click', function () {
+            $('body').addClass('site-mobile');
+        });
+
+        shadeMobile.on('click', function () {
+            $('body').removeClass('site-mobile');
+        });
+
+        // 添加新窗口
+        $("body").on("click", ".layui-nav .layui-nav-item a", function () {
+            //如果不存在子级
+            if ($(this).siblings().length == 0) {
+                addTab($(this));
+                $('body').removeClass('site-mobile');  //移动端点击菜单关闭菜单层
+            }
+            $(this).parent("li").siblings().removeClass("layui-nav-itemed");
+        });
+
+        //公告层
+        function showNotice() {
+            layer.open({
+                type: 1,
+                title: "系统公告",
+                closeBtn: false,
+                area: '310px',
+                shade: 0.8,
+                id: 'LAY_layuipro',
+                btn: ['好的'],
+                moveType: 1,
+                content: '<div style="padding:15px 20px; text-align:justify; line-height: 22px; text-indent:2em;border-bottom:1px solid #e2e2e2;"><p>这是一个基于layui的带后台的CMS管理系统，已经集成了通用的功能，例如菜单、用户、角色、机构、日志管理，系统架构清晰，方便做二次开发。</p></div>',
+                success: function (layero) {
+                    var btn = layero.find('.layui-layer-btn');
+                    btn.css('text-align', 'center');
+                    btn.on("click", function () {
+                        window.sessionStorage.setItem("showNotice", "true");
+                    })
+                    if ($(window).width() > 432) {  //如果页面宽度不足以显示顶部“系统公告”按钮，则不提示
+                        btn.on("click", function () {
+                            layer.tips('查看最新公告', '#showNotice', {
+                                tips: 3
+                            });
+                        })
+                    }
+                }
+            });
+        }
+
+        //判断是否处于锁屏状态(如果关闭以后则未关闭浏览器之前不再显示)
+        if (window.sessionStorage.getItem("lockcms") != "true" && window.sessionStorage.getItem("showNotice") != "true") {
+            showNotice();
+        }
+        $(".showNotice").on("click", function () {
+            showNotice();
+        });
+
+        //刷新后还原打开的窗口
+        if (window.sessionStorage.getItem("menu") != null) {
+            menu = JSON.parse(window.sessionStorage.getItem("menu"));
+            curmenu = window.sessionStorage.getItem("curmenu");
+            var openTitle = '';
+            for (var i = 0; i < menu.length; i++) {
+                openTitle = '';
+                if (menu[i].icon) {
+                    if (menu[i].icon.split("-")[0] == 'icon') {
+                        openTitle += '<i class="iconfont ' + menu[i].icon + '"></i>';
+                    } else {
+                        openTitle += '<i class="layui-icon">' + menu[i].icon + '</i>';
+                    }
+                }
+                openTitle += '<cite>' + menu[i].title + '</cite>';
+                openTitle += '<i class="layui-icon layui-unselect layui-tab-close" data-id="' + menu[i].layId + '">&#x1006;</i>';
+                element.tabAdd("#demo", {
+                    title: openTitle,
+                    content: "<iframe src='" + menu[i].href + "' data-id='" + menu[i].layId + "'></frame>",
+                    id: menu[i].layId
+                })
+                //定位到刷新前的窗口
+                if (curmenu != "undefined") {
+                    if (curmenu == '' || curmenu == "null") {  //定位到后台首页
+                        element.tabChange("#demo", '');
+                    } else if (JSON.parse(curmenu).title == menu[i].title) {  //定位到刷新前的页面
+                        element.tabChange("#demo", menu[i].layId);
+                    }
+                } else {
+                    element.tabChange("#demo", menu[menu.length - 1].layId);
+                }
+            }
+            //渲染顶部窗口
+            tab.tabMove();
+        }
+
+        //刷新当前
+        $(".refresh").on("click", function () {  //此处添加禁止连续点击刷新一是为了降低服务器压力，另外一个就是为了防止超快点击造成chrome本身的一些js文件的报错(不过貌似这个问题还是存在，不过概率小了很多)
+            if ($(this).hasClass("refreshThis")) {
+                $(this).removeClass("refreshThis");
+                $(".clildFrame .layui-tab-item.layui-show").find("iframe")[0].contentWindow.location.reload(true);
+                setTimeout(function () {
+                    $(".refresh").addClass("refreshThis");
+                }, 2000)
+            } else {
+                layer.msg("您点击的速度超过了服务器的响应速度，还是等两秒再刷新吧！");
+            }
+        });
+
+        //关闭其他
+        $(".closePageOther").on("click", function () {
+            if ($("#top_tabs li").length > 2 && $("#top_tabs li.layui-this cite").text() != "后台首页") {
+                var menu = JSON.parse(window.sessionStorage.getItem("menu"));
+                $("#top_tabs li").each(function () {
+                    if ($(this).attr("lay-id") != '' && !$(this).hasClass("layui-this")) {
+                        element.tabDelete("#demo", $(this).attr("lay-id")).init();
+                        //此处将当前窗口重新获取放入session，避免一个个删除来回循环造成的不必要工作量
+                        for (var i = 0; i < menu.length; i++) {
+                            if ($("#top_tabs li.layui-this cite").text() == menu[i].title) {
+                                menu.splice(0, menu.length, menu[i]);
+                                window.sessionStorage.setItem("menu", JSON.stringify(menu));
+                            }
+                        }
+                    }
+                })
+            } else if ($("#top_tabs li.layui-this cite").text() == "后台首页" && $("#top_tabs li").length > 1) {
+                $("#top_tabs li").each(function () {
+                    if ($(this).attr("lay-id") != '' && !$(this).hasClass("layui-this")) {
+                        element.tabDelete("#demo", $(this).attr("lay-id")).init();
+                        window.sessionStorage.removeItem("menu");
+                        menu = [];
+                        window.sessionStorage.removeItem("curmenu");
+                    }
+                })
+            } else {
+                layer.msg("没有可以关闭的窗口了@_@");
+            }
+            //渲染顶部窗口
+            tab.tabMove();
+        });
+
+        //关闭全部
+        $(".closePageAll").on("click", function () {
+            if ($("#top_tabs li").length > 1) {
+                $("#top_tabs li").each(function () {
+                    if ($(this).attr("lay-id") != '') {
+                        element.tabDelete("#demo", $(this).attr("lay-id")).init();
+                        window.sessionStorage.removeItem("menu");
+                        menu = [];
+                        window.sessionStorage.removeItem("curmenu");
+                    }
+                })
+            } else {
+                layer.msg("没有可以关闭的窗口了@_@");
+            }
+            //渲染顶部窗口
+            tab.tabMove();
+        })
+
+        //打赏
+        $('.dashang').click(function () {
+            layer.open({
+                type: 2
+                ,title: false //不显示标题栏
+                ,anim:2
+                ,closeBtn: false
+                ,area: ['540px','500px']
+                ,shade: 0.8
+                ,id: 'dashang' //设定一个id，防止重复弹出
+                ,btn: ['好的']
+                ,btnAlign: 'c'
+                ,moveType: 1 //拖拽模式，0或者1
+                ,content: ['dashang.html','no']
+            });
+        });
+    });
+
+
+
+
+
+</script>

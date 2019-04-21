@@ -1,0 +1,237 @@
+
+{extend name='base/main' /}
+
+{block name="seo"}
+<title>{$title|default='页面标题'}</title>
+<meta name="keywords" content="{$keywords|default='页面关键字'}">
+<meta name="description" content="{description|default='页面描述'}">
+<link href="__URL__/lib/webuploader/0.1.5/webuploader.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+{/block}
+
+
+{block name="content"}
+<div class="page-container">
+    <form action="__URL__/category/addSave"  method="post" class="form form-horizontal" id="form-category-update">
+
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>分类名称name：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="{$data.name}" placeholder="" id="" name="name">
+            </div>
+        </div>
+
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">所在分类：parent_id：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="{$data.parent_id}" placeholder="" id="" name="parent_id">
+            </div>
+        </div>
+
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">所在分类中排序值order：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="{$data.order}" placeholder="" id="" name="order">
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">创建类型：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" name="type" size="1">
+                    <option value="0" {eq name="$data.type" value="0"}
+                            selected
+                            {/eq}>module</option>
+                    <option value="1" {eq name="$data.type" value="1"}
+                            selected
+                            {/eq}>controller</option>
+                    <option value="2" {eq name="$data.type" value="2"}
+                            selected
+                            {/eq}>model</option>
+                    <option value="3" {eq name="$data.type" value="3"}
+                            selected
+                            {/eq}>action not view</option>
+                    <option value="4" {eq name="$data.type" value="4"}
+                            selected
+                            {/eq}>action and view</option>
+                    <option value="5" {eq name="$data.type" value="5"}
+                            selected
+                            {/eq}>category</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">分类描述remark：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <textarea id="textarea_cate" name="remark" cols="" rows="" class="textarea" placeholder="" datatype="*10-100"
+                          dragonfly="true" nullmsg="备注不能为空！" onKeyUp="$.Huitextarealength(this,200)"></textarea>
+                <p class="textarea-numberbar"><em class="textarea-length">0</em>/200</p>
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>模块名称module：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="{$data.module}" placeholder="" id="" name="module">
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>控制器名称名称controller：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="{$data.controller}" placeholder="" id="" name="controller">
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>对应模型名称model：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="{$data.model}" placeholder="" id="" name="model">
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>方法名称action：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="{$data.action}" placeholder="" id="" name="action">
+            </div>
+        </div>
+
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>视图模板名称view：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="{$data.view}" placeholder="" id="" name="view">
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>URL地址：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="{$data.url}" placeholder="" id="" name="url">
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>显示状态status：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="{$data.status}" placeholder="" id="" name="status">
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>postman地址：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="{$data.postman}" placeholder="" id="" name="postman">
+            </div>
+        </div>
+
+        <!--隐藏提交id-->
+        <input type="hidden"  value="{$data.id}"  name="id">
+        <!--隐藏提交id-->
+
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+                <button  type="button" class="btn btn-success" id=""  onclick="submit_update(0)"><i
+                        class="icon-save"></i> 修改基本信息
+                </button>
+                <button type="button"  class="btn btn-success" id=""  onclick="submit_update(1)"><i
+                        class="icon-save"></i> 修改节点
+                </button>
+                <button onClick="layer_close();" class="btn btn-default radius" type="button">
+                    &nbsp;&nbsp;取消&nbsp;&nbsp;
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+{/block}
+
+
+{block name="js"}
+<!--请在下方写此页面业务相关的脚本-->
+
+<script type="text/javascript">
+    $(function() {
+        $("#textarea_cate").val("{$data.remark}");
+    });
+    //Ajax请求控制器中的方法完成数据的增加
+    function submit_update($key) {
+        if ($key){
+            //验证child_id是否已存在
+            var formData = $("#form-category-update").serialize();
+
+            //serialize() 方法通过序列化表单值，创建 URL 编码文本字符串
+            $.ajax({
+                url: '__URL__/category/addVerify',
+                data: formData,
+                type: 'post',
+                success: function (data) {
+                    console.log(data.flag);
+                    var data = JSON.parse(data);
+                    if (data.flag == -1) {
+
+                        layer.msg('child_id已存在,请重新输入!', {icon: 2, time: 1000});
+                        return;
+                    }else {
+                        var formData = $("#form-category-update").serialize();
+                        $.ajax({
+                            url: '__URL__/category/addSave',
+                            data: formData,
+                            type: 'post',
+                            success: function (data) {
+
+                                var data = JSON.parse(data);
+
+
+                                if (data.flag == -1) {
+                                    layer.msg('修改失败!', {icon: 2, time: 1000});
+                                    return;
+                                } else {
+                                    layer.msg('修改成功!', {icon: 1, time: 1000});
+                                    window.location.reload();
+                                }
+                            }
+
+                        });
+                    }
+                }
+
+            });
+
+        }else{
+            var formData = $("#form-category-update").serialize();
+            $.ajax({
+                url: '__URL__/category/addSave',
+                data: formData,
+                type: 'post',
+                success: function (data) {
+
+                    var data = JSON.parse(data);
+
+
+                    if (data.flag == -1) {
+                        layer.msg('修改失败!', {icon: 2, time: 1000});
+                        return;
+                    } else {
+                        layer.msg('修改成功!', {icon: 1, time: 1000});
+                        window.parent.location.reload();
+                    }
+                }
+
+            });
+        }
+
+    }
+
+</script>
+{/block}
+</body>
+</html>

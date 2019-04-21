@@ -1,20 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<div class="row cl">
-    <div class="formControls col-xs-8 col-xs-offset-3">
-        <tr>
-            <th>请输入验证码：</th>
-            <td>
-                <input type="text" name="captcha" class="inp01"/>
-                <img src="{:url('admin/user/verify')}" alt="captcha" />
-            </td>
-        </tr> <a id="kanbuq" href="javascript:;">看不清，换一张</a> </div>
-</div>
+{extend name='base/base' /}
 
+
+{block name="seo"}
+<title>{$title|default='网页管理系统'}</title>
+<meta name="keywords" content="{$keywords|default='页面关键字'}">
+<meta name="description" content="{description|default='页面描述'}">
+</head>
+
+{/block}
+
+    {block name="content"}
+
+
+            <div class="layui-tab-content clildFrame">
+
+                    <iframe src="/index/index/main.html" data-frameid="top_tabs" scrolling="auto" frameborder="0">
+
+                    </iframe>
+
+            </div>
+
+
+    {/block}
+
+    {block name="js"}
+
+{/block}
 </body>
 </html>

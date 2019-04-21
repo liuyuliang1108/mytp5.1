@@ -12,76 +12,83 @@
 
 {block name="content"}
 <article class="page-container">
-    <form class="form form-horizontal" id="form-common-edit">
+    <form class="form form-horizontal" id="form-User-edit">
         <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>中文名称</label>
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>配置项名称</label>
             <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="{$info.name}" placeholder="" id="common-name" name="name">
+                <input type="text" class="input-text" value="{$info.name}" placeholder="" id="UserName" name="name">
             </div>
         </div>
-
         <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>公共模板名称</label>
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>工作环境</label>
             <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="{$info.value}" placeholder="" id="common-value" name="value">
+                <input type="text" class="input-text" value="{$info.work_env}" placeholder="" id="work_env" name="work_env">
             </div>
         </div>
-
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-3">类型：</label>
             <div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:150px;">
 			<select class="select" name="type" size="1">
-				<option value="1"
-                        {eq name="$info.type" value="1.不需渲染视图方法"}
-                        selected
-                        {/eq}
-				>1.不需渲染视图方法</option>
-                <option value="2"
-                        {eq name="$info.type" value="2.渲染视图方法"}
-                        selected
-                        {/eq}
-				>2.渲染视图方法</option>
-			</select>
-			</span> </div>
-        </div>
-
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3">参数：</label>
-            <div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:150px;">
-                <select class="select" name="attr" size="1">
 				<option value="0"
-                        {eq name="$info.attr" value="0.不需控制器名前缀"}
+                        {eq name="$info.type" value="win"}
                         selected
                         {/eq}
-				>0.不需控制器名前缀</option>
-                    <option value="1"
-                            {eq name="$info.attr" value="1.需控制器名前缀"}
-                            selected
-                            {/eq}
-				>1.需控制器名前缀</option>
+				>win</option>
+                <option value="1"
+                        {eq name="$info.type" value="linux"}
+                        selected
+                        {/eq}
+				>linux</option>
 			</select>
 			</span> </div>
         </div>
 
         <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3">是否启用：</label>
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>配置文件名</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="{:implode(',',$info.file_name)}" placeholder="" id="fileName" name="file_name">
+            </div>
+        </div>
+
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>配置项所在目录</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="{$info.dir}" placeholder="" id="UserDir" name="dir">
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>配置项版本</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="{$info.version}" placeholder="" id="UserVersion" name="version">
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">是否启用当前版本：</label>
             <div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:150px;">
-                <select class="select" name="status" size="1">
+			<select class="select" name="status" size="1">
 				<option value="0"
                         {eq name="$info.status" value="已停用"}
                         selected
                         {/eq}
 				>已停用</option>
-                    <option value="1"
-                            {eq name="$info.status" value="已启用"}
-                            selected
-                            {/eq}
+                <option value="1"
+                        {eq name="$info.status" value="已启用"}
+                        selected
+                        {/eq}
 				>已启用</option>
 			</select>
 			</span> </div>
         </div>
 
-
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>版本描述</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="{:implode(';',$info.description)}" placeholder="" id="UserDescription" name="description">
+            </div>
+        </div>
         <!--隐藏提交id-->
         <input type="hidden"  value="{$info.id}"  name="id">
         <!--隐藏提交id-->
@@ -108,23 +115,15 @@
             radioClass: 'iradio-blue',
             increaseArea: '20%'
         });
-        $(function(){
-            $("#cp-btn").zclip({
-                path:'__ADMIN__/lib/jquery-zclip/ZeroClipboard.swf', //记得把ZeroClipboard.swf引入到项目中
-                copy:function(){
-                    return $('#textarea_cate').val();
-                }
-            });
-        });
 
-        $("#form-common-edit").validate({
+        $("#form-User-edit").validate({
             rules:{
                 name:{
                     required:true,
                     minlength:2,
                     maxlength:16
                 },
-                value:{
+                version:{
                     required:true,
                 },
             },
@@ -134,7 +133,7 @@
             submitHandler:function(form){
                 $(form).ajaxSubmit({
                     type: 'post',
-                    url: "{:url('common/commonEditSave')}" ,
+                    url: "{:url('user/UserEditSave')}" ,
                     success: function(data){
                         layer.msg('修改成功!',{icon:1,time:1000});
                         layer.close();

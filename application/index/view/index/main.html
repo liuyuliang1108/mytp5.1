@@ -1,0 +1,97 @@
+{extend name='base/main' /}
+
+
+{block name="seo"}
+<title>{$title|default='老猫管理系统'}</title>
+<meta name="keywords" content="{$keywords|default='页面关键字'}">
+<meta name="description" content="{description|default='页面描述'}">
+
+</head>
+{/block}
+
+{block name="content"}
+<body class="childrenBody">
+	<div class="panel_box row">
+		<div class="panel col">
+			<a href="javascript:;" data-url="page/system/sysMenu/allMenus.html" data-type="tabAdd">
+				<div class="panel_icon">
+					<i class="layui-icon" data-icon="&#xe63a;">&#xe63a;</i>
+				</div>
+				<div class="panel_word newMessage">
+					<span></span>
+					<cite>系统菜单</cite>
+				</div>
+			</a>
+		</div>
+		<div class="panel col">
+			<a href="javascript:;" data-url="page/system/sysUser/allUsers.html" data-type="tabAdd">
+				<div class="panel_icon" style="background-color:#FF5722;">
+					<i class="iconfont icon-dongtaifensishu" data-icon="icon-dongtaifensishu"></i>
+				</div>
+				<div class="panel_word userAll">
+					<span></span>
+					<cite>用户管理</cite>
+				</div>
+			</a>
+		</div>
+		<div class="panel col">
+			<a href="javascript:;" data-url="page/system/sysLog/allLogs.html" data-type="tabAdd">
+				<div class="panel_icon" style="background-color:#F7B824;">
+					<i class="iconfont icon-wenben" data-icon="icon-wenben"></i>
+				</div>
+				<div class="panel_word waitNews">
+					<span></span>
+					<cite>应用日志</cite>
+				</div>
+			</a>
+		</div>
+	</div>
+	<div class="layui-carousel" id="car">
+		<div carousel-item>
+			<div><img src="__LAYUI__/common/images/img1.jpg"></div>
+			<div><img src="__LAYUI__/common/images/img2.jpg"></div>
+			<div><img src="__LAYUI__/common/images/img3.jpg"></div>
+		</div>
+	</div>
+
+	{/block}
+
+	{block name="js"}
+	<script type="text/javascript">
+		/**
+		 * 首页内容.js
+		 * */
+		layui.config({
+			base: '__LAYUI__/common/js/'//定义基目录
+		}).extend({
+			ajaxExtention:'ajaxExtention',
+			$tool:'tool'
+		}).use(['form','element','layer','carousel','jquery','ajaxExtention','$tool'],function(){
+			var form = layui.form,
+					layer = parent.layer === undefined ? layui.layer : parent.layer,
+					element = layui.element,
+					$ = layui.jquery,
+					carousel = layui.carousel,
+					$tool = layui.$tool;
+
+			function init() {
+				carousel.render({
+					elem: '#car'
+					,width: '100%' //设置容器宽度
+					,height: '400px'
+					,arrow: 'always' //始终显示箭头
+				});
+			}
+			init();
+
+			$(".panel a").on("click",function(){
+				window.parent.addTab($(this));
+			});
+
+
+		});
+
+	</script>
+	{/block}
+</body>
+</html>

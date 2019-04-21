@@ -1,0 +1,43 @@
+
+<!--base.html是基础模板，可供其他模板继承-->
+
+<!--meta信息及ccs引用-->
+{include file='base/meta' /}
+<!--meta信息及ccs引用-->
+
+{block name="seo"}
+网站标题关键词与描述
+{/block}
+
+<!--layui body-->
+{include file='/base/body' /}
+<!--layui body-->
+
+<!--顶部导航栏-->
+{include file='/base/header' /}
+<!--顶部导航栏-->
+
+<!--左侧菜单栏-->
+{include file='/base/menu' /}
+<!--左侧菜单栏-->
+
+<!--body_tab选项卡-->
+{include file='/base/body_tab' /}
+<!--body_tab选项卡-->
+
+{block name="content"}
+页面主体内容
+{/block}
+
+<!--尾部信息及公共js文件引用-->
+{include file='base/footer' /}
+<!--尾部信息及公共js文件引用-->
+
+
+{block name="js"}
+用户自定义js脚本
+{/block}
+
+</body>
+</html>
+

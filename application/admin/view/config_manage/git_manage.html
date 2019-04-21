@@ -155,6 +155,7 @@ function copy_to_git() {
 
     window.open(url);
 }
+
     /*copy配置项并init git仓库，并配置工作环境*/
     function copy_to_init() {
         var url="{:url('admin/config_manage/copyToGit',['id'=>$vo.id,'flag'=>1])}";
@@ -163,10 +164,11 @@ function copy_to_git() {
     }
     /*更新版本*/
     function update_version() {
-        var url="{:url('admin/config_manage/updateVersion',['id'=>$vo.id])}";
+        var url="{:url('admin/config_manage/updateVersion',['id'=>$vo.id,'flag'=>1,])}";
 
         window.open(url);
     }
+
 
 /*打开配置项所在目录*/
     function open_dir(id) {

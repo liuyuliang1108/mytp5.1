@@ -1,0 +1,268 @@
+﻿{extend name='base/base_content' /}
+
+
+{block name="seo"}
+<title>{$title|default='页面标题'}</title>
+<meta name="keywords" content="{$keywords|default='页面关键字'}">
+<meta name="description" content="{description|default='页面描述'}">
+</head>
+<body>
+{/block}
+
+
+{block name="content"}
+<div class="page-container">
+	<p class="f-20 text-success">欢迎使用H-ui.admin <span class="f-14">v3.1</span>后台模版！</p>
+	<p>登录次数：{$Think.session.user_info.login_count}次 </p>
+	<p>上次登录IP：{$Request.ip}  上次登录时间：{:date("Y-m-d H:i:s",$Think.session.user_info.login_time )}</p>
+	<table class="table table-border table-bordered table-bg">
+		<thead>
+		<tr>
+			<th colspan="7" scope="col">信息统计</th>
+		</tr>
+		<tr class="text-c">
+			<th>统计</th>
+			<th>资讯库</th>
+			<th>图片库</th>
+			<th>产品库</th>
+			<th>用户</th>
+			<th>管理员</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr class="text-c">
+			<td>总数</td>
+			<td>92</td>
+			<td>9</td>
+			<td>0</td>
+			<td>8</td>
+			<td>20</td>
+		</tr>
+		<tr class="text-c">
+			<td>今日</td>
+			<td>0</td>
+			<td>0</td>
+			<td>0</td>
+			<td>0</td>
+			<td>0</td>
+		</tr>
+		<tr class="text-c">
+			<td>昨日</td>
+			<td>0</td>
+			<td>0</td>
+			<td>0</td>
+			<td>0</td>
+			<td>0</td>
+		</tr>
+		<tr class="text-c">
+			<td>本周</td>
+			<td>2</td>
+			<td>0</td>
+			<td>0</td>
+			<td>0</td>
+			<td>0</td>
+		</tr>
+		<tr class="text-c">
+			<td>本月</td>
+			<td>2</td>
+			<td>0</td>
+			<td>0</td>
+			<td>0</td>
+			<td>0</td>
+		</tr>
+		</tbody>
+	</table>
+	<table class="table table-border table-bordered table-bg mt-20">
+		<thead>
+		<tr>
+			<th colspan="2" scope="col">请求信息</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr>
+			<th width="30%">当前访问域名或者IP</th>
+			<td><span id="lbServerName">{$Request.host}</span></td>
+		</tr>
+		<tr>
+			<td>当前访问协议</td>
+			<td>{$Request.scheme}</td>
+		</tr>
+
+		<tr>
+			<td>服务器端口 </td>
+			<td>{$Request.port}</td>
+		</tr>
+
+		<tr>
+			<td>当前请求的REMOTE_PORT</td>
+			<td>{$Request.remotePort}</td>
+		</tr>
+
+		<tr>
+			<td>当前请求的当前请求的SERVER_PROTOCOL</td>
+			<td>{$Request.protocol}</td>
+		</tr>
+
+		<tr>
+			<td>当前请求的CONTENT_TYPE </td>
+			<td>{$Request.contentType}</td>
+		</tr>
+
+		<tr>
+			<td>服务器域名</td>
+			<td>{$Request.domain}</td>
+		</tr>
+
+		<tr>
+			<td> 当前访问的子域名 </td>
+			<td>{$Request.subDomain}</td>
+		</tr>
+
+		<tr>
+			<td> 当前访问的泛域名 </td>
+			<td>{$Request.panDomain}</td>
+		</tr>
+
+		<tr>
+			<td> 当前访问的根域名 </td>
+			<td>{$Request.rootDomain}</td>
+		</tr>
+
+		<tr>
+			<td>当前请求url，传入true参数</td>
+			<!--传入true参数，获取包含域名的完整绝对url请求地址-->
+			<td>{$Request.url.true}</td>
+		</tr>
+
+		<tr>
+			<td> 当前请求的QUERY_STRING参数  </td>
+			<td>{$Request.query}</td>
+		</tr>
+
+		<tr>
+			<td>  当前执行的文件 </td>
+			<td>{$Request.baseFile}</td>
+		</tr>
+
+		<tr>
+			<td> URL访问根地址 </td>
+			<td>{$Request.root}</td>
+		</tr>
+
+		<tr>
+			<td>  URL访问根目录  </td>
+			<td>{$Request.rootUrl}</td>
+		</tr>
+
+		<tr>
+			<td>当前请求URL的pathinfo信息（含URL后缀）</td>
+			<td>{$Request.pathinfo}</td>
+		</tr>
+
+		<tr>
+			<td>  请求URL的pathinfo信息(不含URL后缀)   </td>
+			<td>{$Request.path}</td>
+		</tr>
+
+		<tr>
+			<td>当前URL的访问后缀</td>
+			<td>{$Request.ext}</td>
+		</tr>
+
+		<tr>
+			<td> 获取当前请求的时间 </td>
+			<td>{$Request.time}</td>
+		</tr>
+
+		<tr>
+			<td> 当前请求的资源类型  </td>
+			<td>{$Request.type}</td>
+		</tr>
+
+		<tr>
+			<td>  当前请求类型 </td>
+			<td>{$Request.method}</td>
+		</tr>
+
+		<tr>
+			<td>PHP版本</td>
+			<td>{$Think.const.PHP_VERSION}</td>
+		</tr>
+
+		<tr>
+			<td>服务器版本</td>
+			<td>{$Think.const.PHP_OS}</td>
+		</tr>
+
+		<thead>
+		<tr>
+			<th colspan="2" scope="col">服务器变量server</th>
+		</tr>
+		</thead>
+		{volist name='$Request.server' id='vo'}
+		<tr>
+			<td>{$key}</td>
+			<td>{$vo}</td>
+		</tr>
+		{/volist}
+
+		<thead>
+		<tr>
+			<th colspan="2" scope="col">请求变量request</th>
+		</tr>
+		</thead>
+		{volist name='$Request.request' id='vo'}
+		<tr>
+			<td>{$key}</td>
+			<td>{$vo}</td>
+		</tr>
+		{/volist}
+
+		<thead>
+		<tr>
+			<th colspan="2" scope="col">环境变量env</th>
+		</tr>
+		</thead>
+		{volist name='$Request.env' id='vo'}
+		<tr>
+			<td>{$key}</td>
+			<td>{$vo}</td>
+		</tr>
+		{/volist}
+
+
+		<thead>
+		<tr>
+			<th colspan="2" scope="col">路由变量route</th>
+		</tr>
+		</thead>
+		{volist name='$Request.route' id='vo'}
+		<tr>
+			<td>{$key}</td>
+			<td>{$vo}</td>
+		</tr>
+		{/volist}
+
+		<thead>
+		<tr>
+			<th colspan="2" scope="col">cookie变量cookie</th>
+		</tr>
+		</thead>
+		{volist name='$Request.cookie' id='vo'}
+		<tr>
+			<td>{$key}</td>
+			<td>{$vo}</td>
+		</tr>
+		{/volist}
+
+		</tbody>
+	</table>
+</div>
+{/block}
+
+{block name="js"}
+<script type="text/javascript" src="__ADMIN__/lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="__ADMIN__/static/h-ui/js/H-ui.min.js"></script>
+{/block}
+</body>
+</html>
