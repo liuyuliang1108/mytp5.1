@@ -1,0 +1,142 @@
+{extend name='base/main' /}
+
+
+{block name="seo"}
+<title>{$title|default='老猫管理系统'}</title>
+<meta name="keywords" content="{$keywords|default='页面关键字'}">
+<meta name="description" content="{description|default='页面描述'}">
+
+</head>
+{/block}
+
+{block name="content"}
+<body class="childrenBody">
+
+<form class="layui-form layui-form-pane" action="" >
+        <div class="layui-form-item">
+           <label class="layui-form-label"><span class="c-red">*</span>中文名称</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" value="{$info.name}" placeholder="" id="common-name" name="name">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+           <label class="layui-form-label"><span class="c-red">*</span>公共模板名称</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" value="{$info.value}" placeholder="" id="common-value" name="value">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+           <label class="layui-form-label">类型：</label>
+            <div class="layui-input-block"> <span class="select-box" style="width:150px;">
+			<select class="select" name="type" size="1">
+				<option value="1"
+                        {eq name="$info.type" value="1.不需渲染视图方法"}
+                        selected
+                        {/eq}
+				>1.不需渲染视图方法</option>
+                <option value="2"
+                        {eq name="$info.type" value="2.渲染视图方法"}
+                        selected
+                        {/eq}
+				>2.渲染视图方法</option>
+			</select>
+			</span> </div>
+        </div>
+
+        <div class="layui-form-item">
+           <label class="layui-form-label">参数：</label>
+            <div class="layui-input-block"> <span class="select-box" style="width:150px;">
+                <select class="select" name="attr" size="1">
+				<option value="0"
+                        {eq name="$info.attr" value="0.不需控制器名前缀"}
+                        selected
+                        {/eq}
+				>0.不需控制器名前缀</option>
+                    <option value="1"
+                            {eq name="$info.attr" value="1.需控制器名前缀"}
+                            selected
+                            {/eq}
+				>1.需控制器名前缀</option>
+			</select>
+			</span> </div>
+        </div>
+
+        <div class="layui-form-item">
+           <label class="layui-form-label">是否启用：</label>
+            <div class="layui-input-block"> <span class="select-box" style="width:150px;">
+                <select class="select" name="status" size="1">
+				<option value="0"
+                        {eq name="$info.status" value="已停用"}
+                        selected
+                        {/eq}
+				>已停用</option>
+                    <option value="1"
+                            {eq name="$info.status" value="已启用"}
+                            selected
+                            {/eq}
+				>已启用</option>
+			</select>
+			</span> </div>
+        </div>
+
+
+        <!--隐藏提交id-->
+        <input type="hidden"  value="{$info.id}"  name="id">
+        <!--隐藏提交id-->
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="common-edit"  type="button">提交修改</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+
+    </form>
+</article>
+
+{/block}
+
+
+{block name="js"}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+<script type="text/javascript">
+    layui.use(['form','element','layer','jquery'],function() {
+        var form = layui.form,
+            layer = parent.layer === undefined ? layui.layer : parent.layer,
+            element = layui.element,
+            $ = layui.jquery;
+
+
+        form.on('submit(category-edit)', function(data){
+            $.ajax({
+                type: 'POST',
+                url:"{:url('common/commonEditSave')}" ,
+                data: $('form').serialize(),
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    data= $.parseJSON(data);
+                    if(data.flag==1){
+                        layer.msg('修改成功!', {icon: 1, time: 1000});
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.location.reload();
+                        parent.layer.close(index);
+                    }else { //给出错误信息
+                        layer.msg('修改失败!', {icon: 2, time: 1000});
+                    }
+                }
+
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+    });
+</script>
+{/block}
+</body>
+</html>

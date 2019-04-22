@@ -17,151 +17,128 @@ use think\Request;
 class Category extends Base //分类管理控制器
 {
 
-
-    public function index()
-    {
-        $this->isLogin();//判断用户是否登录
-        $data = CategoryList::selectData();
-
-        $data = getTree($data, 0);
-
-        $this->view->assign('title', '后台管理系统v1.0');
-
-        return $this->fetch('', ['menu' => $data]);
-    }
-
-    public function welcome()
-    {
-
-        return $this->fetch('');
-    }
-
+    /**
+     * @name categoryManage
+     * @decs 分类管理首页展示
+     * @abstract 申明变量/类/方法
+     * @access public protected static
+     * 关联数据库：
+     * @return mixed
+     * User: yliang_liu
+     * Created on: 2019/4/22 16:13
+     */
     public function categoryManage()
     {
-       // $this->isLogin();//判断用户是否登录
-
-
+        // $this->isLogin();//判断用户是否登录
         return $this->fetch('');
     }
 
-    public function select($cId = 11, $flag = 0)//flag为0是查询操作，为1是新增查询操作
+    public function categoryAdd($cId)//flag为0是查询操作，为1是新增查询操作
     {
 
-        $data =CategoryList::where('child_id',$cId)->find();
+        $data = CategoryList::where('child_id', $cId)->find();
 
-        if ($flag == 0) {
-
-            return $this->fetch('', ['data' => $data]);
-        } else {
-            /*获取所有公共模板数据 返回对象数组*/
-            //以类型分类，获取二维对象数组
-            $model = new CommonModel;
-            $list=[];
-            $typeNub=$model->max('type');
-            for ($i=1;$i<=$typeNub;$i++) {
-                $list[$i]=CommonModel::all(['type'=>$i]);
-            }
-            $this->view->assign('list', $list);
-            return $this->fetch('add', ['data' => $data]);
+        /*获取所有公共模板数据 返回对象数组*/
+        //以类型分类，获取二维对象数组
+        $model = new CommonModel;
+        $list = [];
+        $typeNub = $model->max('type');
+        for ($i = 1; $i <= $typeNub; $i++) {
+            $list[$i] = CommonModel::all(['type' => $i]);
         }
+        $this->view->assign('list', $list);
+        return $this->fetch('', ['data' => $data]);
+
+
+    }
+
+    public function categoryEdit($cId = 11)
+    {
+
+        $data = CategoryList::where('child_id', $cId)->find();
+
+        return $this->fetch('', ['data' => $data]);
 
     }
 
 
     //删除分类
-    public function delete()
+    public function delete(Request $request)
     {
-        $cId = intval(input('get.id'));    //接收前端Ajax传过来的数据
-        $id = 'child_id';
-        //  $arr = json_decode($data, true);
-        // $cId = $arr['id'];
-        $result = CategoryList::editData('', $id, $cId, 2);
-        $data = $result['affected'];
-        //如果删除成功，封装json数据
-        if ($data) {
-            $response = array(
-                'flag' => 1,
-                'errmsg' => 'success',
-                'data' => true
-            );
-        } else {
-            $response = array(
-                'flag' => -1,
-                'errmsg' => 'fail',
-                'data' => false
-            );
-        }
+        $cId = $request->param('id');    //接收前端Ajax传过来的数据
 
-        return json_encode($response);//以json格式输出
+        $result = CategoryList::destroy(['child_id' => $cId]);
+
+        //如果删除成功，封装json数据
+        $data = $result ? ['flag' => 1] : ['flag' => -1];
+
+        return json_encode($data);//以json格式输出
     }
 
-    public function addSave(Request $request)//新增方法，以及修改方法//依赖注入request对象
+    public function CategoryAddSave(Request $request)//新增方法，以及修改方法//依赖注入request对象
     {
         //获取请求参数
         $data = $request->param();
 
         //数据处理
-        if ($data['type']==3) {
-            $data['url'] = '/' .$data['module'] . '/' .humpToLine($data['controller']) . '/' . $data['action'] . '.html';
-        }else{
-            $data['url']="javascript:;";
+
+        //如果类型为方法型，生成url地址，
+        if ($data['type'] == 3) {
+            $data['url'] = '/' . $data['module'] . '/' . humpToLine($data['controller']) . '/' . $data['action'] . '.html';
+        } else {
+            $data['url'] = "javascript:;";
         }
 
         $data['postman'] = '/' . $data['module'] . '/' . humpToLine($data['controller']) . '/' . $data['action'] . '.html';
         $data['parent_id'] = intval($data['parent_id']);
 
-        //先判断是否更新了节点信息
-        if (array_key_exists('id', $data)) {
-            $result= CategoryList::get($data['id']);
-            $pId=$result->parent_id;
-            if (!$pId==$data['parent_id']) {
+        //当新增以及父级关系改变时，自动生成order
+        if (array_key_exists('id', $data)) { //存在id键为更新操作
+            $result = CategoryList::get($data['id']);
+            $pId = $result->parent_id;
+            if (!$pId == $data['parent_id']) {   //判断更新操作是否更新了父级关系
                 //自动获取order
                 $model = new CategoryList;
-                $order=$model->where(['parent_id'=>$data['parent_id']])->max('order');
-                if ($order) {
-                    $data['order']=$order+1;
-
-                }else{
-                    $data['order']=1;
-                }
+                $order = $model->where(['parent_id' => $data['parent_id']])->max('order');
+                $data['order'] = $order ? $order + 1 : 1;//三元表达式，如果此类中不存在，则序号为1
             }
-        }else{
+        } else {
             //自动获取order
             $model = new CategoryList;
-            $order=$model->where(['parent_id'=>$data['parent_id']])->max('order');
-            if ($order) {
-                $data['order']=$order+1;
-
-            }else{
-                $data['order']=1;
-            }
+            $order = $model->where(['parent_id' => $data['parent_id']])->max('order');
+            $data['order'] = $order ? $order + 1 : 1;//三元表达式，如果此类中不存在，则序号为1
         }
 
-
-        $data['child_id'] = $data['parent_id'] * 10 + $data['order'];
+        //判断排序有几位数
+        $nub = ($data['order'] % 10) + 1;
+        //根据父节点，和排序生成子节点
+        $data['child_id'] = $data['parent_id'] * 10 * $nub + $data['order'];
+        //驼峰转下划线法得到视图文件名
         $data['view'] = humpToLine($data['action']);
+
         //将字符串转为索引数组
-        $data['status']=substr($data['status'],0, -1) ;
-        $data['status'] = explode ( '|', $data['status'] );
+        if (!array_key_exists('id', $data)) {
+            $data['status'] = substr($data['status'], 0, -1);
+        }
+        $data['status'] = explode('|', $data['status']);
         //并将字符型数组转成整型数组
-        foreach($data['status'] as $key=>$value)
-        {
-            $data['status'][$key]=(int)$value;
+        foreach ($data['status'] as $key => $value) {
+            $data['status'][$key] = (int)$value;
         }
 
         if (array_key_exists('id', $data)) {//调用本模型中的更新方法
-            $category =new CategoryList;
+            $category = new CategoryList;
             $result = $category->isUpdate()->save($data);
 
-        }else {//调用本模型中的新增方法
+            $data = $result ? ['flag' => 1] : ['flag' => -1];
+
+        } else {                                     //调用本模型中的新增方法
             $category = new CategoryList;
             $result = $category->save($data);
-            if (!$result) {
+            //新增成功后生成模板文件
+            if ($result) {
 
-            } else {
-                $result = [];
                 switch ($data['type']) {
-
                     case 0:
                         {
                             //创建模块module
@@ -171,7 +148,7 @@ class Category extends Base //分类管理控制器
                     case 1:
                         {
                             //创建默认控制器
-                            self::buildController($data['module'], $data['controller'],$data['model']);
+                            self::buildController($data['module'], $data['controller'], $data['model']);
                             break;
                         }
                     case 2:
@@ -180,16 +157,8 @@ class Category extends Base //分类管理控制器
                             self::buildModel($data['module'], $data['model']);
                             //并创建对应控制器
                             if ($data['controller']) {
-                                self::buildController($data['module'], $data['controller'],$data['model']);
+                                self::buildController($data['module'], $data['controller'], $data['model']);
                             }
-                            break;
-                        }
-                    case 3:
-                        {//创建方法
-                            break;
-                        }
-                    case 4:
-                        {//创建分类
                             break;
                         }
                 }
@@ -200,55 +169,51 @@ class Category extends Base //分类管理控制器
                         //生成文件
                         Build::run($build);
                     }
-                }else{
+                } else {
                     $result = ['flag' => 1];
                 }
 
 
-
-                if ($data['type']==3) {
-                    $model=$data['model'];
+                if ($data['type'] == 3) {
+                    $model = $data['model'];
                     //获取控制器中文名
-                    $result=CategoryList::get(['child_id'=>$data['parent_id']]);
-                    $name=$result->name;
-                    if ($data['status'][0]==10000) {
+                    $result = CategoryList::get(['child_id' => $data['parent_id']]);
+                    $name = $result->name;
+                    if ($data['status'][0] == 10000) {
                         //创建默认无视图方法
-                        self::buildAction($data['module'],$data['controller'],$model, $data['action'],$name);
-                    }elseif ($data['status'][0]==20000){
-                        self::buildAction($data['module'],$data['controller'],$model, $data['action'],$name);
-                        self::buildTpl($data['module'], $data['controller'],$data['action'],$name,0);
-                    }else{
+                        self::buildAction($data['module'], $data['controller'], $model, $data['action'], $name);
+                    } elseif ($data['status'][0] == 20000) {
+                        self::buildAction($data['module'], $data['controller'], $model, $data['action'], $name);
+                        self::buildTpl($data['module'], $data['controller'], $data['action'], $name, 0);
+                    } else {
                         //获取传入公共模板信息
-                        $list = CommonModel::all(['index'=>$data['status']]);
-                        foreach ($list as $key=>$value){
+                        $list = CommonModel::all(['index' => $data['status']]);
+                        foreach ($list as $key => $value) {
 
-                            $action=$value->value;
-                            $attr=$value->attr;
-                            switch ($value->getData('type')){
-                                case 1:{
-                                    self::buildAction($data['module'],$data['controller'],$model, $action,$name);
-                                    break;
-                                }
-                                case 2:{
-                                    self::buildAction($data['module'],$data['controller'],$model, $action,$name);
-                                    self::buildTpl($data['module'], $data['controller'],$action,$name,$attr);
-                                    break;
-                                }
+                            $action = $value->value;
+                            $attr = $value->attr;
+                            switch ($value->getData('type')) {
+                                case 1:
+                                    {
+                                        self::buildAction($data['module'], $data['controller'], $model, $action, $name);
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        self::buildAction($data['module'], $data['controller'], $model, $action, $name);
+                                        self::buildTpl($data['module'], $data['controller'], $action, $name, $attr);
+                                        break;
+                                    }
                             }
                         }
                     }
-                    }
+                }
             }
 
 
-            if ($result) {
-                $result = ['flag' => 1];
-
-            } else {
-                $result = ['flag' => -1];
-            };
+            $data = $result ? ['flag' => 1] : ['flag' => -1];
         }
-        return json_encode($result);//以json格式输出
+        return json_encode($data);//以json格式输出
     }
 
 

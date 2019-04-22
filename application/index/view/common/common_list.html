@@ -1,0 +1,247 @@
+{extend name='base/main' /}
+
+
+{block name="seo"}
+<title>{$title|default='老猫管理系统'}</title>
+<meta name="keywords" content="{$keywords|default='页面关键字'}">
+<meta name="description" content="{description|default='页面描述'}">
+
+</head>
+{/block}
+
+{block name="content"}
+<body class="childrenBody">
+
+<div class="layui-card">
+    <div class="layui-card-header">公共模板列表</div>
+    <div class="layui-card-body">
+        <a href="javascript:;" class="layui-btn" onclick="unDelete()">批量恢复</a>
+        <a href="javascript:;" class="layui-btn" onclick="common_add('添加公共模板列表','{:url('common/commonAdd')}','800','500')"><i class="layui-icon">&#xe608;</i>添加公共模板列表</a>
+        </span> <span class="r">共有数据：<strong>{$count}</strong> 条</span> </div>
+
+</div>
+
+<table class="layui-table">
+
+    <thead>
+    <tr>
+        <th width="25"><input type="checkbox" name="" value=""></th>
+        <th width="40">ID</th>
+        <th width="40">公共模板列表名</th>
+        <th width="40">文件名</th>
+        <th width="40">类型</th>
+        <th width="40">索引</th>
+        <th width="40">参数</th>
+        <th width="40">状态</th>
+        <th width="60">创建时间</th>
+        <th width="100">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {volist name='list' id='vo'}
+    <tr>
+    <td><input type="checkbox" value="{$key}" name=""></td>
+    <td>{$vo.id}</td>
+    <td>{$vo.name}</td>
+    <td>{$vo.value}</td>
+    <td>{$vo.type}</td>
+    <td>{$vo.index}</td>
+    <td>{$vo.attr}</td>
+    <!--启用停用权限仅admin用户使用-->
+    {eq name="$Think.session.user_info.name" value="admin"}
+    <td class="td-status">
+        {if condition="$vo.status eq '已启用'"}
+        <span class="label label-success radius">{$vo.status}</span></td>
+    {else/}
+    <span class="label radius">{$vo.status}</span>
+    {/if}
+    </td>
+    {/eq}
+    <td>{$vo.create_time}</td>
+
+    <td class="td-manage">
+        <!--启用停用权限及删除仅admin用户使用-->
+        {eq name="$Think.session.user_info.name" value="admin"}
+        <a style="text-decoration:none" onClick="
+                {if condition="$vo.status eq '已启用'"}
+        common_stop(this,'{$vo.id}')" href="javascript:;" title="停用"><i class="layui-icon">&#x1007;</i></a>
+        {else/}
+        common_start(this,'{$vo.id}')" href="javascript:;" title="启用"><i class="layui-icon">&#x1005;</i></a>
+        {/if}
+        {/eq}
+        <a title="编辑" href="javascript:;" onclick="common_edit('公共模板列表编辑','{:url('common/commonEdit',['id'=>$vo.id])}','800','500')" class="ml-5" style="text-decoration:none"><i class="layui-icon">&#xe642;</i>  </a>
+        {eq name="$Think.session.user_info.name" value="admin"}
+        <a title="删除" href="javascript:;" onclick="common_del(this,'{$vo.id}')" class="ml-5" style="text-decoration:none"><i class="layui-icon">&#xe640;</i></a>
+        {/eq}
+        {eq name="$Think.session.user_info.name" value="admin"}
+
+        <a href="javascript:;" onclick="git_manage('git管理','{:url('common/gitManage',['id'=>$vo.id])}','800','500')" class="layui-btn">
+            git管理</a>
+        {/eq}
+    </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+
+
+
+
+{/block}
+
+{block name="js"}
+<script type="text/javascript">
+    /**
+     * 首页内容.js
+     * */
+    layui.use(['form','element','layer','jquery'],function() {
+        var form = layui.form,
+            layer = parent.layer === undefined ? layui.layer : parent.layer,
+            element = layui.element,
+            $ = layui.jquery;
+
+
+        form.on('submit(formDemo)', function(data){
+            $.ajax({
+                type: 'POST',
+                url: "{:url('index/category/addSave')}",
+                data: $('form').serialize(),
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    if(data.flag==1){
+                        layer.msg('修改失败!', {icon: 2, time: 1000});
+                    }else { //给出错误信息
+                        layer.msg('修改成功!', {icon: 1, time: 1000});
+                        window.location.reload();
+                    }
+                }
+
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+    });
+
+    //Ajax请求控制器中的方法完成数据的增加
+
+
+    /*公共模板列表-停用*/
+    function common_stop(obj,id) {
+        layer.confirm('确认要停用吗？', function (index) {
+            //此处请求后台程序，下方是成功后的前台处理……
+            $.ajax({
+                type: 'get',
+                url: "{:url('common/setStatus')}",
+                data: {id: id},
+                dataType: 'json',
+                success: function (data) {
+                    $(obj).parents("tr").find(".td-manage").prepend('<a onClick="common_start(this,'+id+')" href="javascript:;" title="启用" style="text-decoration:none"><i class="layui-icon">&#x1005;</i></a>');
+                    $(obj).parents("tr").find(".td-status").html('<span class="label label-default radius">已禁用</span>');
+                    $(obj).remove();
+                    layer.msg('已停用!', {icon: 5, time: 1000});
+                }
+            });
+        });
+    }
+
+    /*公共模板列表-启用*/
+    function common_start(obj,id){
+        layer.confirm('确认要启用吗？',function(index){
+            //此处请求后台程序，下方是成功后的前台处理……
+            $.ajax({
+                type: 'get',
+                url: "{:url('common/setStatus')}",
+                data:{id:id},
+                dataType: 'json',
+                success: function(data) {
+                    $(obj).parents("tr").find(".td-manage").prepend('<a onClick="common_stop(this,'+id+')" href="javascript:;" title="停用" style="text-decoration:none"><i class="layui-icon">&#x1007;</i></a>');
+                    $(obj).parents("tr").find(".td-status").html('<span class="label label-success radius">已启用</span>');
+                    $(obj).remove();
+                    layer.msg('已启用!', {icon: 6,time:1000});
+                }
+            });
+        });
+    }
+
+    /*公共模板列表-增加*/
+    function common_add(title,url,w,h){
+        layer.open({
+            type: 2,
+            title: title,
+            closeBtn: 1, //不显示关闭按钮
+            maxmin: true, //开启最大化最小化按钮
+            shade: [0],
+            shadeClose: true, //开启遮罩关闭
+            area: [w+'px', h+'px'],
+            anim: 2,
+            content: [url, 'no'], //iframe的url，no代表不显示滚动条
+        });
+    }
+
+
+    /*公共模板列表-编辑*/
+    function common_edit(title,url,w,h){
+
+        layer.open({
+            type: 2,
+            title: title,
+            closeBtn: 1, //不显示关闭按钮
+            maxmin: true, //开启最大化最小化按钮
+            shade: [0],
+            shadeClose: true, //开启遮罩关闭
+            area: [w+'px', h+'px'],
+            anim: 2,
+            content: [url, 'no'], //iframe的url，no代表不显示滚动条
+        });
+    }
+
+    /*公共模板列表-删除*/
+    function common_del(obj,id){
+        layer.confirm('确认要删除吗？',function(){
+            $.ajax({
+                type: 'get',
+                url: "{:url('common/commonDelete')}",
+                data:{id:id},
+                dataType: 'json',
+                success: function(data){
+                    $(obj).parents("tr").remove();
+                    layer.msg('已删除!',{icon:1,time:1000});
+                },
+                error:function(data) {
+                    console.log(data.msg);
+                },
+            });
+        });
+    }
+    /*公共模板列表-删除恢复*/
+    function unDelete(){
+        layer.confirm('确认要恢复吗？',function(index){
+            //此处请求后台程序，下方是成功后的前台处理……
+            $.ajax({
+                type: 'get',
+                url: "{:url('common/unDelete')}",
+                dataType: 'json',
+                success: function(data) {
+                    layer.msg('已恢复!', {icon: 6,time:1000});
+                    window.location.reload();
+                }
+            });
+        });
+    }
+
+    /*git管理*/
+    function git_manage(title,url,w,h){
+
+        layer_show(title,url,w,h);
+    }
+
+
+</script>
+{/block}
+</body>
+</html>
+
+
+
+

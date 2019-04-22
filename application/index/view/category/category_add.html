@@ -1,0 +1,204 @@
+
+{extend name='base/main' /}
+
+
+{block name="seo"}
+<title>{$title|default='页面标题'}</title>
+<meta name="keywords" content="{$keywords|default='页面关键字'}">
+<meta name="description" content="{description|default='页面描述'}">
+</head>
+
+{/block}
+
+
+{block name="content"}
+<body class="childrenBody">
+<div class="panel_box row">
+    
+
+    <form class="layui-form layui-form-pane" action="" id="form-category-add">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="c-red">*</span>分类名称name：</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" value="{$data.name}" placeholder="" id="" name="name">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">所在分类：parent_id：</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" value="{$data.child_id}" placeholder="" id="parent_id"
+                       name="parent_id">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+        <label class="layui-form-label">创建类型：</label>
+        <div class="layui-input-block">
+        <select class="select" name="type" size="1">
+            <option value="0">module</option>
+            <option value="1">controller</option>
+            <option value="2">model</option>
+            <option value="3">action</option>
+            <option value="4">category</option>
+        </select>
+        </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">分类描述remark：</label>
+            <div class="layui-input-block">
+                <textarea id="textarea_cate" name="remark" placeholder="请输入内容" class="layui-textarea"></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="c-red">*</span>模块名称module：</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" value="{$data.module}" placeholder="" id="" name="module">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="c-red">*</span>控制器名称名称controller：</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" value="{$data.controller}" placeholder="" id="" name="controller">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="c-red">*</span>对应模型名称model：</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" value="{$data.model}" placeholder="" id="" name="model">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="c-red">*</span>方法名称action：</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" value="index" placeholder="" id="" name="action">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">方法类型：</label>
+            <div class="layui-input-block">
+
+                {volist name='list' id='vo'}
+                <!--输出块-->
+                <div class="layui-collapse">
+                    <!--项目块-->
+                    <div class="layui-colla-item">
+                        <!--标题块-->
+                        <h2 class="layui-colla-title">{switch name="$key"}
+                            {case value="1"}1.不需渲染视图方法{/case}
+                            {case value="2"}2.渲染视图方法{/case}
+                            {/switch}</h2>
+                        <!--标题块-->
+                        <!--内容块-->
+                        <div class="layui-colla-content layui-show">
+                            <!--默认按钮-->
+                            <input type="checkbox"name="status" value="{$key}0000" id="checkbox-{$key}0000" title="
+                                              默认
+                                    {switch name="$key"}
+                            {case value="1"}不需渲染视图方法{/case}
+                            {case value="2"}渲染视图方法{/case}
+                            {/switch}
+                            " lay-skin="primary">
+                            <!--默认按钮-->
+                            {volist name='vo' id='vi'}
+                            <input type="checkbox" name="status" value="{$vi.index}" id="checkbox-{$vi.index}" title="{$vi.value}|{$vi.name}" lay-skin="primary">
+                            {/volist}
+                           </div>
+                        <!--内容块-->
+                    </div>
+                    <!--项目块-->
+                    {/volist}
+                </div>
+                <!--输出块-->
+
+
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo" onclick="submit_add()">创建</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+{/block}
+
+{block name="js"}
+<!--请在下方写此页面业务相关的脚本-->
+
+<script type="text/javascript">
+
+    /**
+     * 首页内容.js
+     * */
+    layui.config({
+        base: '__LAYUI__/common/js/'//定义基目录
+    }).extend({
+        ajaxExtention:'ajaxExtention',
+        $tool:'tool'
+    }).use(['form','element','layer','carousel','jquery','ajaxExtention','$tool'],function(){
+        var form = layui.form,
+            layer = parent.layer === undefined ? layui.layer : parent.layer,
+            element = layui.element,
+            $ = layui.jquery,
+            carousel = layui.carousel,
+            $tool = layui.$tool;
+
+
+
+    });
+    $(function() {
+        $("#textarea_cate").val("{$data.remark}");
+    });
+
+
+    //Ajax请求控制器中的方法完成数据的增加
+    function submit_add() {
+        //复选框数据连接
+        var str = "";
+        $("input[name='status']").each(function(){
+            if($(this).is(":checked"))
+            {
+                str +=  $(this).val()+"|";
+            }
+        });
+        $("input[name='status']").val(str);
+
+        var formData = $("#form-category-add").serialize();
+        $.ajax({
+            url: '__URL__/category/addSave',
+            data: formData,
+            type: 'post',
+            success: function (data) {
+                var data = JSON.parse(data);
+                if (data.flag == -1) {
+                    layer.msg('增加失败!', {icon: 2, time: 1000});
+                    return;
+                } else {
+                    layer.msg('增加成功!', {icon: 1, time: 1000});
+                    window.parent.location.reload(); // 父页面刷新
+                }
+            }
+
+        });
+
+    }
+
+
+</script>
+{/block}
+</body>
+</html>

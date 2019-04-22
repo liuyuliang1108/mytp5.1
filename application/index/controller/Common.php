@@ -14,7 +14,16 @@ use think\Request;
 
 class Common extends Base
 {
-    /*公共模板列表模板*/
+    /**
+     * @name commonList
+     * @decs 公共模板列表模板
+     * @abstract 申明变量/类/方法
+     * @access public protected static
+     * 关联数据库：Common
+     * @return mixed
+     * User: yliang_liu
+     * Created on: 2019/4/22 16:07
+     */
     public function commonList()
     {
         /*模板赋值*/
@@ -39,7 +48,6 @@ class Common extends Base
                 'attr' => $value->attr,
                 'status' => $value->status,
                 'create_time' => $value->create_time,
-
             ];
 
             /*每次关联查询结果保存到数组$commonList中*/
@@ -54,7 +62,16 @@ class Common extends Base
         return $this->fetch();
     }
 
-    /*公共模板添加模板*/
+    /**
+     * @name CommonAdd
+     * @decs 公共模板添加模板
+     * @abstract 申明变量/类/方法
+     * @access public protected static
+     * 关联数据库：
+     * @return mixed
+     * User: yliang_liu
+     * Created on: 2019/4/22 16:07
+     */
     public function CommonAdd()
     {
         /*模板赋值*/
@@ -65,7 +82,17 @@ class Common extends Base
         return $this->fetch();
     }
 
-    /*公共模板增加保存*/
+    /**
+     * @name CommonAddSave
+     * @decs 公共模板增加保存
+     * @abstract 申明变量/类/方法
+     * @access public protected static
+     * 关联数据库：Common
+     * @param Request $request
+     * @return false|string|null
+     * User: yliang_liu
+     * Created on: 2019/4/22 16:08
+     */
     public function CommonAddSave(Request $request)
     {
         //获取传入参数
@@ -108,7 +135,7 @@ class Common extends Base
      * @decs 公共模板编辑模板
      * @abstract 申明变量/类/方法
      * @access public protected static
-     * 关联数据库：
+     * 关联数据库：Common
      * @param Request $request
      * @return mixed
      * User: yliang_liu
@@ -136,7 +163,7 @@ class Common extends Base
      * @decs 公共模板编辑保存
      * @abstract 申明变量/类/方法
      * @access public protected static
-     * 关联数据库：
+     * 关联数据库：Common
      * @param Request $request
      * @return bool
      * User: yliang_liu
@@ -172,7 +199,7 @@ class Common extends Base
      * @decs
      * @abstract 申明变量/类/方法
      * @access public
-     * 关联数据库：CommonModel
+     * 关联数据库：Common
      * @param Request $request
      * @return bool
      * User: yliang_liu
@@ -194,7 +221,7 @@ class Common extends Base
      * @decs 设定状态
      * @abstract 申明变量/类/方法
      * @access public protected static
-     * 关联数据库：
+     * 关联数据库：Common
      * @param Request $request
      * User: yliang_liu
      * Created on: 2019/4/19 14:01

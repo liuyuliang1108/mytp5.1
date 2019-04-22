@@ -11,9 +11,7 @@
 
 {block name="content"}
 <body class="childrenBody">
-<div class="panel_box row">
 
-</div>
 <form class="layui-form layui-form-pane" action="" id="form-category-edit">
 
     <div class="layui-form-item">
@@ -54,11 +52,8 @@
                         {/eq}>model</option>
                 <option value="3" {eq name="$data.type" value="3"}
                         selected
-                        {/eq}>action not view</option>
+                        {/eq}>action</option>
                 <option value="4" {eq name="$data.type" value="4"}
-                        selected
-                        {/eq}>action and view</option>
-                <option value="5" {eq name="$data.type" value="5"}
                         selected
                         {/eq}>category</option>
             </select>
@@ -133,12 +128,13 @@
     <!--隐藏提交id-->
     <input type="hidden"  value="{$data.id}"  name="id">
     <!--隐藏提交id-->
+
     <div class="layui-form-item">
-        <div class="layui-input-block">
-            <button class="layui-btn" lay-submit lay-filter="formDemo" onclick="submit_update()">提交修改</button>
-            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-        </div>
+    <div class="layui-input-block">
+        <button class="layui-btn" lay-submit="" lay-filter="category-edit"  type="button">提交修改</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
     </div>
+</div>
 </form>
 
 {/block}
@@ -148,49 +144,40 @@
     /**
      * 首页内容.js
      * */
-    layui.config({
-        base: '__LAYUI__/common/js/'//定义基目录
-    }).extend({
-        ajaxExtention:'ajaxExtention',
-        $tool:'tool'
-    }).use(['form','element','layer','carousel','jquery','ajaxExtention','$tool'],function(){
+    layui.use(['form','element','layer','jquery'],function() {
         var form = layui.form,
             layer = parent.layer === undefined ? layui.layer : parent.layer,
             element = layui.element,
-            $ = layui.jquery,
-            carousel = layui.carousel,
-            $tool = layui.$tool;
+            $ = layui.jquery;
 
 
+        form.on('submit(category-edit)', function(data){
+            $.ajax({
+                type: 'POST',
+                url: "{:url('index/category/addSave')}",
+                data: $('form').serialize(),
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    data= $.parseJSON(data);
+                    if(data.flag==1){
+                        layer.msg('修改成功!', {icon: 1, time: 1000});
+                        window.location.reload();
+                    }else { //给出错误信息
+                        layer.msg('修改失败!', {icon: 2, time: 1000});
+                    }
+                }
+
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
 
     });
     $(function() {
         $("#textarea_cate").val("{$data.remark}");
     });
     //Ajax请求控制器中的方法完成数据的增加
-    function submit_update() {
 
-                        var formData = $("#form-category-edit").serialize();
-                        $.ajax({
-                            url: '__URL__/category/addSave',
-                            data: formData,
-                            type: 'post',
-                            success: function (data) {
-
-                                var data = JSON.parse(data);
-
-
-                                if (data.flag == -1) {
-                                    layer.msg('修改失败!', {icon: 2, time: 1000});
-                                    return;
-                                } else {
-                                    layer.msg('修改成功!', {icon: 1, time: 1000});
-                                    window.location.reload();
-                                }
-                            }
-                        });
-
-            }
 
 
 

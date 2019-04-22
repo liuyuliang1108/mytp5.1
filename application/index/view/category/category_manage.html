@@ -17,13 +17,13 @@
     <ul id="bcTree" class="ztree"></ul>
     <div class="row cl" style="text-align: center">
         <button class="layui-btn" onclick="category_add()">新增</button>
-        <button class="layui-btn" onclick="category_add()">删除</button>
+        <button class="layui-btn" onclick="category_del()">删除</button>
     </div>
 </div>
 
 
 <div style="display: inline-block; width: 65%; height: 556px;">
-    <iframe src="/index/category/select" data-frameid="category-select" scrolling="auto" frameborder="0" style=" width: 100%; height: 556px;">
+    <iframe src="/index/category/categoryEdit" data-frameid="category" id="iframe-category" scrolling="auto" frameborder="0" style=" width: 100%; height: 556px;">
 
     </iframe>
 </div>
@@ -95,7 +95,7 @@
                 var cId = treeNode.id;
                 var pId = treeNode.pId;
                 //默认进入查看页面
-                category_select(0, cId);
+                category_edit(cId);
             }
         }
 
@@ -127,26 +127,19 @@
     });
 
     //查看、编辑分类
-    function category_select(flag, cId) {
+    function category_edit(cId) {
 
 
         var cId = cId;
-
 
         if (cId == "") {
 
             layer.alert("请选择一个博客分类");
             return;
         }
+        $("#iframe-category").attr('src', "__URL__/category/categoryEdit?cId=" + cId);
 
-        //修改和完成所有的信息技术
-        if (flag == '1' && $("#checkNodePid").val() == "") {
 
-            layer.alert("根博客分类不能修改");
-            return;
-        }
-
-        $("#cIframe").prop("src", "__URL__/category/select?cId=" + cId + "&flag=" + flag);
     }
 
 
@@ -159,7 +152,6 @@
 
         var cId = nodes[0].id;
 
-        var flag = 1;
 
 
         if (cId == "") {
@@ -168,13 +160,14 @@
             return;
         }
 
+        $("#iframe-category").attr('src', "__URL__/category/add?cId=" + cId);
 
-        $("#cIframe").prop("src", "__URL__/category/select?cId=" + cId + "&flag=" + flag);
     }
 
 
     //Ajax请求控制器中的方法完成数据的删除
     function category_del() {
+
         var treeObj = $.fn.zTree.getZTreeObj("bcTree");
         nodes = treeObj.getCheckedNodes(true);
 
@@ -182,7 +175,7 @@
 
         var tId = nodes[0].tId;
 
-        $.ajax({
+        jQuery.ajax({
             url: '__URL__/category/delete',
             data: {"id": id},
             type: 'get',
@@ -193,6 +186,7 @@
                 if (data.flag == 1) {
                     //如果php处理成功，调用此方法
                     layer.msg('删除成功!', {icon: 1, time: 1000});
+
                     $("#bcTree" + tId.substring(6)).remove();      //把这个id的数据在html中自动删除
 
                 } else {
@@ -203,6 +197,8 @@
         });
 
     }
+
+
 </script>
 {/block}
 </body>
