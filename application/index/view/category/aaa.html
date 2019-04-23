@@ -11,9 +11,6 @@
 
 {block name="content"}
 <body class="childrenBody">
-<div class="panel_box row">
-
-</div>
 
 
 {/block}
@@ -28,13 +25,11 @@
     }).extend({
         ajaxExtention:'ajaxExtention',
         $tool:'tool'
-    }).use(['form','element','layer','carousel','jquery','ajaxExtention','$tool'],function(){
+    }).use(['form','element','layer','carousel','jquery'],function(){
         var form = layui.form,
             layer = parent.layer === undefined ? layui.layer : parent.layer,
             element = layui.element,
-            $ = layui.jquery,
-            carousel = layui.carousel,
-            $tool = layui.$tool;
+            $ = layui.jquery;
 
 
 

@@ -1,0 +1,127 @@
+{extend name='base/main' /}
+
+
+{block name="seo"}
+<title>{$title|default='老猫管理系统'}</title>
+<meta name="keywords" content="{$keywords|default='页面关键字'}">
+<meta name="description" content="{description|default='页面描述'}">
+</head>
+{/block}
+
+{block name="content"}
+<body class="childrenBody">
+
+<form class="layui-form layui-form-pane" action="" id="form-config-add">
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>配置项名称</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="" placeholder="" id="configName" name="name">
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>工作环境</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="" placeholder="" id="work_env" name="work_env">
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label">类型：</label>
+		<div class="layui-input-block"> <span class="select-box" style="width:150px;">
+			<select class="select" name="type" size="1">
+				<option value="0">win</option>
+				<option value="1">linux</option>
+			</select>
+			</span> </div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>配置文件名</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="" placeholder="" id="fileName" name="file_name">
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>配置项所在目录</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="" placeholder="" id="configDir" name="dir">
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>配置项版本</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="" placeholder="" id="configVersion" name="version">
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label">是否启用当前版本：</label>
+		<div class="layui-input-block"> <span class="select-box" style="width:150px;">
+			<select class="select" name="status" size="1">
+				<option value="0">不启用</option>
+				<option value="1">启用</option>
+			</select>
+			</span> </div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>版本描述</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="" placeholder="" id="configDescription" name="description">
+		</div>
+	</div>
+
+
+	<div class="layui-form-item">
+		<div class="layui-input-block">
+			<button class="layui-btn" lay-submit="" lay-filter="config-add"  type="button">提交</button>
+			<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		</div>
+	</div>
+</form>
+
+{/block}
+
+
+{block name="js"}
+<!--请在下方写此页面业务相关的脚本-->
+
+<script type="text/javascript">
+	layui.use(['form','element','layer'],function() {
+		var form = layui.form,
+				layer = parent.layer === undefined ? layui.layer : parent.layer,
+				element = layui.element;
+
+
+		form.on('submit(config-add)', function(data){
+			$.ajax({
+				type: 'POST',
+				url: "{:url('index/config/configAddSave')}",
+				data: $('form').serialize(),
+				dataType: 'json',
+				async: false,
+				success: function (data) {
+					data= $.parseJSON(data);
+					if(data.flag==1){
+						layer.msg('添加成功!',{icon:1,time:1000});
+						var index = parent.layer.getFrameIndex(window.name);
+						parent.location.reload();
+						parent.layer.close(index);
+					}else { //给出错误信息
+						layer.msg('增加失败!', {icon: 2, time: 1000});
+					}
+				}
+
+			});
+			return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+		});
+
+	});
+
+</script>
+{/block}
+</body>
+</html>

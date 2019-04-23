@@ -126,7 +126,7 @@
         <div class="layui-form-item">
             <div class="layui-form-item">
                 <div class="layui-input-block">
-                    <button class="layui-btn" lay-submit lay-filter="formDemo" onclick="submit_add()">创建</button>
+                    <button class="layui-btn" lay-submit lay-filter="category-add">创建</button>
                     <button type="reset" class="layui-btn layui-btn-primary">重置</button>
                 </div>
             </div>
@@ -149,15 +149,42 @@
     }).extend({
         ajaxExtention:'ajaxExtention',
         $tool:'tool'
-    }).use(['form','element','layer','carousel','jquery','ajaxExtention','$tool'],function(){
+    }).use(['form','element','layer'],function(){
         var form = layui.form,
             layer = parent.layer === undefined ? layui.layer : parent.layer,
-            element = layui.element,
-            $ = layui.jquery,
-            carousel = layui.carousel,
-            $tool = layui.$tool;
+            element = layui.element;
 
+        form.on('submit(category-add)', function(data){
+            //复选框数据连接处理
+            var str = "";
+            $("input[name='status']").each(function(){
+                if($(this).is(":checked"))
+                {
+                    str +=  $(this).val()+"|";
+                }
+            });
+            $("input[name='status']").val(str);
 
+            //Ajax请求控制器中的方法完成数据的增加
+            $.ajax({
+                type: 'POST',
+                url: "{:url('index/category/CategoryAddSave')}",
+                data: $('form').serialize(),
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    data= $.parseJSON(data);
+                    if(data.flag==1){
+                        layer.msg('新增成功!', {icon: 1, time: 1000});
+                        window.parent.location.reload();
+                    }else { //给出错误信息
+                        layer.msg('新增失败!', {icon: 2, time: 1000});
+                    }
+                }
+
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
 
     });
     $(function() {
@@ -165,37 +192,7 @@
     });
 
 
-    //Ajax请求控制器中的方法完成数据的增加
-    function submit_add() {
-        //复选框数据连接
-        var str = "";
-        $("input[name='status']").each(function(){
-            if($(this).is(":checked"))
-            {
-                str +=  $(this).val()+"|";
-            }
-        });
-        $("input[name='status']").val(str);
 
-        var formData = $("#form-category-add").serialize();
-        $.ajax({
-            url: '__URL__/category/addSave',
-            data: formData,
-            type: 'post',
-            success: function (data) {
-                var data = JSON.parse(data);
-                if (data.flag == -1) {
-                    layer.msg('增加失败!', {icon: 2, time: 1000});
-                    return;
-                } else {
-                    layer.msg('增加成功!', {icon: 1, time: 1000});
-                    window.parent.location.reload(); // 父页面刷新
-                }
-            }
-
-        });
-
-    }
 
 
 </script>

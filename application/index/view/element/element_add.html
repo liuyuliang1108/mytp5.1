@@ -1,0 +1,115 @@
+element小驼峰控制器名
+element下划线控制器名
+组件模板控制器中文名
+{extend name='base/main' /}
+
+
+{block name="seo"}
+<title>{$title|default='老猫管理系统'}</title>
+<meta name="keywords" content="{$keywords|default='页面关键字'}">
+<meta name="description" content="{description|default='页面描述'}">
+</head>
+{/block}
+
+{block name="content"}
+<body class="childrenBody">
+
+<form class="layui-form layui-form-pane" action="" id="form-element-edit">
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>组件名称name：</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.name}" placeholder="" id="" name="name">
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>组件别名alias：</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.alias}" placeholder="" id="" name="alias">
+		</div>
+	</div>
+
+
+	<div class="layui-form-item">
+		<label class="layui-form-label">所在组件：parent_id：</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.parent_id}" placeholder="" id="" name="parent_id">
+		</div>
+	</div>
+
+
+	<div class="layui-form-item">
+		<label class="layui-form-label">类型type：</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.type}" placeholder="" id="" name="type">
+		</div>
+	</div>
+
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>组件内容content：</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.content}" placeholder="" id="" name="content">
+		</div>
+	</div>
+
+	<div class="layui-form-item layui-form-text">
+		<label class="layui-form-label">组件描述des：</label>
+		<div class="layui-input-block">
+			<textarea id="textarea_cate" name="des" placeholder="请输入内容" class="layui-textarea"></textarea>
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<div class="layui-input-block">
+			<button class="layui-btn" lay-submit="" lay-filter="element-add"  type="button">提交</button>
+			<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		</div>
+	</div>
+</form>
+
+{/block}
+
+
+{block name="js"}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+<script type="text/javascript">
+	layui.use(['form','element','layer'],function() {
+		var form = layui.form,
+				layer = parent.layer === undefined ? layui.layer : parent.layer,
+				element = layui.element;
+
+
+		form.on('submit(element-add)', function(data){
+			$.ajax({
+				type: 'POST',
+				url: "{:url('index/element/elementAddSave')}",
+				data: $('form').serialize(),
+				dataType: 'json',
+				async: false,
+				success: function (data) {
+					data= $.parseJSON(data);
+					if(data.flag==1){
+						layer.msg('增加成功!', {icon: 1, time: 1000});
+						window.location.reload();
+					}else { //给出错误信息
+						layer.msg('增加失败!', {icon: 2, time: 1000});
+					}
+				}
+
+			});
+			return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+		});
+
+	});
+	$(function() {
+		$("#textarea_cate").val("{$data.des}");
+	});
+</script>
+{/block}
+</body>
+</html>

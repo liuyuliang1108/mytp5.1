@@ -11,7 +11,7 @@ $id = $attr['id'];
 //使用模型get方法,返回model对象
 $data = {$model}::get(['id' => $id]);
 //模板赋值
-$this->view->assign('info', $data);
+$this->view->assign('data', $data);
 /*渲染模板*/
 return $this->fetch();
 }

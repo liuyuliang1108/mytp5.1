@@ -1,138 +1,179 @@
-{extend name='base/base_content' /}
+{$littleController}小驼峰控制器名
+{$underlineController}下划线控制器名
+{$name}控制器中文名
+{extend name='base/main' /}
 
 
 {block name="seo"}
-<title>{$title|default='页面标题'}</title>
+<title>{$title|default='老猫管理系统'}</title>
 <meta name="keywords" content="{$keywords|default='页面关键字'}">
-<meta name="description" content="{$description|default='页面描述'}">
+<meta name="description" content="{description|default='页面描述'}">
 </head>
-<body>
 {/block}
 
-
 {block name="content"}
-<article class="page-container">
-	<form class="form form-horizontal" id="form-{$littleController}-add">
-	<div class="row cl">
-		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>{$name}名称</label>
-		<div class="formControls col-xs-8 col-sm-9">
-			<input type="text" class="input-text" value="" placeholder="" id="{{$littleController}}Name" name="name">
+<body class="childrenBody">
+
+<form class="layui-form layui-form-pane" action="" id="form-{$underlineController}-add">
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>{$name}名称name：</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.name}" placeholder="" id="" name="name">
 		</div>
 	</div>
 
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>工作环境</label>
-			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="" placeholder="" id="work_env" name="work_env">
-			</div>
-		</div>
 
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-3">类型：</label>
-			<div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:150px;">
+	<div class="layui-form-item">
+		<label class="layui-form-label">所在{$name}：parent_id：</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.parent_id}" placeholder="" id="" name="parent_id">
+		</div>
+	</div>
+
+
+	<div class="layui-form-item">
+		<label class="layui-form-label">排序值order：</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.order}" placeholder="" id="" name="order">
+		</div>
+	</div>
+
+	<div class="layui-form-item" pane>
+		<label class="layui-form-label">创建类型：</label>
+		<div class="layui-input-block">
 			<select class="select" name="type" size="1">
-				<option value="0">win</option>
-				<option value="1">linux</option>
+				<option value="0" {eq name="$data.type" value="0"}
+						selected
+						{/eq}>module</option>
+				<option value="1" {eq name="$data.type" value="1"}
+						selected
+						{/eq}>controller</option>
+				<option value="2" {eq name="$data.type" value="2"}
+						selected
+						{/eq}>model</option>
+				<option value="3" {eq name="$data.type" value="3"}
+						selected
+						{/eq}>action</option>
+				<option value="4" {eq name="$data.type" value="4"}
+						selected
+						{/eq}>{$littleController}</option>
 			</select>
-			</span> </div>
-		</div>
-
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>{$name}文件名</label>
-			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="" placeholder="" id="fileName" name="file_name">
-			</div>
-		</div>
-
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>{$name}所在目录</label>
-			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="" placeholder="" id="{$littleController}Dir" name="dir">
-			</div>
-		</div>
-
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>{$name}项版本</label>
-			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="" placeholder="" id="{$littleController}Version" name="version">
-			</div>
-		</div>
-
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-3">是否启用当前版本：</label>
-			<div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:150px;">
-			<select class="select" name="status" size="1">
-				<option value="0">不启用</option>
-				<option value="1">启用</option>
-			</select>
-			</span> </div>
-		</div>
-
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>版本描述</label>
-			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="" placeholder="" id="{$littleController}Description" name="description">
-			</div>
-		</div>
-
-	<div class="row cl">
-		<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
-			<input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
 		</div>
 	</div>
-	</form>
-</article>
+
+
+	<div class="layui-form-item layui-form-text">
+		<label class="layui-form-label">{$name}描述remark：</label>
+		<div class="layui-input-block">
+			<textarea id="textarea_cate" name="remark" placeholder="请输入内容" class="layui-textarea"></textarea>
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>模块名称module：</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.module}" placeholder="" id="" name="module">
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>控制器名称名称controller：</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.controller}" placeholder="" id="" name="controller">
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>对应模型名称model：</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.model}" placeholder="" id="" name="model">
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>方法名称action：</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.action}" placeholder="" id="" name="action">
+		</div>
+	</div>
+
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>视图模板名称view：</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.view}" placeholder="" id="" name="view">
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>URL地址：</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.url}" placeholder="" id="" name="url">
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>显示状态status：</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{:implode('|',$data.status)}" placeholder="" id="" name="status">
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>postman地址：</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.postman}" placeholder="" id="" name="postman">
+		</div>
+	</div>
+
+
+	<div class="layui-form-item">
+		<div class="layui-input-block">
+			<button class="layui-btn" lay-submit="" lay-filter="{$underlineController}-add"  type="button">提交</button>
+			<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		</div>
+	</div>
+</form>
 
 {/block}
 
 
 {block name="js"}
 <!--请在下方写此页面业务相关的脚本-->
-<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
-<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/validate-methods.js"></script>
-<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+
 <script type="text/javascript">
-$(function(){
-	$('.skin-minimal input').iCheck({
-		checkboxClass: 'icheckbox-blue',
-		radioClass: 'iradio-blue',
-		increaseArea: '20%'
-	});
-	
-	$("#form-{$littleController}-add").validate({
-		rules:{
-			name:{
-				required:true,
-				minlength:2,
-				maxlength:16
-			},
-			version:{
-				required:true,
-			},
-		},
-		onkeyup:false,
-		focusCleanup:true,
-		success:"valid",
-		submitHandler:function(form){
-			$(form).ajaxSubmit({
-				type: 'post',
-				url: "{:url('{$underlineController}/{$littleController}AddSave')}" ,
-				success: function(data){
+	layui.use(['form','element','layer'],function() {
+		var form = layui.form,
+				layer = parent.layer === undefined ? layui.layer : parent.layer,
+				element = layui.element;
 
-					layer.msg('添加成功!',{icon:1,time:1000});
-					var index = parent.layer.getFrameIndex(window.name);
-					parent.location.reload();
-					parent.layer.close(index);
-				},
-                error: function(data){
 
-					layer.msg('error!',{icon:1,time:1000});
+		form.on('submit({$underlineController}-add)', function(data){
+			$.ajax({
+				type: 'POST',
+				url: "{:url('index/{$underlineController}/{$littleController}AddSave')}",
+				data: $('form').serialize(),
+				dataType: 'json',
+				async: false,
+				success: function (data) {
+					data= $.parseJSON(data);
+					if(data.flag==1){
+						layer.msg('增加成功!', {icon: 1, time: 1000});
+						window.location.reload();
+					}else { //给出错误信息
+						layer.msg('增加失败!', {icon: 2, time: 1000});
+					}
 				}
-			});
 
-		}
+			});
+			return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+		});
+
 	});
-});
+	$(function() {
+		$("#textarea_cate").val("{$data.remark}");
+	});
 </script>
 {/block}
 </body>

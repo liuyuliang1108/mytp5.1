@@ -144,17 +144,16 @@
     /**
      * 首页内容.js
      * */
-    layui.use(['form','element','layer','jquery'],function() {
+    layui.use(['form','element','layer'],function() {
         var form = layui.form,
             layer = parent.layer === undefined ? layui.layer : parent.layer,
-            element = layui.element,
-            $ = layui.jquery;
+            element = layui.element;
 
 
         form.on('submit(category-edit)', function(data){
             $.ajax({
                 type: 'POST',
-                url: "{:url('index/category/addSave')}",
+                url: "{:url('index/category/CategoryAddSave')}",
                 data: $('form').serialize(),
                 dataType: 'json',
                 async: false,
@@ -176,7 +175,7 @@
     $(function() {
         $("#textarea_cate").val("{$data.remark}");
     });
-    //Ajax请求控制器中的方法完成数据的增加
+
 
 
 

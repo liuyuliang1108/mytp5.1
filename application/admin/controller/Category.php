@@ -116,7 +116,7 @@ class Category extends Base //分类管理控制器
         }else{
             $data['order']=1;
         }
-        $data['child_id'] = $data['parent_id'] * 10 + $data['order'];
+        $data['child_id'] = $data['parent_id'] * 100 + $data['order'];
         $data['view'] = humpToLine($data['action']);
         //将字符串转为索引数组
         $data['status']=substr($data['status'],0, -1) ;

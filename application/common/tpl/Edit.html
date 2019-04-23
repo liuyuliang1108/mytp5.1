@@ -1,154 +1,185 @@
-{extend name='base/base_content' /}
+{extend name='base/main' /}
 
 
 {block name="seo"}
-<title>{$title|default='页面标题'}</title>
+<title>{$title|default='老猫管理系统'}</title>
 <meta name="keywords" content="{$keywords|default='页面关键字'}">
-<meta name="description" content="{$description|default='页面描述'}">
-</head>
-<body>
-{/block}
+<meta name="description" content="{description|default='页面描述'}">
 
+</head>
+{/block}
 
 {block name="content"}
-<article class="page-container">
-    <form class="form form-horizontal" id="form-{$littleController}-edit">
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>配置项名称</label>
-            <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="{$info.name}" placeholder="" id="{$littleController}Name" name="name">
-            </div>
+<body class="childrenBody">
+
+<form class="layui-form layui-form-pane" action="" id="form-{$underlineController}-edit">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><span class="c-red">*</span>{$name}名称name：</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" value="{$data.name}" placeholder="" id="" name="name">
         </div>
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>工作环境</label>
-            <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="{$info.work_env}" placeholder="" id="work_env" name="work_env">
-            </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">所在{$name}：parent_id：</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" value="{$data.parent_id}" placeholder="" id="" name="parent_id">
         </div>
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3">类型：</label>
-            <div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:150px;">
-			<select class="select" name="type" size="1">
-				<option value="0"
-                        {eq name="$info.type" value="win"}
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">排序值order：</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" value="{$data.order}" placeholder="" id="" name="order">
+        </div>
+    </div>
+
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">创建类型：</label>
+        <div class="layui-input-block">
+            <select class="select" name="type" size="1">
+                <option value="0" {eq name="$data.type" value="0"}
                         selected
-                        {/eq}
-				>win</option>
-                <option value="1"
-                        {eq name="$info.type" value="linux"}
+                        {/eq}>module</option>
+                <option value="1" {eq name="$data.type" value="1"}
                         selected
-                        {/eq}
-				>linux</option>
-			</select>
-			</span> </div>
-        </div>
-
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>配置文件名</label>
-            <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="{:implode(',',$info.file_name)}" placeholder="" id="fileName" name="file_name">
-            </div>
-        </div>
-
-
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>配置项所在目录</label>
-            <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="{$info.dir}" placeholder="" id="{$littleController}Dir" name="dir">
-            </div>
-        </div>
-
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>配置项版本</label>
-            <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="{$info.version}" placeholder="" id="{$littleController}Version" name="version">
-            </div>
-        </div>
-
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3">是否启用当前版本：</label>
-            <div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:150px;">
-			<select class="select" name="status" size="1">
-				<option value="0"
-                        {eq name="$info.status" value="已停用"}
+                        {/eq}>controller</option>
+                <option value="2" {eq name="$data.type" value="2"}
                         selected
-                        {/eq}
-				>已停用</option>
-                <option value="1"
-                        {eq name="$info.status" value="已启用"}
+                        {/eq}>model</option>
+                <option value="3" {eq name="$data.type" value="3"}
                         selected
-                        {/eq}
-				>已启用</option>
-			</select>
-			</span> </div>
+                        {/eq}>action</option>
+                <option value="4" {eq name="$data.type" value="4"}
+                        selected
+                        {/eq}>{$littleController}</option>
+            </select>
         </div>
+    </div>
 
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>版本描述</label>
-            <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="{:implode(';',$info.description)}" placeholder="" id="{$littleController}Description" name="description">
-            </div>
+
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">{$name}描述remark：</label>
+        <div class="layui-input-block">
+            <textarea id="textarea_cate" name="remark" placeholder="请输入内容" class="layui-textarea"></textarea>
         </div>
-        <!--隐藏提交id-->
-        <input type="hidden"  value="{$info.id}"  name="id">
-        <!--隐藏提交id-->
-        <div class="row cl">
-            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
-                <input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交修改&nbsp;&nbsp;">
-            </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><span class="c-red">*</span>模块名称module：</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" value="{$data.module}" placeholder="" id="" name="module">
         </div>
-    </form>
-</article>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><span class="c-red">*</span>控制器名称名称controller：</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" value="{$data.controller}" placeholder="" id="" name="controller">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><span class="c-red">*</span>对应模型名称model：</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" value="{$data.model}" placeholder="" id="" name="model">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><span class="c-red">*</span>方法名称action：</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" value="{$data.action}" placeholder="" id="" name="action">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><span class="c-red">*</span>视图模板名称view：</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" value="{$data.view}" placeholder="" id="" name="view">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><span class="c-red">*</span>URL地址：</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" value="{$data.url}" placeholder="" id="" name="url">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><span class="c-red">*</span>显示状态status：</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" value="{:implode('|',$data.status)}" placeholder="" id="" name="status">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><span class="c-red">*</span>postman地址：</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" value="{$data.postman}" placeholder="" id="" name="postman">
+        </div>
+    </div>
+
+    <!--隐藏提交id-->
+    <input type="hidden"  value="{$data.id}"  name="id">
+    <!--隐藏提交id-->
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="{$underlineController}-edit"  type="button">提交修改</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
 
 {/block}
 
-
 {block name="js"}
-<!--请在下方写此页面业务相关的脚本-->
-<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
-<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/validate-methods.js"></script>
-<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/messages_zh.js"></script>
 <script type="text/javascript">
-    $(function(){
-        $('.skin-minimal input').iCheck({
-            checkboxClass: 'icheckbox-blue',
-            radioClass: 'iradio-blue',
-            increaseArea: '20%'
+    /**
+     * 首页内容.js
+     * */
+    layui.use(['form','element','layer'],function() {
+        var form = layui.form,
+            layer = parent.layer === undefined ? layui.layer : parent.layer,
+            element = layui.element;
+
+
+        form.on('submit({$underlineController}-edit)', function(data){
+            $.ajax({
+                type: 'POST',
+                url: "{:url('index/{$underlineController}/{$littleController}AddSave')}",
+                data: $('form').serialize(),
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    data= $.parseJSON(data);
+                    if(data.flag==1){
+                        layer.msg('修改成功!', {icon: 1, time: 1000});
+                        window.location.reload();
+                    }else { //给出错误信息
+                        layer.msg('修改失败!', {icon: 2, time: 1000});
+                    }
+                }
+
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });
 
-        $("#form-{$littleController}-edit").validate({
-            rules:{
-                name:{
-                    required:true,
-                    minlength:2,
-                    maxlength:16
-                },
-                version:{
-                    required:true,
-                },
-            },
-            onkeyup:false,
-            focusCleanup:true,
-            success:"valid",
-            submitHandler:function(form){
-                $(form).ajaxSubmit({
-                    type: 'post',
-                    url: "{:url('{$underlineController}/{$littleController}EditSave')}" ,
-                    success: function(data){
-                        layer.msg('修改成功!',{icon:1,time:1000});
-                        layer.close();
-                        window.parent.location.reload();
-                    },
-                    error: function(XmlHttpRequest, textStatus, errorThrown){
-                        layer.msg('error!',{icon:1,time:1000});
-                    }
-                });
-                var index = parent.layer.getFrameIndex(window.name);
-                parent.$('.btn-refresh').click();
-                //parent.layer.close(index);
-            }
-        });
     });
+    $(function() {
+        $("#textarea_cate").val("{$data.remark}");
+    });
+
+
+
+
+
 </script>
 {/block}
 </body>

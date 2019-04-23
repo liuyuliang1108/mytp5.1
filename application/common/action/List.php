@@ -25,11 +25,11 @@ $data = [
 'teacher' => isset($value->teacher->name) ? $value->teacher->name : '<span style="color:red;">未分配</span>'
 ];
 
-/*每次关联查询结果保存到数组${$littleController}List中*/
-${$littleController}List[] = $data;
+/*每次关联查询结果保存到数组$list中*/
+$list[] = $data;
 }
 /*模板赋值*/
-$this->view->assign('{$littleController}List', ${$littleController}List);
+$this->view->assign('list', $list);
 $this->view->assign('count', $count);
 
 /*渲染模板*/

@@ -21,7 +21,7 @@
 	</div>
 
 		<div class="layui-form-item">
-			 <label class="layui-form-label"><span class="c-red">*</span>公共模板名称</label>
+			 <label class="layui-form-label"><span class="c-red">*</span>英文名称</label>
 			<div class="layui-input-block">
 				<input type="text" class="layui-input" value="" placeholder="" id="common-value" name="value">
 			</div>
@@ -65,26 +65,22 @@
 	</div>
 
 	</form>
-</article>
+
 
 {/block}
 
 
 {block name="js"}
 <!--请在下方写此页面业务相关的脚本-->
-<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
-<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/validate-methods.js"></script>
-<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/messages_zh.js"></script>
 <script type="text/javascript">
 
-	layui.use(['form','element','layer','jquery'],function() {
+	layui.use(['form','element','layer'],function() {
 		var form = layui.form,
 				layer = parent.layer === undefined ? layui.layer : parent.layer,
-				element = layui.element,
-				$ = layui.jquery;
+				element = layui.element;
 
 
-		form.on('submit(category-edit)', function(data){
+		form.on('submit(common-add)', function(data){
 			$.ajax({
 				type: 'POST',
 				url: "{:url('common/CommonAddSave')}" ,

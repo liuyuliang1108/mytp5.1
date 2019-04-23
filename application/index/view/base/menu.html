@@ -2,7 +2,11 @@
 <div class="layui-side layui-bg-black" style="height: 900px;">
     <div class="user-photo">
         <a class="img" title="我的头像"><img src="__LAYUI__/common/images/face.jpg"></a>
-        <p>你好！{:session('user_info.name')}, 欢迎使用</p>
+        <p>你好！{if condition="$Think.session.user_info.name eq 'admin'"}
+            {:session('user_info.name')}, 欢迎使用</p>
+        {else/}
+        游客<a href="/index/index/login.html" style="color: #A7E2E7">请登录</a>
+        {/if}
     </div>
     <!--异步生成导航栏-->
     <div class="navBar layui-side-scroll" id="navBarId"></div>

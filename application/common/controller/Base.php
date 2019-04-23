@@ -8,7 +8,7 @@
 namespace app\{$module}\controller;
 
 use \app\{$module}\controller\Base;
-use app\{$module}\model\{$model} as {$model}Model;
+use app\{$module}\model\{$model} as {$model};
 use think\Request;
 
 class {$controller} extends Base

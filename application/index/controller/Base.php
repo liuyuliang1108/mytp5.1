@@ -45,9 +45,13 @@ class Base extends Controller
      */
     protected function buildAction($module, $controller, $model,$action,$name, $suffix = false)
     {
+        if ($controller==$model) {
+            //如果模型与控制器名相同，则给模型设置一个别名
+            $model=$model.'Model';
+        }
         $actionName=$action;
         //控制器名大驼峰转小驼峰
-        $littleController=$controller;
+        $littleController=lcfirst($controller);
         //控制器名大驼峰转下划线
         $underlineController=humpToLine($controller);
         //判断是否有对应基础方法
@@ -57,9 +61,13 @@ class Base extends Controller
         }
         $filename = APP_PATH . ($module ? $module . '/' : '') . 'controller' . '/' . $controller . ($suffix ? 'Controller' : '') . '.php';
 
-            $content = file_get_contents( APP_PATH. 'common' . '/'. 'action' . '/' . $action. '.php');
-            $content = str_replace(['{$littleController}', '{$model}', '{$name}','{$actionName}'], [$littleController,$model,$name,$actionName], $content);
-            file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
+        $content = file_get_contents( APP_PATH. 'common' . '/'. 'action' . '/' . $action. '.php');
+        $content = str_replace(['{$littleController}', '{$model}', '{$name}','{$actionName}'], [$littleController,$model,$name,$actionName], $content);
+        //判断写入文件目录是否存在
+        if(!is_dir(APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $underlineController . ($suffix ? 'Model' : ''))){
+            mkdir((APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $underlineController . ($suffix ? 'Model' : '')));
+        }
+        file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
 
     }
 
@@ -81,7 +89,7 @@ class Base extends Controller
     protected function buildTpl($module, $controller,$action,$name,$attr, $suffix = false)
     {
         //控制器名大驼峰转小驼峰
-        $littleController=$controller;
+        $littleController=lcfirst($controller);
         //控制器名大驼峰转下划线
         $underlineController=humpToLine($controller);
         $tplName=humpToLine($controller.$action);
@@ -97,9 +105,13 @@ class Base extends Controller
             $filename = APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' .$tplName. '.html';
         }
 
-            $content = file_get_contents( APP_PATH. 'common' . '/'. 'tpl' . '/' . $action. '.html');
-            $content = str_replace(['{$littleController}','{$underlineController}','{$name}'], [$littleController,$underlineController,$name], $content);
-            file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
+        $content = file_get_contents( APP_PATH. 'common' . '/'. 'tpl' . '/' . $action. '.html');
+        $content = str_replace(['{$littleController}','{$underlineController}','{$name}'], [$littleController,$underlineController,$name], $content);
+        //判断写入文件目录是否存在
+        if(!is_dir(APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $underlineController . ($suffix ? 'Model' : ''))){
+            mkdir((APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $underlineController . ($suffix ? 'Model' : '')));
+        }
+        file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
 
     }
     /**

@@ -1,3 +1,6 @@
+{$littleController}小驼峰控制器名
+{$underlineController}下划线控制器名
+{$name}控制器中文名
 {extend name='base/main' /}
 
 
@@ -16,21 +19,21 @@
 <div class="pos-a" style="width:20%;left:0;top:0; bottom:0; height:100%; border-right:1px solid #e5e5e5; background-color:#f5f5f5; overflow:auto;display: inline-block ;vertical-align: top;">
     <ul id="bcTree" class="ztree"></ul>
     <div class="row cl" style="text-align: center">
-        <button class="layui-btn" onclick="category_add()">新增</button>
-        <button class="layui-btn" onclick="category_del()">删除</button>
+        <button class="layui-btn" onclick="{$underlineController}_add()">新增</button>
+        <button class="layui-btn" onclick="{$underlineController}_del()">删除</button>
     </div>
 </div>
 
 
 <div style="display: inline-block; width: 65%; height: 556px;">
-    <iframe src="/index/category/categoryEdit" data-frameid="category" id="iframe-category" scrolling="auto" frameborder="0" style=" width: 100%; height: 556px;">
+    <iframe src="/index/{$underlineController}/{$littleController}Edit" data-frameid="{$littleController}" id="iframe-{$littleController}" scrolling="auto" frameborder="0" style=" width: 100%; height: 556px;">
 
     </iframe>
 </div>
 {/block}
 
 {block name="js"}
-    <script type="text/javascript" src="__ADMIN__/lib/zTree/v3/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="__ADMIN__/lib/zTree/v3/js/jquery.ztree.all-3.5.min.js"></script>
 <script type="text/javascript">
     /**
      * 首页内容.js
@@ -92,7 +95,7 @@
                 var cId = treeNode.id;
                 var pId = treeNode.pId;
                 //默认进入查看页面
-                category_edit(cId);
+                {$underlineController}_edit(cId);
             }
         }
 
@@ -102,7 +105,7 @@
     /*初始化tree*/
     function initTree() {
         jQuery.ajax({
-            url: "__URL__/category/getTreeData",
+            url: "__URL__/{$underlineController}/getTreeData",
             data: {},
             type: "POST",
             dataType: "json",
@@ -124,7 +127,7 @@
     });
 
     //查看、编辑分类
-    function category_edit(cId) {
+    function {$underlineController}_edit(cId) {
 
 
         var cId = cId;
@@ -134,14 +137,14 @@
             layer.alert("请选择一个博客分类");
             return;
         }
-        $("#iframe-category").attr('src', "__URL__/category/categoryEdit?cId=" + cId);
+        $("#iframe-{$littleController}").attr('src', "__URL__/{$underlineController}/{$littleController}Edit?cId=" + cId);
 
 
     }
 
 
     //新增分类
-    function category_add() {
+    function {$underlineController}_add() {
 
         var treeObj = $.fn.zTree.getZTreeObj("bcTree");
         nodes = treeObj.getCheckedNodes(true);
@@ -157,13 +160,13 @@
             return;
         }
 
-        $("#iframe-category").attr('src', "__URL__/category/categoryAdd?cId=" + cId);
+        $("#iframe-{$littleController}").attr('src', "__URL__/{$underlineController}/{$littleController}Add?cId=" + cId);
 
     }
 
 
     //Ajax请求控制器中的方法完成数据的删除
-    function category_del() {
+    function {$underlineController}_del() {
 
         var treeObj = $.fn.zTree.getZTreeObj("bcTree");
         nodes = treeObj.getCheckedNodes(true);
@@ -173,7 +176,7 @@
         var tId = nodes[0].tId;
 
         jQuery.ajax({
-            url: '__URL__/category/delete',
+            url: '__URL__/{$underlineController}/delete',
             data: {"id": id},
             type: 'post',
             dataType:'json',

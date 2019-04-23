@@ -33,7 +33,7 @@ class Category extends Base //分类管理控制器
         return $this->fetch('');
     }
 
-    public function categoryAdd($cId)//flag为0是查询操作，为1是新增查询操作
+    public function categoryAdd($cId)//
     {
 
         $data = CategoryList::where('child_id', $cId)->find();
@@ -110,7 +110,7 @@ class Category extends Base //分类管理控制器
         }
 
         //判断排序有几位数
-        $nub = ($data['order'] % 10) + 1;
+        $nub = strlen($data['order'] ) ;
         //根据父节点，和排序生成子节点
         $data['child_id'] = $data['parent_id'] * 10 * $nub + $data['order'];
         //驼峰转下划线法得到视图文件名
@@ -118,7 +118,11 @@ class Category extends Base //分类管理控制器
 
         //将字符串转为索引数组
         if (!array_key_exists('id', $data)) {
-            $data['status'] = substr($data['status'], 0, -1);
+            if (array_key_exists('status', $data)) {
+                $data['status'] = substr($data['status'], 0, -1);
+            }else{
+                $data['status'] = '0';
+            }
         }
         $data['status'] = explode('|', $data['status']);
         //并将字符型数组转成整型数组
@@ -142,7 +146,7 @@ class Category extends Base //分类管理控制器
                     case 0:
                         {
                             //创建模块module
-                            $result['create'] = CategoryList::createTool($data, 4);
+                             CategoryList::createTool($data, 4);
                             break;
                         }
                     case 1:
@@ -164,13 +168,9 @@ class Category extends Base //分类管理控制器
                 }
 
                 if ($data['type'] == 1) {
-                    if ($result['create']) {
                         $build = include APP_PATH . 'build.php';
                         //生成文件
                         Build::run($build);
-                    }
-                } else {
-                    $result = ['flag' => 1];
                 }
 
 
@@ -217,19 +217,7 @@ class Category extends Base //分类管理控制器
     }
 
 
-    public function admin()
-    {
-        //分类后台管理页面
 
-        //默认进入查看第一条信息
-        $where = 'child_id=11';
-        $result = CategoryList::selectData($where, 1);
-
-        $column = array_keys($result);
-        //渲染模板
-
-        return $this->fetch('', ['data' => $result, 'column' => $column]);
-    }
 
 
     /**
