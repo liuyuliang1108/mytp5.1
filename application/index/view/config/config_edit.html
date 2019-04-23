@@ -95,33 +95,32 @@
     <input type="hidden"  value="{$data.id}"  name="id">
     <!--隐藏提交id-->
     <div class="layui-form-item">
-        <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
-            <input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交修改&nbsp;&nbsp;">
-        </div>
-    </div>
-</form>
-<form>
-    <div class="layui-form-item">
-        <label class="form-label col-xs-2 col-sm-1" style="margin-left: 40px;margin-top: 35px">运行命令:</label>
-        <div class="formControls col-xs-10 col-sm-8">
-                <textarea id="textarea_cate" name="remark" cols="" rows="" class="textarea" placeholder="" datatype="*10-100"
-                          dragonfly="true" nullmsg="运行命令！" ></textarea>
-        </div>
-        <a href="javascript:void(0);" id="cp-btn" class="btn btn-primary radius"style="margin-top: 10px">
-            <i class="Hui-iconfont"></i>复制到剪辑板</a>
-        {if condition="$data.type eq 'win'"}
-        <a href="javascript:void(0);" onclick="exec_cmd({$data.id},'win')" class="btn btn-primary radius" style="margin-top: 20px">
-            <i class="Hui-iconfont"></i>直接运行命令</a>
-        {/if}
-    </div>
-</form>
-    <div class="layui-form-item">
         <div class="layui-input-block">
             <button class="layui-btn" lay-submit="" lay-filter="config-edit"  type="button">提交修改</button>
             <button type="reset" class="layui-btn layui-btn-primary">重置</button>
         </div>
     </div>
 </form>
+
+
+    <div class="layui-collapse" id="exec-btn">
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">生成命令:</h2>
+            <div class="layui-colla-content layui-show">
+                <textarea name="desc" id="textarea_cate" placeholder="请输入内容" class="layui-textarea"></textarea>
+            </div>
+            </div>
+            </div>
+        </div>
+    <a href="javascript:;" id="cp-btn" class="layui-btn">
+        复制到剪辑板</a>
+    {if condition="$data.type eq 'win'"}
+    <a href="javascript:;"  onclick="exec_cmd({$data.id},'win')" class="layui-btn">
+        直接运行命令</a>
+    {/if}
+    </div>
+
+
 
 {/block}
 
@@ -149,8 +148,7 @@
                     }else {
                         var html='';
                         if(data.type=='win'){
-                            html='<a href="javascript:void(0);"  class="btn btn-primary radius" style="margin-top: 20px;">';
-                            html+='<i class="Hui-iconfont"></i>运行命令</a>';
+                            html='<a href="javascript:void(0);"  class="layui-btn">运行命令</a>';
                             $("#exec-btn").html(html);
                         }
                         $.ajax({

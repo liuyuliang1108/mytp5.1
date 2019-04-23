@@ -285,7 +285,7 @@ class Config extends Base
         //使用模型get方法,返回model对象
         $model = ConfigModel::get(['id' => $id]);
         //模板赋值
-        $this->view->assign('info', $model);
+        $this->view->assign('data', $model);
         $this->view->assign('flag', $flag);
         /*渲染模板*/
         return $this->fetch();
@@ -308,7 +308,7 @@ class Config extends Base
         //使用模型get方法,返回model对象
         $result = ConfigModel::get(['id' => $id]);
         //模板赋值
-        $this->view->assign('config_info', $result);
+        $this->view->assign('data', $result);
         $this->view->assign('flag', $flag);
         /*渲染模板*/
         return $this->fetch();

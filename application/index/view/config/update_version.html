@@ -1,0 +1,223 @@
+{extend name='base/main' /}
+
+
+{block name="seo"}
+<title>{$title|default='老猫管理系统'}</title>
+<meta name="keywords" content="{$keywords|default='页面关键字'}">
+<meta name="description" content="{description|default='页面描述'}">
+
+</head>
+{/block}
+
+{block name="content"}
+<body class="childrenBody">
+
+<form class="layui-form layui-form-pane" action="" id="form-config-edit">
+
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>配置项名称</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.name}" placeholder="" id="configName" name="name">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>工作环境</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.work_env}" placeholder="" id="work_env" name="work_env">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">类型：</label>
+		<div class="layui-input-block"> <span class="select-box" style="width:150px;">
+			<select class="select" name="type" size="1">
+				<option value="0"
+						{eq name="$data.type" value="win"}
+						selected
+						{/eq}
+				>win</option>
+				<option value="1"
+						{eq name="$data.type" value="linux"}
+						selected
+						{/eq}
+				>linux</option>
+			</select>
+			</span> </div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>配置文件名</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{:implode(',',$data.file_name)}" placeholder="" id="fileName" name="file_name">
+		</div>
+	</div>
+
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>配置项所在目录</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.dir}" placeholder="" id="configDir" name="dir">
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>配置项版本</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{$data.version}" placeholder="" id="configVersion" name="version">
+		</div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label">是否启用当前版本：</label>
+		<div class="layui-input-block"> <span class="select-box" style="width:150px;">
+			<select class="select" name="status" size="1">
+				<option value="0"
+						{eq name="$data.status" value="已停用"}
+						selected
+						{/eq}
+				>停用</option>
+				<option value="1"
+						{eq name="$data.status" value="已启用"}
+						selected
+						{/eq}
+				>启用</option>
+			</select>
+			</span> </div>
+	</div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"><span class="c-red">*</span>版本描述</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input" value="{:implode(';',$data.description)}" placeholder="" id="configDescription" name="description">
+		</div>
+	</div>
+
+
+	<div class="layui-form-item">
+		<div class="layui-input-block">
+			<button class="layui-btn" lay-submit="" lay-filter="config-edit"  type="button">提交修改</button>
+			<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		</div>
+	</div>
+</form>
+
+<div class="layui-collapse">
+	<div class="layui-colla-item">
+		<h2 class="layui-colla-title">生成命令:</h2>
+		<div class="layui-colla-content layui-show">
+			<textarea name="desc" id="textarea_cate" placeholder="请输入内容" class="layui-textarea"></textarea>
+		</div>
+	</div>
+</div>
+</div>
+<a href="javascript:;" id="cp-btn" class="layui-btn">
+	复制到剪辑板</a>
+{if condition="$data.type eq 'win'"}
+<a href="javascript:;"  onclick="exec_cmd({$data.id},'win')" class="layui-btn">
+	直接运行命令</a>
+{/if}
+<div id="exec-btn"> </div>
+</div>
+{/block}
+
+
+{block name="js"}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="__ADMIN__/lib/jquery-zclip/jquery.zclip.js"></script>
+<script type="text/javascript">
+	var attr ='{$data.id}';
+	var id=0;
+	{if condition="$flag eq '0'"}
+	var url="{:url('config/initUpdateCmd')}";
+	{else/}
+		var url="{:url('config/updateCmd')}";
+		{/if}
+
+$(function(){
+	$('.skin-minimal input').iCheck({
+		checkboxClass: 'icheckbox-blue',
+		radioClass: 'iradio-blue',
+		increaseArea: '20%'
+	});
+	$("#cp-btn").zclip({
+		path:'__ADMIN__/lib/jquery-zclip/ZeroClipboard.swf', //记得把ZeroClipboard.swf引入到项目中
+		copy:function(){
+			return $('#textarea_cate').val();
+		}
+	});
+	
+	$("#form-config-edit").validate({
+		rules:{
+			name:{
+				required:true,
+				minlength:2,
+				maxlength:16
+			},
+			version:{
+				required:true,
+			},
+		},
+		onkeyup:false,
+		focusCleanup:true,
+		success:"valid",
+		submitHandler:function(form){
+			$(form).ajaxSubmit({
+				type: 'post',
+				url: "{:url('config_manage/configAddSave')}" ,
+				success: function(data){
+					var data = JSON.parse(data);
+					layer.msg('新增版本信息成功!',{icon:1,time:1000});
+					var html='';
+					if(data.type=='win'){
+						html='<a href="javascript:void(0);"  class="btn btn-primary radius" style="margin-top: 20px;">';
+						html+='<i class="Hui-iconfont"></i>运行命令</a>';
+						$("#exec-btn").html(html);
+					}
+					$.ajax({
+						type: 'post',
+						url: "{:url('config/updateCmd')}",
+						data: {id:data.id,
+						attr:attr,
+							flag:1},
+						dataType: 'json',
+						success: function (data) {
+							$("#textarea_cate").val(data.cmd);
+							layer.msg('命令已生成,版本启动状态已修改!', {icon: 6, time: 1000});
+							id=data.id;
+						}
+					});
+				},
+                error: function(XmlHttpRequest, textStatus, errorThrown){
+					layer.msg('error!',{icon:1,time:1000});
+				}
+			});
+			var index = parent.layer.getFrameIndex(window.name);
+			parent.$('.btn-refresh').click();
+			parent.layer.close(index);
+		}
+	});
+});
+//动态给元素绑定事件
+$("#exec-btn").on('click', '.item', function () {
+	exec_cmd();
+})
+/*执行命令*/
+function exec_cmd() {
+	$.ajax({
+		type: 'post',
+		url: "{:url('config/execCmd')}",
+		data: {flag:2,
+			id:id,
+			attr:attr},
+		dataType: 'json',
+		success: function (data) {
+			if (data.flag == 1) {
+				layer.msg('命令已执行成功!', {icon: 6, time: 1000});
+			}
+		}
+	});
+}
+</script>
+{/block}
+</body>
+</html>

@@ -1,0 +1,184 @@
+{extend name='base/main' /}
+
+
+{block name="seo"}
+<title>{$title|default='老猫管理系统'}</title>
+<meta name="keywords" content="{$keywords|default='页面关键字'}">
+<meta name="description" content="{description|default='页面描述'}">
+
+</head>
+{/block}
+
+{block name="content"}
+<body class="childrenBody">
+
+<table class="layui-table">
+        <thead>
+        <tr>
+            <th scope="col" colspan="12">配置列表</th>
+        </tr>
+        <tr>
+            <th width="25"><input type="checkbox" name="" value=""></th>
+            <th width="40">ID</th>
+            <th width="40">配置项名</th>
+            <th width="40">工作环境</th>
+            <th width="40">类型</th>
+            <th width="80">配置文件名</th>
+            <th width="160">所在目录</th>
+            <th width="40">版本号</th>
+            <th width="40">是否启用</th>
+            <th width="150">版本描述</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><input type="checkbox" value="" name=""></td>
+            <td>{$vo.id}</td>
+            <td>{$vo.name}</td>
+            <td>{$vo.work_env}</td>
+            <td>{$vo.type}</td>
+            <td>{:implode(',',$vo.file_name)}</td>
+            <td>{$vo.dir}</td>
+            <td>{$vo.version}</td>
+            <!--启用停用权限仅admin用户使用-->
+            {eq name="$Think.session.user_info.name" value="admin"}
+            <td class="td-status">
+                {if condition="$vo.status eq '已启用'"}
+                <span class="label label-success radius">{$vo.status}</span>
+            {else/}
+            <span class="label radius">{$vo.status}</span>
+            {/if}
+            </td>
+            {/eq}
+            <td>{:implode(';',$vo.description)}</td>
+
+        </tr>
+        </tbody>
+    </table>
+<div class="layui-collapse" id="exec-btn">
+    <div class="layui-colla-item">
+        <h2 class="layui-colla-title">
+            {if condition="$vo.type eq 'win'"}
+            <a href="javascript:void(0);" onclick="init_load({$vo.id},'win')" class="layui-btn">init-win-config-load-to-git</a>
+            <a href="javascript:void(0);" onclick="open_dir({$vo.id})" class="layui-btn">open-dir</a>
+            {else/}
+            <a href="javascript:;" onclick="init_load({$vo.id},'linux')" class="layui-btn">init-linux-config-load-to-git</a>
+            {/if}
+            <a href="javascript:void(0);" onclick="copy_to_git()" class="layui-btn">copy_to_git</a>
+            <a href="javascript:void(0);" onclick="copy_to_init()" class="layui-btn">copy_to_init</a>
+            <a href="javascript:void(0);" onclick="update_version()" class="layui-btn">update_version</a>
+        </h2>
+        <div class="layui-colla-content layui-show">
+           <textarea name="desc" id="textarea_cate" placeholder="生成命令" class="layui-textarea"></textarea>
+        </div>
+    </div>
+    <h2 class="layui-colla-title">
+    <a href="javascript:void(0);" id="cp-btn" class="layui-btn">复制到剪辑板</a>
+    {if condition="$vo.type eq 'win'"}
+    <a href="javascript:void(0);" onclick="exec_cmd({$vo.id},'win')" class="layui-btn">直接运行命令</a>
+    {/if}
+    </h2>
+</div>
+
+{/block}
+
+
+{block name="js"}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="__ADMIN__/lib/jquery-zclip/jquery.zclip.js"></script>
+
+<script type="text/javascript">
+    /*
+        参数解释：
+        title	标题
+        url		请求的url
+        id		需要操作的数据id
+        w		弹出层宽度（缺省调默认值）
+        h		弹出层高度（缺省调默认值）
+    */
+    layui.use(['form','element','layer'],function() {
+        var form = layui.form,
+            layer = parent.layer === undefined ? layui.layer : parent.layer,
+            element = layui.element;
+    });
+
+    $(function(){
+        $("#cp-btn").zclip({
+            path:'__ADMIN__/lib/jquery-zclip/ZeroClipboard.swf', //记得把ZeroClipboard.swf引入到项目中
+            copy:function(){
+                return $('#textarea_cate').val();
+            }
+        });
+    });
+    /*初始化 配置项git仓库*/
+    function init_load(id,attr){
+        $.ajax({
+            type: 'post',
+            url: "{:url('config/initLoad')}",
+            data: {id:id,
+            attr:attr},
+            dataType: 'json',
+            success: function (data) {
+                $("#textarea_cate").val(data.cmd);
+                layer.msg('命令已生成!', {icon: 6, time: 1000});
+            }
+        });
+    }
+/*执行命令*/
+    function exec_cmd(id,attr) {
+        $.ajax({
+            type: 'post',
+            url: "{:url('config/execCmd')}",
+            data: {flag:1,
+                id:id,
+                attr:attr},
+            dataType: 'json',
+            success: function (data) {
+                $("#textarea_cate").val(data.cmd);
+                if (data.flag == 1) {
+                    layer.msg('命令已执行成功!', {icon: 6, time: 1000});
+                }
+            }
+    });
+    }
+
+/*copy配置项git仓库，并配置工作环境*/
+function copy_to_git() {
+    var url="{:url('admin/config/copyToGit',['id'=>$vo.id,'flag'=>0])}";
+
+    window.open(url);
+}
+
+    /*copy配置项并init git仓库，并配置工作环境*/
+    function copy_to_init() {
+        var url="{:url('admin/config/copyToGit',['id'=>$vo.id,'flag'=>1])}";
+
+        window.open(url);
+    }
+    /*更新版本*/
+    function update_version() {
+        var url="{:url('admin/config/updateVersion',['id'=>$vo.id,'flag'=>1,])}";
+
+        window.open(url);
+    }
+
+
+/*打开配置项所在目录*/
+    function open_dir(id) {
+        $.ajax({
+            type: 'post',
+            url: "{:url('admin/config/openDir')}",
+            data: {id:id},
+            dataType: 'json',
+            success: function (data) {
+
+                layer.msg('已打开!', {icon: 6, time: 1000});
+            }
+        });
+    }
+
+
+</script>
+{/block}
+</body>
+</html>

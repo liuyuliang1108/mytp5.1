@@ -70,7 +70,7 @@
             config_start(this,'{$vo.id}')" href="javascript:;" title="启用"><i class="layui-icon">&#x1005;</i></a>
             {/if}
             {/eq}
-            <a title="编辑" href="javascript:;" onclick="config_edit('公共模板列表编辑','{:url('config/configEdit',['id'=>$vo.id])}','800','500')" class="ml-5" style="text-decoration:none"><i class="layui-icon">&#xe642;</i>  </a>
+            <a title="编辑" href="javascript:;" onclick="config_edit('公共模板列表编辑','{:url('config/configEdit',['id'=>$vo.id])}','800','700')" class="ml-5" style="text-decoration:none"><i class="layui-icon">&#xe642;</i>  </a>
             {eq name="$Think.session.user_info.name" value="admin"}
             <a title="删除" href="javascript:;" onclick="config_del(this,'{$vo.id}')" class="ml-5" style="text-decoration:none"><i class="layui-icon">&#xe640;</i></a>
             {/eq}
@@ -145,7 +145,7 @@
 
     /*公共模板列表-增加*/
     function config_add(title,url,w,h){
-        layer.open({
+        top.layer.open({
             type: 2,
             title: title,
             closeBtn: 1, //不显示关闭按钮
@@ -154,7 +154,8 @@
             shadeClose: true, //开启遮罩关闭
             area: [w+'px', h+'px'],
             anim: 2,
-            content: [url, 'no'], //iframe的url，no代表不显示滚动条
+            shade: [0.4, '#000'],
+            content: [url], //iframe的url，no代表不显示滚动条
         });
     }
 
@@ -162,7 +163,7 @@
     /*公共模板列表-编辑*/
     function config_edit(title,url,w,h){
 
-        layer.open({
+        top.layer.open({
             type: 2,
             title: title,
             closeBtn: 1, //不显示关闭按钮
@@ -171,7 +172,8 @@
             shadeClose: true, //开启遮罩关闭
             area: [w+'px', h+'px'],
             anim: 2,
-            content: [url, 'no'], //iframe的url，no代表不显示滚动条
+            shade: [0.4, '#000'],
+            content: [url], //iframe的url
         });
     }
 
@@ -212,8 +214,24 @@
     /*git管理*/
     function git_manage(title,url,w,h){
 
-        layer_show(title,url,w,h);
+
+            top.layer.open({
+                type: 2,
+                title: title,
+                closeBtn: 1, //不显示关闭按钮
+                maxmin: true, //开启最大化最小化按钮
+                shade: [0],
+                shadeClose: true, //开启遮罩关闭
+                area: [w+'px', h+'px'],
+                anim: 2,
+                shade: [0.4, '#000'],
+                content: [url], //iframe的url
+            });
+
     }
+
+
+
 
 
 </script>
