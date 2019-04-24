@@ -1,0 +1,125 @@
+
+{extend name='base/main' /}
+
+
+{block name="seo"}
+<title>{$title|default='老猫管理系统'}</title>
+<meta name="keywords" content="{$keywords|default='页面关键字'}">
+<meta name="description" content="{description|default='页面描述'}">
+<link rel="stylesheet" type="text/css" href="__ADMIN__/lib/simditor/styles/simditor.css" />
+</head>
+{/block}
+
+{block name="content"}
+<body class="childrenBody">
+
+<form class="layui-form layui-form-pane" action="" id="form-article-add">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="c-red">*</span>文章标题：</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" value="{$data.name}" placeholder="" id="articletitle" name="title">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">所在分类：</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" value="{$data.child_id}" placeholder="" id="articlecategory" name="child_id">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">关键词：</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" value="" placeholder="" id="keywords" name="keywords">
+            </div>
+        </div>
+
+        <input type="hidden" id="input-status" name="status" value="" >
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">文章内容：</label>
+            <div class="layui-input-block">
+                <textarea name="content" id="editor" placeholder="Balala" autofocus></textarea>
+            </div>
+
+        </div>
+    <div class="layui-form-item">
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="article-add" onclick="article_save(1)">保存草稿</button>
+                <button class="layui-btn" lay-submit lay-filter="article-add" onclick="article_save(0)">创建发布</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </div>
+</form>
+                {/block}
+
+
+                    {block name="js"}
+
+                <!--请在下方写此页面业务相关的脚本-->
+                <script type="text/javascript" src="__ADMIN__/lib/simditor/scripts/module.js"></script>
+                <script type="text/javascript" src="__ADMIN__/lib/simditor/scripts/hotkeys.js"></script>
+                <script type="text/javascript" src="__ADMIN__/lib/simditor/scripts/uploader.js"></script>
+                <script type="text/javascript" src="__ADMIN__/lib/simditor/scripts/simditor.js"></script>
+                <script type="text/javascript">
+
+                    //Ajax请求控制器中的方法完成数据的增加
+                    function article_save($key) {
+                        if ($key) {
+                            $('#input-status').val(1);
+                        } else {
+                            $('#input-status').val(0);
+                        }
+                    }
+                        layui.use(['form','element','layer'],function() {
+                            var form = layui.form,
+                                layer = parent.layer === undefined ? layui.layer : parent.layer,
+                                element = layui.element;
+
+
+                            form.on('submit(article-add)', function(data){
+                                $.ajax({
+                                    type: 'POST',
+                                    url: "{:url('index/blog/articleSave')}",
+                                    data: $('form').serialize(),
+                                    dataType: 'json',
+                                    async: false,
+                                    success: function (data) {
+                                        data= $.parseJSON(data);
+                                        if(data.flag==1){
+                                            layer.msg('添加成功!',{icon:1,time:1000});
+                                        }else { //给出错误信息
+                                            layer.msg('增加失败!', {icon: 2, time: 1000});
+                                        }
+                                    }
+
+                                });
+                                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                            });
+
+                        });
+
+                    Simditor.locale = 'zh-CN';
+                    toolbar = ['title', 'bold', 'italic', 'underline', 'strikethrough', 'fontScale', 'color', '|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent', 'alignment'];
+
+                    var editor = new Simditor({
+                        textarea: $('#editor'),
+
+                        toolbar: toolbar,
+                        pasteImage: true,//是否允许粘帖上传图片
+                        defaultImage: '<%=basePath%>asset/public/js/simditor/images/image.png',
+                        upload : {
+                            url : '<%=basePath%>article/qiniuUploadImg.action?Math.random()', //文件上传的接口地址
+                            params: null, //键值对,指定文件上传接口的额外参数,上传的时候随文件一起提交
+                            fileKey: 'ImageFile', //服务器端获取文件数据的参数名
+                            connectionCount: 3,
+                            leaveConfirm: '正在上传文件'
+                        }
+                    });
+                </script>
+                <!--/请在上方写此页面业务相关的脚本-->
+                {/block}
+</body>
+</html>

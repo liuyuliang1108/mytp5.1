@@ -101,6 +101,8 @@ class Category extends Base //分类管理控制器
                 $model = new CategoryList;
                 $order = $model->where(['parent_id' => $data['parent_id']])->max('order');
                 $data['order'] = $order ? $order + 1 : 1;//三元表达式，如果此类中不存在，则序号为1
+            }else{
+                $data['order']=$result->order;
             }
         } else {
             //自动获取order
@@ -227,7 +229,7 @@ class Category extends Base //分类管理控制器
      * */
     public function getTreeData()
     {   //方法：获得树数据
-        $nodeArr = CategoryList::selectData("", 1);
+        $nodeArr = CategoryList::getzTreeData();
 
         return json_encode($nodeArr);//以json格式输出
 

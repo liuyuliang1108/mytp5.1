@@ -114,7 +114,7 @@ class Common extends Base
         //使用模型save方法,返回bool值
         $model = new CommonModel;
         //返回bool值
-        $data = $model->save($attr);
+        $result = $model->save($attr);
         //创建基础文件
         if ($attr['type'] == 1) {
             self::buildBaseAction($attr['value']);
@@ -122,12 +122,8 @@ class Common extends Base
             self::buildBaseAction($attr['value']);
             self::buildBaseTpl($attr['value']);
         }
-        if ($data) {
-            //json格式输出
-            return json_encode($model);
-        } else {
-            return null;
-        }
+        $data = $result ? ['flag' => 1] : ['flag' => -1];
+        return json_encode($data);
     }
 
     /**

@@ -163,7 +163,7 @@ class Base extends Controller
     {
         $filename = APP_PATH  . 'common' . '/' .'action' . '/' . $baseName . '.php';
         if (!is_file($filename)) {//如果已存在该文件则不创建
-            $content = '{$littleController}小驼峰控制器名'."\n".'{$name}控制器中文名'."\n".'{$model}模型名';
+            $content ='{$model}模型名'."\n". '{$littleController}小驼峰控制器名'."\n".'{$name}控制器中文名';
             file_put_contents($filename, $content);
         }
     }
