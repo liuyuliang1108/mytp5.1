@@ -11,7 +11,7 @@ namespace app\index\controller;
 use think\facade\Build;
 use app\index\controller\Base;
 use \app\index\model\Common as CommonModel;
-use app\index\model\CategoryList;
+use app\index\model\Category as CategoryModel;
 use think\Request;
 
 class Category extends Base //分类管理控制器
@@ -36,7 +36,7 @@ class Category extends Base //分类管理控制器
     public function categoryAdd($cId)//
     {
 
-        $data = CategoryList::where('child_id', $cId)->find();
+        $data = Category::where('child_id', $cId)->find();
 
         /*获取所有公共模板数据 返回对象数组*/
         //以类型分类，获取二维对象数组
@@ -55,7 +55,7 @@ class Category extends Base //分类管理控制器
     public function categoryEdit($cId = 11)
     {
 
-        $data = CategoryList::where('child_id', $cId)->find();
+        $data = Category::where('child_id', $cId)->find();
 
         return $this->fetch('', ['data' => $data]);
 
@@ -67,7 +67,7 @@ class Category extends Base //分类管理控制器
     {
         $cId = $request->param('id');    //接收前端Ajax传过来的数据
 
-        $result = CategoryList::destroy(['child_id' => $cId]);
+        $result = Category::destroy(['child_id' => $cId]);
 
         //如果删除成功，封装json数据
         $data = $result ? ['flag' => 1] : ['flag' => -1];
@@ -94,11 +94,11 @@ class Category extends Base //分类管理控制器
 
         //当新增以及父级关系改变时，自动生成order
         if (array_key_exists('id', $data)) { //存在id键为更新操作
-            $result = CategoryList::get($data['id']);
+            $result = Category::get($data['id']);
             $pId = $result->parent_id;
             if (!$pId == $data['parent_id']) {   //判断更新操作是否更新了父级关系
                 //自动获取order
-                $model = new CategoryList;
+                $model = new Category;
                 $order = $model->where(['parent_id' => $data['parent_id']])->max('order');
                 $data['order'] = $order ? $order + 1 : 1;//三元表达式，如果此类中不存在，则序号为1
             }else{
@@ -106,7 +106,7 @@ class Category extends Base //分类管理控制器
             }
         } else {
             //自动获取order
-            $model = new CategoryList;
+            $model = new Category;
             $order = $model->where(['parent_id' => $data['parent_id']])->max('order');
             $data['order'] = $order ? $order + 1 : 1;//三元表达式，如果此类中不存在，则序号为1
         }
@@ -133,13 +133,13 @@ class Category extends Base //分类管理控制器
         }
 
         if (array_key_exists('id', $data)) {//调用本模型中的更新方法
-            $category = new CategoryList;
+            $category = new Category;
             $result = $category->isUpdate()->save($data);
 
             $data = $result ? ['flag' => 1] : ['flag' => -1];
 
         } else {                                     //调用本模型中的新增方法
-            $category = new CategoryList;
+            $category = new Category;
             $result = $category->save($data);
             //新增成功后生成模板文件
             if ($result) {
@@ -148,7 +148,7 @@ class Category extends Base //分类管理控制器
                     case 0:
                         {
                             //创建模块module
-                             CategoryList::createTool($data, 4);
+                             Category::createTool($data, 4);
                             break;
                         }
                     case 1:
@@ -179,7 +179,7 @@ class Category extends Base //分类管理控制器
                 if ($data['type'] == 3) {
                     $model = $data['model'];
                     //获取控制器中文名
-                    $result = CategoryList::get(['child_id' => $data['parent_id']]);
+                    $result = Category::get(['child_id' => $data['parent_id']]);
                     $name = $result->name;
                     if ($data['status'][0] == 10000) {
                         //创建默认无视图方法
@@ -229,32 +229,11 @@ class Category extends Base //分类管理控制器
      * */
     public function getTreeData()
     {   //方法：获得树数据
-        $nodeArr = CategoryList::getzTreeData();
+        $nodeArr = Category::getzTreeData();
 
         return json_encode($nodeArr);//以json格式输出
 
     }
 
-    public function addVerify($parent_id, $order)
-    {
-        //验证child_id是否存在
-
-        $id = 'child_id';
-        //$arr = json_decode($data, true);
-
-        $cId = intval($parent_id) * 10 + intval($order);
-
-        // $cId=$arr['child_id'];
-        $where = $id . '=' . $cId;
-        $result = CategoryList::selectData($where, 1);
-        if ($result) {
-            $result = ['flag' => -1];
-
-        } else {
-            $result = ['flag' => 1];
-        };
-        return json_encode($result);//以json格式输出
-
-    }
 }
 

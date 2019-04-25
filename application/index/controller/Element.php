@@ -112,13 +112,9 @@ class Element extends Base
         //使用模型save方法,返回bool值
         $object = new ElementModel;
         //返回bool值
-        $data = $object->save($attr);
-        if ($data) {
-            //json格式输出
-            return json_encode($object);
-        } else {
-            return null;
-        }
+        $result = $object->save($attr);
+        $data = $result ? ['flag' => 1] : ['flag' => -1];
+        return json_encode($data);//以json格式输出;
     }
 
     /*组件编辑保存*/
@@ -129,8 +125,9 @@ class Element extends Base
         $id = $attr['id'];
         //使用模型save方法,返回bool值
         $model = new ElementModel;
-        $data = $model->isUpdate()->save($attr, ['id' => $id]);
-        return $data;
+        $result = $model->isUpdate()->save($attr, ['id' => $id]);
+        $data = $result ? ['flag' => 1] : ['flag' => -1];
+        return json_encode($data);//以json格式输出;
     }
 }
 

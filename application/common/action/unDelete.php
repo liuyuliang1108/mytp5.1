@@ -9,5 +9,6 @@ $config->restore();
 $config->is_delete=0;
 $data+=$config->save();
 }
-return $data;
+$data = $data ? ['flag' => 1] : ['flag' => -1];
+return json_encode($data);//以json格式输出
 }

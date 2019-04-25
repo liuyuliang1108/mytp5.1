@@ -9,7 +9,7 @@
 namespace app\index\controller;
 
 use \app\index\controller\Base;
-use \app\index\model\CategoryList;
+use \app\index\model\Category;
 use app\index\model\Blog as BlogModel;
 use think\Request;
 
@@ -187,8 +187,9 @@ class Blog extends Base
         BlogModel::update(['is_delete' => 1], $map);
 
         //使用模型destroy方法,软删除,修改delete_time字段
-        $data = BlogModel::destroy($map);
-        return $data;
+        $result = BlogModel::destroy($map);
+        $data = $result ? ['flag' => 1] : ['flag' => -1];
+        return json_encode($data);//以json格式输出;
 
 
     }
@@ -197,7 +198,7 @@ class Blog extends Base
     public function articleAdd($cId)
     {
 
-        $data = CategoryList::get(['child_id' => $cId]);
+        $data = Category::get(['child_id' => $cId]);
         return $this->fetch('', ['data' => $data]);
     }
 
@@ -247,7 +248,7 @@ class Blog extends Base
             $result = $model->save($data);
             $data = $result ? ['flag' => 1] : ['flag' => -1];
         }
-        return json($data);//以json格式输出;
+        return json_encode($data);//以json格式输出;
 
     }
 }

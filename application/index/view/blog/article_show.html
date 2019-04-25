@@ -94,11 +94,11 @@
                 type: 'get',
                 success: function (data) {
                     //如果php处理成功，调用此方法
-
+                    data= $.parseJSON(data);
                     if (data.flag == 1) {
 
                         layer.msg('删除成功!', {icon: 1, time: 1000});
-                        window.location.href ="__URL__/blog/blogList?cId=" + {$data.child_id};
+                        window.location.href ="__URL__/blog/blogSelect?cId=" + {$data.child_id};
 
                     } else {
                         layer.msg('删除失败!', {icon: 1, time: 1000});

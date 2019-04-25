@@ -13,8 +13,7 @@
 
 {block name="content"}
 <body class="childrenBody">
-<div class="panel_box row">
-    
+
 
     <form class="layui-form layui-form-pane" action="" id="form-category-add">
         <div class="layui-form-item">
@@ -168,7 +167,7 @@
             //Ajax请求控制器中的方法完成数据的增加
             $.ajax({
                 type: 'POST',
-                url: "{:url('index/category/CategoryAddSave')}",
+                url: "{:url('category/categoryAddSave')}",
                 data: $('form').serialize(),
                 dataType: 'json',
                 async: false,

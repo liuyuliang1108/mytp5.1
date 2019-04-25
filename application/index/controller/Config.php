@@ -133,8 +133,9 @@ class Config extends Base
         ConfigModel::update(['is_delete' => 1], ['id' => $id]);
 
         //使用模型destroy方法,软删除,修改delete_time字段
-        $data = ConfigModel::destroy(['id' => $id]);
-        return $data;
+        $result = ConfigModel::destroy(['id' => $id]);
+        $data = $result ? ['flag' => 1] : ['flag' => -1];
+        return json_encode($data);//以json格式输出;
     }
 
     /*配置删除恢复*/
@@ -149,7 +150,8 @@ class Config extends Base
             $data+=$config->save();
         }
 
-        return $data;
+        $data = $data ? ['flag' => 1] : ['flag' => -1];
+        return json_encode($data);//以json格式输出;
     }
 
 
@@ -271,11 +273,7 @@ class Config extends Base
 
         //执行命令
         exec($data['cmd'],$output,$flag);
-        if ($flag==0) {
-            $data['flag']=1;
-        }else{
-            $data['flag']=0;
-        }
+        $data['flag'] = $flag ? 0 : 1;
         return $data;
     }
 

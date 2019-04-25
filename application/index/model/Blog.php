@@ -8,7 +8,7 @@
 
 namespace app\index\model;
 use think\Model;
-use \app\index\model\CategoryList;
+use \app\index\model\Category as CategoryModel;
 use think\model\concern\SoftDelete;
 class Blog extends Model
 {
@@ -51,7 +51,7 @@ class Blog extends Model
     static function getzTreeData()
     {
         //实例化模型
-        $model = new CategoryList();
+        $model = new CategoryModel();
         $where = 'child_id LIKE ' . "'11%'";
         //查询条件回调函数
         $where = function ($query) use ($where) {

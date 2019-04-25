@@ -186,8 +186,11 @@ class Common extends Base
         $id = $attr['id'];
         //使用模型save方法,返回bool值
         $model = new CommonModel;
-        $data = $model->isUpdate()->save($attr, ['id' => $id]);
-        return $data;
+        $result = $model->isUpdate()->save($attr, ['id' => $id]);
+
+        $data = $result ? ['flag' => 1] : ['flag' => -1];
+        return json_encode($data);//以json格式输出;
+
     }
 
     /**
@@ -207,9 +210,10 @@ class Common extends Base
         $attr = $request->param();
         $id = $attr['id'];
         //使用模型update方法,返回model对象,软删除
-        $data = CommonModel::destroy(['id' => $id]);
+        $result = CommonModel::destroy(['id' => $id]);
         //使用删除事件同时将is_delete字段修改为1
-        return $data;
+        $data = $result ? ['flag' => 1] : ['flag' => -1];
+        return json_encode($data);//以json格式输出;
     }
 
     /**

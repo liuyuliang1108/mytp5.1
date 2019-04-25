@@ -9,6 +9,7 @@ $attr['description'] = explode ( '|', $attr['description'] );
 $id = $attr['id'];
 //使用模型save方法,返回bool值
 $model = new {$model};
-$data = $model->isUpdate()->save($attr, ['id' => $id]);
-return $data;
+$result = $model->isUpdate()->save($attr, ['id' => $id]);
+$data = $result ? ['flag' => 1] : ['flag' => -1];
+return json_encode($data);//以json格式输出
 }

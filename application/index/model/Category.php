@@ -12,7 +12,7 @@ namespace app\index\model;
 use think\Model;
 
 
-class CategoryList extends Model
+class Category extends Model
 {
     // 设置json类型字段
     protected $json = [
@@ -22,7 +22,7 @@ class CategoryList extends Model
     static function getzTreeData()
     {
         //实例化模型
-        $model = new CategoryList();
+        $model = new Category();
 
         //调用本模型的all方法
         $result = $model->all();//返回了一个对象数组

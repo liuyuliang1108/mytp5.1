@@ -153,7 +153,7 @@
         form.on('submit({$underlineController}-edit)', function(data){
             $.ajax({
                 type: 'POST',
-                url: "{:url('index/{$underlineController}/{$littleController}AddSave')}",
+                url: "{:url('{$underlineController}/{$littleController}EditSave')}",
                 data: $('form').serialize(),
                 dataType: 'json',
                 async: false,

@@ -46,8 +46,8 @@
     <div class="layui-form-item">
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <button class="layui-btn" lay-submit lay-filter="article-add" onclick="article_save(1)">保存草稿</button>
-                <button class="layui-btn" lay-submit lay-filter="article-add" onclick="article_save(0)">创建发布</button>
+                <button class="layui-btn" lay-submit lay-filter="article-save" onclick="article_save(0)" type="button">存草稿箱</button>
+                <button class="layui-btn" lay-submit lay-filter="article-save" onclick="article_save(1)" type="button">创建发布</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
             </div>
         </div>
@@ -78,20 +78,22 @@
                                 layer = parent.layer === undefined ? layui.layer : parent.layer,
                                 element = layui.element;
 
+                            form.on('submit(article-save)', function(data){
 
-                            form.on('submit(article-add)', function(data){
+                                //Ajax请求控制器中的方法完成数据的增加
                                 $.ajax({
                                     type: 'POST',
-                                    url: "{:url('index/blog/articleSave')}",
+                                    url: "{:url('blog/articleSave')}",
                                     data: $('form').serialize(),
                                     dataType: 'json',
                                     async: false,
                                     success: function (data) {
                                         data= $.parseJSON(data);
                                         if(data.flag==1){
-                                            layer.msg('添加成功!',{icon:1,time:1000});
+                                            layer.msg('新增成功!', {icon: 1, time: 1000});
+                                            window.location.href ="__URL__/blog/blogSelect?cId=" + {$data.child_id}
                                         }else { //给出错误信息
-                                            layer.msg('增加失败!', {icon: 2, time: 1000});
+                                            layer.msg('新增失败!', {icon: 2, time: 1000});
                                         }
                                     }
 
@@ -100,6 +102,7 @@
                             });
 
                         });
+
 
                     Simditor.locale = 'zh-CN';
                     toolbar = ['title', 'bold', 'italic', 'underline', 'strikethrough', 'fontScale', 'color', '|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent', 'alignment'];

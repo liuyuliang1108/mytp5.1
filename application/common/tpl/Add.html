@@ -152,7 +152,7 @@
 		form.on('submit({$underlineController}-add)', function(data){
 			$.ajax({
 				type: 'POST',
-				url: "{:url('index/{$underlineController}/{$littleController}AddSave')}",
+				url: "{:url('{$underlineController}/{$littleController}AddSave')}",
 				data: $('form').serialize(),
 				dataType: 'json',
 				async: false,

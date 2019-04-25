@@ -1,3 +1,8 @@
+1、熟悉使用ThinkPHP5框架开发；
+2、熟悉使用MySQL数据库，熟悉掌握索引优化、查询优化和储存优化；
+3、熟悉linux基本命令，能编写简单的shell脚本
+4、对Web前端技术Html，Css，Javascript，Ajax，Jquery等能够熟练运用，layui及插件能掌握运用到开发中；
+5、版本控制Git能熟悉使用；
 
 基础阶段  重点：linux nginx mysql php熟练
 linux：基本命令，操作，启动，基本服务配置，包括rpm安装文件，各种服务配置

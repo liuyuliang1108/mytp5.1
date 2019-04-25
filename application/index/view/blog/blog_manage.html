@@ -176,8 +176,14 @@
 	}
 	//添加博客内容
 	function blog_add() {
+		var treeObj = $.fn.zTree.getZTreeObj("bcTree");
+		nodes = treeObj.getCheckedNodes(true);
 
-		var cId = $("#checkNodeId").val();
+		var cId = nodes[0].id;
+
+
+
+
 
 		if (cId == "") {
 			layer.alert("请选择一个博客分类");

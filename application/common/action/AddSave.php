@@ -10,10 +10,6 @@ $attr['description'] = explode ( ';', $attr['description'] );
 $object = new {$model};
     //返回bool值
 $data = $object->save($attr);
-if ($data) {
-    //json格式输出
-return json_encode($object);
-}else{
-return null ;
-}
+$data = $result ? ['flag' => 1] : ['flag' => -1];
+return json_encode($data);//以json格式输出
 }
