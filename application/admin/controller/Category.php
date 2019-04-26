@@ -210,6 +210,9 @@ class Category extends Base //分类管理控制器
                                 case 2:{
                                     self::buildAction($data['module'],$data['controller'],$model, $action,$name);
                                     self::buildTpl($data['module'], $data['controller'],$action,$name,$attr);
+                                    if ($value->value=='List') {
+                                        self::replaceActionAttr($data['module'],$data['controller'],$model, $action,$name);
+                                    }
                                     break;
                                 }
                             }

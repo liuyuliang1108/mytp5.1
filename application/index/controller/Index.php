@@ -6,7 +6,7 @@ namespace app\index\controller;
 use think\Request;
 use think\facade\Session;
 use app\index\model\User as UserModel;
-use app\admin\model\CategoryList;
+use app\index\model\Category as CategoryModel;
 use app\common\func\PhpTree;
 use \app\index\controller\Base;
 
@@ -28,7 +28,7 @@ class Index extends Base
         return $this->fetch('');
     }
     public function getTree(){
-        $model= new CategoryList;
+        $model= new CategoryModel;
         $result=$model->field(['id','child_id','parent_id','name','url'])->all();
 
         //将分类信息遍历成数组

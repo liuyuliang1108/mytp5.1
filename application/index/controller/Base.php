@@ -7,7 +7,7 @@
  */
 
 namespace app\index\controller;
-
+use think\Db;
 use think\Controller;
 use think\facade\Session;
 
@@ -129,11 +129,14 @@ class Base extends Controller
         if ($controller==$model) {
             //如果模型与控制器名相同，则给模型设置一个别名
             $model=$model.'Model';
+            $modelName=$controller." as $model" ;
+        }else{
+            $modelName=$model;
         }
         $filename = APP_PATH . ($module ? $module . '/' : '') . 'controller' . '/' . $controller . ($suffix ? 'Controller' : '') . '.php';
         if (!is_file($filename)) {//如果已存在该文件则不创建
             $content = file_get_contents( APP_PATH. 'common' . '/'. 'controller' . '/' . 'Base' . '.php');
-            $content = str_replace(['{$module}','{$model}' , '{$controller}'], [$module,$model,$controller], $content);
+            $content = str_replace(['{$module}','{$model}' , '{$controller}','{$modelName}'], [$module,$model,$controller,$modelName], $content);
             file_put_contents($filename, $content);
         }
     }
@@ -180,5 +183,128 @@ class Base extends Controller
             $content = '{$littleController}小驼峰控制器名'."\n".'{$underlineController}下划线控制器名'."\n".'{$name}控制器中文名';
             file_put_contents($filename, $content);
         }
+    }
+
+    protected function replaceActionAttr($module, $controller, $model,$action,$name,$suffix = false){
+        // 获取该表字段信息
+        $result=Db::table($model);
+        $keys= $result->getTableFields();
+
+        //控制器名大驼峰转下划线
+        $underlineController=humpToLine($controller);
+
+        foreach ($keys as $attr){
+            $sub=substr($attr,0,strlen($attr)-3);
+            if (substr($attr,-3)=='_id') {
+                if ($attr=='child_id'||$attr=='parent_id') {
+                    $data["$attr"]='$value->'.$attr;
+                }else{
+                    $data["$sub"]= 'isset($value->'.$sub.'->name) ? $value->'.$sub."->name : "."'".'<span style="color:red;">未分配</span>';
+                }
+            }else{
+                if ($attr=='create_time'||$attr=='update_time'||$attr=='delete_time'||$attr=='is_delete') {
+
+                }else{
+                    $data["$attr"]='$value->'.$attr;
+                }
+            }
+        }
+
+
+        $filename = APP_PATH . ($module ? $module . '/' : '') . 'controller' . '/' . $controller . ($suffix ? 'Controller' : '') . '.php';
+        //判断写入文件目录是否存在,不存在创建目录
+        if(!is_dir(APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $underlineController . ($suffix ? 'Model' : ''))){
+            mkdir((APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $underlineController . ($suffix ? 'Model' : '')));
+        }
+        file_put_contents($filename, var_export($data,true).PHP_EOL, FILE_APPEND);
+
+    }
+
+    protected function replaceTplAttr($module, $controller,$model,$action,$name,$attr, $suffix = false){
+        // 获取该表字段信息
+        $result=Db::table($model);
+        $keys= $result->getTableFields();
+        //控制器名大驼峰转小驼峰
+        $littleController=lcfirst($controller);
+        //控制器名大驼峰转下划线
+        $underlineController=humpToLine($controller);
+        $tplName=humpToLine($controller.$action);
+        $content='';
+        $filename=APP_PATH. 'common' . '/'. 'tpl' . '/' . $action. '.html';
+
+        foreach ($keys as $attr){
+
+                if ($attr=='create_time'||$attr=='update_time'||$attr=='delete_time'||$attr=='is_delete') {
+
+                }else{
+                    $content.='<td>{$vo.'.$attr.'}</td>'."\n";
+                }
+
+        }
+        //判断写入文件目录是否存在
+        if(!is_dir(APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $underlineController . ($suffix ? 'Model' : ''))){
+            mkdir((APP_PATH . ($module ? $module . '/' : '') . 'view' . '/' . $underlineController . ($suffix ? 'Model' : '')));
+        }
+        file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
+    }
+    /**
+     * 获取数据表信息
+     * @access public
+     * @param string $tableName 数据表名 留空自动获取
+     * @param string $fetch 获取信息类型 包括 fields type bind pk
+     * @return mixed
+     */
+    public function getTableInfo($tableName = '', $fetch = '')
+    {
+        static $_info = [];
+        if (!$tableName) {
+            $tableName = $this->getTable();
+        }
+        if (is_array($tableName)) {
+            $tableName = key($tableName) ?: current($tableName);
+        }
+        if (strpos($tableName, ',')) {
+            // 多表不获取字段信息
+            return false;
+        }
+        $guid = md5($tableName);
+        if (!isset($_info[$guid])) {
+            $info   = $this->connection->getFields($tableName);
+            $fields = array_keys($info);
+            $bind   = $type   = [];
+            foreach ($info as $key => $val) {
+                // 记录字段类型
+                $type[$key] = $val['type'];
+                if (preg_match('/(int|double|float|decimal|real|numeric|serial)/is', $val['type'])) {
+                    $bind[$key] = PDO::PARAM_INT;
+                } elseif (preg_match('/bool/is', $val['type'])) {
+                    $bind[$key] = PDO::PARAM_BOOL;
+                } else {
+                    $bind[$key] = PDO::PARAM_STR;
+                }
+                if (!empty($val['primary'])) {
+                    $pk[] = $key;
+                }
+            }
+            if (isset($pk)) {
+                // 设置主键
+                $pk = count($pk) > 1 ? $pk : $pk[0];
+            } else {
+                $pk = null;
+            }
+            $result       = ['fields' => $fields, 'type' => $type, 'bind' => $bind, 'pk' => $pk];
+            $_info[$guid] = $result;
+        }
+        return $fetch ? $_info[$guid][$fetch] : $_info[$guid];
+    }
+   protected function arrayToObject($array) {
+        if (is_array($array)) {
+            $obj = new StdClass();
+            foreach ($array as $key => $val){
+                $obj->$key = $val;
+            }
+        }
+        else { $obj = $array; }
+        return $obj;
     }
 }

@@ -33,15 +33,15 @@ class Grade extends Base
                 'status' => $value->status,
                 'create_time' => $value->create_time,
                 /*用关联方法teacher属性方法访问teacher表中数据*/
-                'teacher' => isset($value->teacher->name) ? $value->teacher->name : '<span style="color:red;">未分配</span>'
+                'teacher' => isset($value->teacher->name) ? $value->teacher->name : '未分配'
             ];
 
             /*每次关联查询结果保存到数组$gradeList中*/
-            $gradeList[] = $data;
+            $list[] = $data;
         }
 
         /*模板赋值*/
-        $this->view->assign('gradeList', $gradeList);
+        $this->view->assign('list', $list);
         $this->view->assign('count', $count);
 
         /*渲染模板*/
@@ -129,6 +129,12 @@ class Grade extends Base
     {
         //获取传入参数
         $attr = $request->param();
+        //去掉表单中为空的数据，即未修改数据
+        foreach ($attr as $key=>$value){
+            if (!empty($value)) {
+                $attr[$key]=$value;
+            }
+        }
         $id = $attr['id'];
 
         //将字符串转为索引数组
