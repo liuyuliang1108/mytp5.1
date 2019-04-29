@@ -27,6 +27,10 @@ class ComposerStaticInit21e6eafec30e1ea96d287357527c3653
         array (
             'app\\' => 4,
         ),
+        'P' => 
+        array (
+            'Predis\\' => 7,
+        ),
         'A' => 
         array (
             'Api\\Doc\\' => 8,
@@ -53,6 +57,10 @@ class ComposerStaticInit21e6eafec30e1ea96d287357527c3653
         'app\\' => 
         array (
             0 => __DIR__ . '/../..' . '/application',
+        ),
+        'Predis\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/predis/predis/src',
         ),
         'Api\\Doc\\' => 
         array (

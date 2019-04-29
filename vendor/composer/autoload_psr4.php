@@ -11,5 +11,6 @@ return array(
     'think\\captcha\\' => array($vendorDir . '/topthink/think-captcha/src'),
     'mumbaicat\\makeapidoc\\' => array($vendorDir . '/mumbaicat/makeapidoc/src'),
     'app\\' => array($baseDir . '/application'),
+    'Predis\\' => array($vendorDir . '/predis/predis/src'),
     'Api\\Doc\\' => array($vendorDir . '/weiwei/api-doc/src'),
 );

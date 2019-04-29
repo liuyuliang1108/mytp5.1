@@ -82,6 +82,21 @@ class Element extends Base
         $attr = $request->param();
         //使用模型get方法,返回model对象
         $data = ElementModel::get(['child_id' => $attr['cId']]);
+        $parent_id=$data->child_id;
+        while ($parent_id){
+            $pId=ElementModel::get(['child_id'=>$parent_id]);
+            $name[$parent_id]=$pId->name;
+            $cId[$parent_id]=$pId->child_id;
+            $parent_id=$pId->parent_id;
+        }
+        $dir=APP_PATH . 'common/';
+        //先将数组从小到大排列，再遍历出目录地址
+        ksort($name);
+        foreach ($name as $value){
+            $dir.=$value.'/';
+        }
+        $filename =$dir.'/'.$data->name.'.html' ;
+        $data->content=file_get_contents($filename);
         //模板赋值
         $this->view->assign('data', $data);
         /*渲染模板*/
@@ -106,15 +121,46 @@ class Element extends Base
     {
         //获取传入参数
         $attr = $request->param();
-        //将字符串转为索引数组
-        $attr['file_name'] = explode(',', $attr['file_name']);
-        $attr['description'] = explode(';', $attr['description']);
+        $parent_id=$attr['parent_id'];
+
+        while ($parent_id){
+            $pId=ElementModel::get(['child_id'=>$parent_id]);
+            $name[$parent_id]=$pId->name;
+            $cId[$parent_id]=$pId->child_id;
+            $parent_id=$pId->parent_id;
+        }
+        $dir=APP_PATH . 'common/';
+        //先将数组从小到大排列，再遍历出目录地址
+        ksort($name);
+        foreach ($name as $value){
+            $dir.=$value.'/';
+        }
+        //创建目录
+    //判断写入文件目录是否存在
+        if(!is_dir($dir.$attr['name'])){
+            mkdir($dir.$attr['name']);
+        }
+        $filename =$dir.$attr['name'].'/'.$attr['name'].'.html' ;
+
+        $content = $attr['content'];
+        //写入文件
+        file_put_contents($filename, $content.PHP_EOL, FILE_APPEND);
+
+        //自动获取type
+        $model = new ElementModel();
+        $type = $model->where(['parent_id' => $attr['parent_id']])->max('type');
+        $attr['type'] = $type ? $type + 1 : 1;//三元表达式，如果此类中不存在，则序号为1
+
+        //根据父节点，和类型生成子节点
+        $attr['child_id'] = $attr['parent_id'] * 100 + $attr['type'];
         //使用模型save方法,返回bool值
         $object = new ElementModel;
         //返回bool值
         $result = $object->save($attr);
-        $data = $result ? ['flag' => 1] : ['flag' => -1];
-        return json_encode($data);//以json格式输出;
+
+     $data['flag']=$result?1:0;
+            return json_encode($data);
+
     }
 
     /*组件编辑保存*/
@@ -128,6 +174,23 @@ class Element extends Base
         $result = $model->isUpdate()->save($attr, ['id' => $id]);
         $data = $result ? ['flag' => 1] : ['flag' => -1];
         return json_encode($data);//以json格式输出;
+    }
+
+    /*组件删除*/
+    public function elementDelete(Request $request)
+    {
+
+        //获取传入参数
+        $attr = $request->param();
+        $id = $attr['id'];
+
+        //使用模型update方法,将is_delete字段修改为1
+        ElementModel::update(['is_delete' => 1], ['id' => $id]);
+
+        //使用模型destroy方法,软删除,修改delete_time字段
+        $result = ElementModel::destroy(['id' => $id]);
+        $data['flag']=$result?1:0;
+        return json_encode($data);
     }
 }
 

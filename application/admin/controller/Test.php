@@ -1,6 +1,7 @@
 <?php
 namespace app\admin\controller;
 use \app\admin\controller\Base;
+use think\facade\Cache;
 use think\Request;
 use think\Db;
 class Test extends Base
@@ -83,6 +84,10 @@ class Test extends Base
             $_info[$guid] = $result;
         }
         return $fetch ? $_info[$guid][$fetch] : $_info[$guid];
+    }
+    public function redis(){
+
+        dump(Cache::store('redis')->set('sfdsf','yingying11111',1000000));
     }
 }
 

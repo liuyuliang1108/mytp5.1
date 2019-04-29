@@ -37,25 +37,21 @@
     </div>
 
 
-    <div class="layui-form-item">
-        <label class="layui-form-label">类型type：</label>
-        <div class="layui-input-block">
-            <input type="text" class="layui-input" value="{$data.type}" placeholder="" id="" name="type">
-        </div>
-    </div>
+    <pre class="layui-code" id="pre_content" lay-title="组件内容content:" lay-height="" lay-skin="" lay-encode="">
+{$data.content|raw}
+</pre>
 
-
-    <div class="layui-form-item">
-        <label class="layui-form-label"><span class="c-red">*</span>组件内容content：</label>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">组件内容content：</label>
         <div class="layui-input-block">
-            <input type="text" class="layui-input" value="{$data.content}" placeholder="" id="" name="content">
+            <textarea id="textarea_content" name="content" placeholder="请输入内容" class="layui-textarea"></textarea>
         </div>
     </div>
 
     <div class="layui-form-item layui-form-text">
         <label class="layui-form-label">组件描述des：</label>
         <div class="layui-input-block">
-            <textarea id="textarea_cate" name="des" placeholder="请输入内容" class="layui-textarea"></textarea>
+            <textarea id="textarea_des" name="des" placeholder="请输入内容" class="layui-textarea"></textarea>
         </div>
     </div>
 
@@ -77,7 +73,10 @@
         </div>
     </div>
 </form>
-
+<fieldset><legend><a name="use">小睹为快</a></legend></fieldset>
+<div class="site-text site-block" id="demo-text">
+    {$data.content|raw}
+</div>
 {/block}
 
 {block name="js"}
@@ -85,11 +84,13 @@
     /**
      * 首页内容.js
      * */
-    layui.use(['form','element','layer'],function() {
+    layui.use(['form','element','layer','code'],function() {
         var form = layui.form,
             layer = parent.layer === undefined ? layui.layer : parent.layer,
             element = layui.element;
-
+        layui.code({
+            encode: true //是否转义html标签。默认不开启
+        });
 
         form.on('submit(element-edit)', function(data){
             $.ajax({
@@ -113,10 +114,11 @@
         });
 
     });
-    $(function() {
-        $("#textarea_cate").val("{$data.des}");
-    });
 
+    $(function() {
+        $("#textarea_des").val("{$data.des}");
+        $("#textarea_content").val($("#pre_content").html()) ;
+    });
 
 
 
