@@ -18,6 +18,7 @@
     <div class="row cl" style="text-align: center">
         <button class="layui-btn" onclick="category_add()">新增</button>
         <button class="layui-btn" onclick="category_del()">删除</button>
+        <button class="layui-btn" onclick="category_all_update()">全部更新</button>
     </div>
 </div>
 
@@ -194,7 +195,28 @@
         });
 
     }
+    //Ajax请求控制器中的方法完成所有数据的更新
+    function category_all_update() {
 
+        jQuery.ajax({
+            url: '{:url("category/allUpdate")}',
+            type: 'post',
+            dataType:'json',
+            success: function (data) {
+
+                var data = JSON.parse(data);
+
+                if (data.flag == 1) {
+                    //如果php处理成功，调用此方法
+                    layer.msg('全部更新成功!', {icon: 1, time: 1000});
+
+                } else {
+                    layer.msg('更新失败!', {icon: 1, time: 1000});
+                }
+            },
+        });
+
+    }
 
 </script>
 {/block}

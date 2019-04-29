@@ -12,14 +12,6 @@
 // 后台应用公共文件
 
 
-function auto_upload_layout(){
-    return
-        "{include file='base/_meta' /}
-{include file='base/_header' /}"
-        ;}
-
-
-
 
 function getTree($data,$pid){
     if (!is_array($data) || empty($data) ) return false;
@@ -130,6 +122,22 @@ function humpToLine($str){
         return 0;//写入失败
     };
 
+     function _simulatePost($url, $data)
+     {
+         $postdata = http_build_query(
+             $data
+         );
 
+         $opts = array('http' =>
+             array(
+                 'method' => 'POST',
+                 'header' => 'Content-type: application/x-www-form-urlencoded',
+                 'content' => $postdata
+             )
+         );
+         $context = stream_context_create($opts);
+         $result = file_get_contents($url, false, $context);
+         return $result;
+     }
 
 }

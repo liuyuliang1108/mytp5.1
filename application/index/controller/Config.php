@@ -278,13 +278,12 @@ class Config extends Base
     }
 
     /*config工作环境编辑*/
-    public function copyToGit($id,$flag)
+    public function copyToGit($id)
     {
         //使用模型get方法,返回model对象
         $model = ConfigModel::get(['id' => $id]);
         //模板赋值
         $this->view->assign('data', $model);
-        $this->view->assign('flag', $flag);
         /*渲染模板*/
         return $this->fetch();
     }
@@ -466,7 +465,7 @@ class Config extends Base
                 $desc= implode(';',$description);
                 $somecontent.="&& echo '@description : $desc'>>README.md";
             }
-        }else{
+        }elseif($flag==1){
             if ( $type=='win') {
                 //修改README.md文件
                 $somecontent.="&& echo.>>README.md";
@@ -491,6 +490,30 @@ class Config extends Base
                 $somecontent.="&& echo '@description : $desc'>>README.md";
             }
 
+        }elseif($flag==2){
+            if ( $type=='win') {
+                //修改README.md文件
+                $somecontent.="&& echo.>>README.md";
+                $somecontent.="&& echo ---------------------------------------------------------->>README.md";
+                $somecontent.="&& echo @config-title : $name>>README.md";
+                $somecontent.="&& echo @config-work_env : $workEnv>>README.md";
+                $somecontent.="&& echo @version : v$version>>README.md";
+                $somecontent.="&& echo @version : v$version>>README.md";
+                $somecontent.="&& echo @type : $type>>README.md";
+                $desc= implode(';',$description);
+                $somecontent.="&& echo @description : $desc>>README.md";
+            }elseif($type=='linux'){
+                //修改README.md文件
+                $somecontent.="&& echo ''>>README.md";
+                $somecontent.="&& echo '----------------------------------------------------------'>>README.md";
+                $somecontent.="&& echo '@config-title : $name'>>README.md";
+                $somecontent.="&& echo '@config-work_env : $workEnv'>>README.md";
+                $somecontent.="&& echo '@version : v$version'>>README.md";
+                $somecontent.="&& echo '@version : v$version'>>README.md";
+                $somecontent.="&& echo '@type : $type'>>README.md";
+                $desc= implode(';',$description);
+                $somecontent.="&& echo '@description : $desc'>>README.md";
+            }
         }
 
         //提交版本修改

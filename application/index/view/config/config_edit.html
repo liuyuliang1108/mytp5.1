@@ -103,7 +103,7 @@
 </form>
 
 
-    <div class="layui-collapse" id="exec-btn">
+    <div class="layui-collapse">
         <div class="layui-colla-item">
             <h2 class="layui-colla-title">生成命令:</h2>
             <div class="layui-colla-content layui-show">
@@ -118,6 +118,7 @@
     <a href="javascript:;"  onclick="exec_cmd({$data.id},'win')" class="layui-btn">
         直接运行命令</a>
     {/if}
+<div id="exec-btn"></div>
     </div>
 
 
@@ -129,6 +130,7 @@
     /**
      * 首页内容.js
      * */
+
     layui.use(['form','element','layer'],function() {
         var form = layui.form,
             layer = parent.layer === undefined ? layui.layer : parent.layer,
@@ -136,34 +138,39 @@
 
 
         form.on('submit(config-edit)', function(data){
-            $(form).ajaxSubmit({
-                type: 'post',
-                url: "{:url('config_manage/configEditSave')}" ,
+            $.ajax({
+                type: 'POST',
+                url: "{:url('config/configEditSave')}",
+                data: $('form').serialize(),
+                dataType:'json',
                 success: function(data){
                     layer.msg('修改成功!',{icon:1,time:1000});
-                    if (data.version=="{$data.version}"){
+                    if ($('configDescription').val()=="{:implode(';',$data.description)}"){
                         layer.close();
-                        window.parent.location.reload();
-
+                        window.location.reload();
                     }else {
-                        var html='';
-                        if(data.type=='win'){
-                            html='<a href="javascript:void(0);"  class="layui-btn">运行命令</a>';
-                            $("#exec-btn").html(html);
-                        }
-                        $.ajax({
-                            type: 'post',
-                            url: "{:url('config_manage/updateCmd')}",
-                            data: {id:data.id,
-                                attr:1,
-                                flag:0},
-                            dataType: 'json',
-                            success: function (data) {
-                                $("#textarea_cate").val(data.cmd);
-                                layer.msg('命令已生成!', {icon: 6, time: 1000});
-                                id=data.id;
+                        var flag;
+                        flag=data.version=="{$data.version}"?0:2;
+
+                            var html='';
+                            if(data.type=='win'){
+                                html='<a href="javascript:void(0);"  class="layui-btn">运行命令</a>';
+                                $("#exec-btn").html(html);
                             }
-                        });
+                            $.ajax({
+                                type: 'post',
+                                url: "{:url('config/updateCmd')}",
+                                data: {id:data.id,
+                                    attr:1,
+                                    flag:flag},
+                                dataType: 'json',
+                                success: function (data) {
+                                    $("#textarea_cate").val(data.cmd);
+                                    layer.msg('命令已生成!', {icon: 6, time: 1000});
+                                    id=data.id;
+                                }
+                            });
+
                     }
                 },
                 error: function(XmlHttpRequest, textStatus, errorThrown){

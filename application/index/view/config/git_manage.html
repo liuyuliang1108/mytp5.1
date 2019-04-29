@@ -57,19 +57,20 @@
     </table>
 <div class="layui-collapse" id="exec-btn">
     <div class="layui-colla-item">
+        {if condition="$vo.type eq 'win'"}
+        <a href="javascript:void(0);" onclick="init_load({$vo.id},'win')" class="layui-btn">多用户|init-win-config-load-to-git|本地初始化git</a>
+        <a href="javascript:void(0);" onclick="open_dir({$vo.id})" class="layui-btn">open-dir|打开目录</a>
+        {else/}
+        <a href="javascript:;" onclick="init_load({$vo.id},'linux')" class="layui-btn">多用户|init-linux-config-load-to-git|本地初始化git</a>
+        {/if}
+        <hr class="layui-bg-green">
+        <a href="javascript:void(0);" onclick="copy_to_git()" class="layui-btn">多用户|copy_to_git|复制配置文件，本地清除该文件</a>
+        <a href="javascript:void(0);" onclick="update_version()" class="layui-btn">多用户|update_version|新增版本，本地提交，分支不同</a>
         <h2 class="layui-colla-title">
-            {if condition="$vo.type eq 'win'"}
-            <a href="javascript:void(0);" onclick="init_load({$vo.id},'win')" class="layui-btn">init-win-config-load-to-git</a>
-            <a href="javascript:void(0);" onclick="open_dir({$vo.id})" class="layui-btn">open-dir</a>
-            {else/}
-            <a href="javascript:;" onclick="init_load({$vo.id},'linux')" class="layui-btn">init-linux-config-load-to-git</a>
-            {/if}
-            <a href="javascript:void(0);" onclick="copy_to_git()" class="layui-btn">copy_to_git</a>
-            <a href="javascript:void(0);" onclick="copy_to_init()" class="layui-btn">copy_to_init</a>
-            <a href="javascript:void(0);" onclick="update_version()" class="layui-btn">update_version</a>
+            生成命令:
         </h2>
         <div class="layui-colla-content layui-show">
-           <textarea name="desc" id="textarea_cate" placeholder="生成命令" class="layui-textarea"></textarea>
+           <textarea name="desc" id="textarea_cate" placeholder="" class="layui-textarea"></textarea>
         </div>
     </div>
     <h2 class="layui-colla-title">
@@ -144,17 +145,11 @@
 
 /*copy配置项git仓库，并配置工作环境*/
 function copy_to_git() {
-    var url="{:url('admin/config/copyToGit',['id'=>$vo.id,'flag'=>0])}";
+    var url="{:url('admin/config/copyToGit',['id'=>$vo.id])}";
 
     window.open(url);
 }
 
-    /*copy配置项并init git仓库，并配置工作环境*/
-    function copy_to_init() {
-        var url="{:url('admin/config/copyToGit',['id'=>$vo.id,'flag'=>1])}";
-
-        window.open(url);
-    }
     /*更新版本*/
     function update_version() {
         var url="{:url('admin/config/updateVersion',['id'=>$vo.id,'flag'=>1,])}";

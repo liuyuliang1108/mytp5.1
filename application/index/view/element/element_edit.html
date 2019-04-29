@@ -94,7 +94,7 @@
         form.on('submit(element-edit)', function(data){
             $.ajax({
                 type: 'POST',
-                url: "{:url('index/element/ElementAddSave')}",
+                url: "{:url('index/element/elementAddSave')}",
                 data: $('form').serialize(),
                 dataType: 'json',
                 async: false,

@@ -75,7 +75,7 @@ class Category extends Base //分类管理控制器
         return json_encode($data);//以json格式输出
     }
 
-    public function CategoryAddSave(Request $request)//新增方法，以及修改方法//依赖注入request对象
+    public function categoryAddSave(Request $request)//新增方法，以及修改方法//依赖注入request对象
     {
         //获取请求参数
         $data = $request->param();
@@ -84,7 +84,7 @@ class Category extends Base //分类管理控制器
 
         //如果类型为方法型，生成url地址，
         if ($data['type'] == 3) {
-            $data['url'] = '/' . $data['module'] . '/' . humpToLine($data['controller']) . '/' . $data['action'] . '.html';
+            $data['url'] = url($data['module'] . '/' . humpToLine($data['controller']) . '/' . $data['action']);
         } else {
             $data['url'] = "javascript:;";
         }
@@ -238,6 +238,26 @@ class Category extends Base //分类管理控制器
         return json_encode($nodeArr);//以json格式输出
 
     }
-
+public function allUpdate(){
+        //使用模型all方法得到全部数据，返回对象数组
+    $data=CategoryModel::all();
+    //遍历对象数组
+    foreach ($data as $value){
+        $id=$value->id;
+        $name=$value->name;
+        $parent_id=$value->parent_id;
+        $type=$value->type;
+        $remark=$value->remark;
+        $module=$value->module;
+        $model=$value->model;
+        $controller=$value->controller;
+        $action=$value->action;
+        //由于更新方法采用依赖请求对象，固采用模拟请求对象，发送请求
+        $result=_simulatePost('index/category/categoryAddSave',['id'=>$id,'name'=>$name,'parent_id'=>$parent_id,'type'=>$type,'remark'=>$remark,
+            'module'=>$module,'model'=>$model,'controller'=>$controller,'action'=>$action]);
+    }
+    $data = $result ? ['flag' => 1] : ['flag' => -1];
+    return json_encode($data);//以json格式输出
+}
 }
 

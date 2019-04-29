@@ -163,7 +163,7 @@ $(function(){
 		submitHandler:function(form){
 			$(form).ajaxSubmit({
 				type: 'post',
-				url: "{:url('config_manage/configAddSave')}" ,
+				url: "{:url('config/configAddSave')}" ,
 				success: function(data){
 					var data = JSON.parse(data);
 					layer.msg('新增版本信息成功!',{icon:1,time:1000});
