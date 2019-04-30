@@ -2493,3 +2493,15 @@ alter table category_list AUTO_INCREMENT=9;
 复制代码
 另外也可以通过`Env`类的`get`方法获取这些路径变量（不区分大小写），例如：
 Env::get('root_path');
+
+linux安装php拓展
+find / -name 'openssl'
+cd /root/php-7.0.12/ext/openssl
+cp ./config0.m4 ./config.m4
+/usr/local/php/bin/phpize
+./configure --with-php-config=/usr/local/php/bin/php-config --with-openssl
+//这里需将禁用函数开启 
+make && make install && make test
+cd /usr/local/php/etc
+vim php.ini
+extension = "openssl.so"

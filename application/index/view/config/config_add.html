@@ -103,7 +103,7 @@
 				async: false,
 				success: function (data) {
 					data= $.parseJSON(data);
-					if(data.flag==1){
+					if(data){
 						layer.msg('添加成功!',{icon:1,time:1000});
 						var index = parent.layer.getFrameIndex(window.name);
 						parent.location.reload();
